@@ -62,6 +62,9 @@ class MusicRepositoryImplTest {
         Dispatchers.setMain(testDispatcher)
         every { mockArtistImageRepository.folderArtworkRevision } returns MutableStateFlow(0L)
         coEvery { mockArtistImageRepository.getFolderArtistImageUrl(any(), any()) } returns null
+        // Search now reports failures as Result; keep the relaxed default an empty success so
+        // tests that only care about local results do not depend on the online source.
+        coEvery { mockYouTubeRepository.searchSongs(any()) } returns Result.success(emptyList())
         coEvery { mockUserPreferencesRepository.allowedDirectoriesFlow } returns flowOf(emptySet())
         coEvery { mockUserPreferencesRepository.blockedDirectoriesFlow } returns flowOf(setOf("/dummy"))
         coEvery { mockUserPreferencesRepository.initialSetupDoneFlow } returns flowOf(true)
@@ -561,7 +564,7 @@ class MusicRepositoryImplTest {
                 bitrate = 160,
                 sampleRate = 48000
             )
-            coEvery { mockYouTubeRepository.searchSongs("aurora") } returns listOf(onlineSong)
+            coEvery { mockYouTubeRepository.searchSongs("aurora") } returns Result.success(listOf(onlineSong))
 
             // Emission counts are racy (YouTube's two emissions can land before local's first),
             // so assert on the final merged state.

@@ -192,8 +192,8 @@ class YouTubeMusicRepository @Inject constructor(
      * Search YouTube / YouTube Music for tracks matching [query].
      * Uses NewPipe extractor (reliable for search).
      */
-    suspend fun searchSongs(query: String): List<Song> = withContext(Dispatchers.IO) {
-        if (query.isBlank()) return@withContext emptyList()
+    suspend fun searchSongs(query: String): Result<List<Song>> = withContext(Dispatchers.IO) {
+        if (query.isBlank()) return@withContext Result.success(emptyList())
         try {
             val searchInfo = SearchInfo.getInfo(
                 ServiceList.YouTube,
@@ -207,10 +207,14 @@ class YouTubeMusicRepository @Inject constructor(
                     songs.add(song)
                 }
             }
-            songs
+            Result.success(songs)
+        } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+            throw e
         } catch (e: Exception) {
+            // Swallowing this into an empty list is what made a failed search look like
+            // "no results"; callers need the failure to say something honest.
             Timber.e(e, "YouTube search failed for query: $query")
-            emptyList()
+            Result.failure(e)
         }
     }
 

@@ -136,9 +136,14 @@ abstract class CloudStreamProxy<K : Any>(
         return awaitReady(timeoutMs)
     }
 
-    fun getProxyUrl(id: K): String {
-        if (actualPort == 0) return ""
-        if (!validateId(id)) return ""
+    /**
+     * Local proxy URL for [id], or null when the server is not listening yet or the id is
+     * invalid. Callers get a null instead of an empty string so a Uri built from it fails
+     * loudly at the call site rather than turning into a silent 404.
+     */
+    fun getProxyUrl(id: K): String? {
+        if (actualPort == 0) return null
+        if (!validateId(id)) return null
         return "http://127.0.0.1:$actualPort$routePrefix/${formatIdForUrl(id)}?t=$sessionToken"
     }
 

@@ -39,19 +39,23 @@ class YouTubeDashboardViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isSearching = true, errorMessage = null)
-            try {
-                val results = repository.searchSongs(query)
-                _uiState.value = _uiState.value.copy(
-                    isSearching = false,
-                    searchResults = results
-                )
-            } catch (e: Exception) {
-                Timber.e(e, "YouTube search failed")
-                _uiState.value = _uiState.value.copy(
-                    isSearching = false,
-                    errorMessage = e.localizedMessage ?: "Search failed"
-                )
-            }
+            repository.searchSongs(query).fold(
+                onSuccess = { results ->
+                    _uiState.value = _uiState.value.copy(
+                        isSearching = false,
+                        searchResults = results,
+                        errorMessage = null
+                    )
+                },
+                onFailure = { e ->
+                    Timber.e(e, "YouTube search failed")
+                    _uiState.value = _uiState.value.copy(
+                        isSearching = false,
+                        searchResults = emptyList(),
+                        errorMessage = e.localizedMessage ?: "YouTube search failed"
+                    )
+                }
+            )
         }
     }
 

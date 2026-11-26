@@ -581,19 +581,14 @@ class MusicRepositoryImpl @Inject constructor(
         // third-party mirrors, tens of seconds worst case).
         val youtubeFlow = flow {
             emit(emptyList())
-            val onlineResults = runCatching {
-                withTimeoutOrNull(ONLINE_SEARCH_TIMEOUT_MS) {
-                    youtubeRepositoryProvider.get().searchSongs(query)
-                }
-            }.fold(
-                onSuccess = { it ?: emptyList() },
-                onFailure = { e ->
-                    // Respect cancellation from rapid retyping instead of emitting on a dead flow.
-                    if (e is kotlinx.coroutines.CancellationException) throw e
-                    Timber.w(e, "YouTube search failed for query '%s'", query)
-                    emptyList()
-                }
-            )
+            val onlineResults = withTimeoutOrNull(ONLINE_SEARCH_TIMEOUT_MS) {
+                youtubeRepositoryProvider.get().searchSongs(query)
+            }?.getOrElse { e ->
+                // Respect cancellation from rapid retyping instead of emitting on a dead flow.
+                if (e is kotlinx.coroutines.CancellationException) throw e
+                Timber.w(e, "YouTube search failed for query '%s'", query)
+                emptyList()
+            } ?: emptyList()
             if (onlineResults.isNotEmpty()) emit(onlineResults)
         }
 
