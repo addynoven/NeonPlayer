@@ -25,6 +25,14 @@ Rules that keep this cheap:
 - **Tag our releases** (`neon-v0.9.0`); leave upstream tags alone so we can still
   diff against a release.
 
+## Branch protection
+
+The repository ruleset forbids deleting branches and force pushing to them, which is
+why `master` can no longer be rewritten in place. `refs/heads/sync/**` is excluded
+from that ruleset so the weekly job can recreate its own throwaway branch; `main` and
+everything else stays protected. `master` is the pre-port fork, kept read-only and
+also preserved by the `backup-pre-oss-port` tag.
+
 ## One-time setup (per clone)
 
 ```bash
