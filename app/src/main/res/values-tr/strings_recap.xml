@@ -17,7 +17,7 @@
     <string name="recap_close">Kapat</string>
     <string name="recap_not_enough_title">Henüz yeterince dinleme yok</string>
     <string name="recap_not_enough_subtitle">Müzik dinlemeye devam et, %1$d özetin dolacak.</string>
-    <string name="recap_intro_kicker">PixelPlayerOSS Özeti</string>
+    <string name="recap_intro_kicker">NeonPlayer Özeti</string>
     <string name="recap_intro_title">Müzikle geçen yılın</string>
     <string name="recap_intro_title_so_far">Şimdiye kadarki yılın</string>
     <string name="recap_intro_subtitle">Yılına eşlik eden şarkılara, sanatçılara ve anlara bir bakış.</string>
@@ -91,7 +91,7 @@
     <string name="recap_summary_listening_style">Dinleme tarzı</string>
     <string name="recap_share">Paylaş</string>
     <string name="recap_share_chooser_title">Özetini paylaş</string>
-    <string name="recap_share_text">%1$d müzik özetim, PixelPlayerOSS ile oluşturuldu</string>
+    <string name="recap_share_text">%1$d müzik özetim, NeonPlayer ile oluşturuldu</string>
     <string name="recap_share_failed">Özet görseli oluşturulamadı</string>
     <string name="recap_play_top_songs">En iyileri çal</string>
     <string name="recap_top_songs_queue_name">%1$d en iyileri</string>

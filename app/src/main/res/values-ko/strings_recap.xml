@@ -17,7 +17,7 @@
     <string name="recap_close">닫기</string>
     <string name="recap_not_enough_title">아직 감상 기록이 부족해요</string>
     <string name="recap_not_enough_subtitle">음악을 계속 들으면 %1$d 리캡이 채워져요.</string>
-    <string name="recap_intro_kicker">PixelPlayerOSS 리캡</string>
+    <string name="recap_intro_kicker">NeonPlayer 리캡</string>
     <string name="recap_intro_title">음악으로 본 나의 한 해</string>
     <string name="recap_intro_title_so_far">지금까지의 한 해</string>
     <string name="recap_intro_subtitle">올해를 함께한 노래, 아티스트, 순간들을 돌아봐요.</string>
@@ -84,7 +84,7 @@
     <string name="recap_summary_listening_style">감상 스타일</string>
     <string name="recap_share">공유</string>
     <string name="recap_share_chooser_title">리캡 공유</string>
-    <string name="recap_share_text">음악으로 본 나의 %1$d, PixelPlayerOSS로 만들었어요</string>
+    <string name="recap_share_text">음악으로 본 나의 %1$d, NeonPlayer로 만들었어요</string>
     <string name="recap_share_failed">리캡 이미지를 만들지 못했어요</string>
     <string name="recap_play_top_songs">인기곡 재생</string>
     <string name="recap_top_songs_queue_name">%1$d 인기곡</string>

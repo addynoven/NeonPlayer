@@ -285,7 +285,7 @@
     <string name="toast_regenerated_palettes_partial">Пересоздано палитр обложек: %1$d из %2$d</string>
     <string name="toast_stats_regeneration_started">Пересоздание статистики начато</string>
     <string name="working_ellipsis">Выполняется…</string>
-    <string name="setcat_about_pixelplayer_title">О PixelPlayerOSS</string>
+    <string name="setcat_about_pixelplayer_title">О NeonPlayer</string>
     <string name="updates_title">Обновления</string>
     <string name="updates_settings_subtitle">Проверка версий и канал выпуска</string>
     <string name="updates_check_row_title">Проверить обновления</string>
@@ -307,7 +307,7 @@
     <string name="updates_status_reinstall_signature">Версию %1$s нельзя установить поверх этой сборки: она подписана другим ключом или имеет другое имя пакета (например, это отладочная сборка).</string>
     <string name="updates_status_downloading">Скачивание %1$s…</string>
     <string name="updates_status_downloading_progress">Скачивание %1$s… %2$d%%</string>
-    <string name="updates_status_permission">Разрешите PixelPlayerOSS устанавливать приложения, чтобы завершить обновление до %1$s.</string>
+    <string name="updates_status_permission">Разрешите NeonPlayer устанавливать приложения, чтобы завершить обновление до %1$s.</string>
     <string name="updates_status_confirm">Подтвердите установку %1$s в системном окне.</string>
     <string name="updates_status_installing">Установка %1$s…</string>
     <string name="updates_error_check">Не удалось связаться с сервером обновлений. Проверьте подключение и повторите попытку.</string>
@@ -328,7 +328,7 @@
     <string name="updates_switch_dialog_title">Требуется переустановка</string>
     <string name="updates_switch_dialog_body">Стабильные сборки выходят в F-Droid, а альфа-сборки — на GitHub. Они подписаны разными ключами, поэтому Android не может обновить одну сборку другой. При удалении данные приложения стираются, поэтому сначала создайте резервную копию.</string>
     <string name="updates_switch_step_backup">1. Создайте резервную копию и сохраните файл вне приложения.</string>
-    <string name="updates_switch_step_download_stable">2. Установите F-Droid, если его нет, и откройте в нём PixelPlayerOSS.</string>
+    <string name="updates_switch_step_download_stable">2. Установите F-Droid, если его нет, и откройте в нём NeonPlayer.</string>
     <string name="updates_switch_step_download_alpha">2. Скачайте APK версии %1$s.</string>
     <string name="updates_switch_step_uninstall">3. Удалите это приложение, установите новую сборку и восстановите резервную копию.</string>
     <string name="updates_switch_action_backup">Создать копию</string>
@@ -338,8 +338,8 @@
     <string name="updates_switch_action_close">Закрыть</string>
     <string name="updates_notification_channel">Обновления приложения</string>
     <string name="updates_notification_title">Доступно обновление</string>
-    <string name="updates_notification_text">PixelPlayerOSS %1$s готов к установке.</string>
-    <string name="updates_notification_confirm_title">Завершите обновление PixelPlayerOSS</string>
+    <string name="updates_notification_text">NeonPlayer %1$s готов к установке.</string>
+    <string name="updates_notification_confirm_title">Завершите обновление NeonPlayer</string>
     <string name="updates_notification_confirm_text">Нажмите, чтобы подтвердить установку.</string>
     <string name="setcat_m3u_sync_section">Синхронизация плейлистов</string>
     <string name="setcat_m3u_sync_title">Автоматическая синхронизация M3U</string>

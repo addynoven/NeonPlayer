@@ -3,16 +3,20 @@ package com.lostf1sh.pixelplayeross.data.stream
 import android.net.Uri
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.cio.CIO
 import io.ktor.server.cio.CIOApplicationEngine
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.content.OutgoingContent
 import io.ktor.server.response.header
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondBytesWriter
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import io.ktor.utils.io.ByteWriteChannel
 import io.ktor.utils.io.writeFully
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import timber.log.Timber
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -88,6 +93,23 @@ abstract class CloudStreamProxy<K : Any>(
 
     private companion object {
         const val STREAM_READ_TIMEOUT_SECONDS = 60L
+
+        /**
+         * Window size for bounded-range relay of upstreams that refuse open-ended GETs.
+         *
+         * googlevideo (rqh=1) and the Invidious worker nodes that proxy it both cap the
+         * *span* of a single Range request: 512 KB is answered with 206, anything at or
+         * above ~1 MB is answered with 403. Measured against a live worker:
+         * bytes=0-524287 -> 206, bytes=0-1048575 -> 403, bytes=0-1999999 -> 403,
+         * bytes=1500000-2500000 -> 403, bytes=0- (open ended) -> 403.
+         *
+         * Keep this comfortably under the smallest observed cap; [MIN_BOUNDED_CHUNK_BYTES]
+         * and [MAX_CHUNK_SHRINKS] below let the relay halve the window if a node ever
+         * enforces something tighter, instead of failing the whole stream.
+         */
+        const val BOUNDED_CHUNK_BYTES = 512_000L
+        const val MIN_BOUNDED_CHUNK_BYTES = 128_000L
+        const val MAX_CHUNK_SHRINKS = 3
     }
 
     fun isReady(): Boolean = actualPort > 0
@@ -171,7 +193,22 @@ abstract class CloudStreamProxy<K : Any>(
      * headers instead of baking them into the cached stream URL (where they'd end up in
      * URL caches and server access logs).
      */
-    protected open fun upstreamHeaders(): Map<String, String> = emptyMap()
+    protected open fun upstreamHeaders(id: K): Map<String, String> = emptyMap()
+
+    /**
+     * Upstream headers for a specific resolved stream URL. Resolved URLs (e.g. googlevideo)
+     * can carry the generating client's identity, so subclasses may tailor headers per URL.
+     * Defaults to [upstreamHeaders] for proxies whose upstream has no per-URL identity.
+     */
+    protected open fun upstreamHeadersForUrl(id: K, streamUrl: String): Map<String, String> =
+        upstreamHeaders(id)
+
+    /**
+     * Drop a cached stream URL before a retry, e.g. after the upstream returned 403/410
+     * for an expired or IP-bound URL. Subclasses evict their own resolver cache; the
+     * proxy's URL cache is evicted by the self-heal path itself.
+     */
+    protected open fun evictResolvedStream(id: K) {}
 
     private fun generateSessionToken(): String {
         val bytes = ByteArray(16)
@@ -246,16 +283,61 @@ abstract class CloudStreamProxy<K : Any>(
                             return@get
                         }
 
+                        // Some upstreams (googlevideo rqh=1 URLs) only serve bounded ranges:
+                        // every unbounded GET the player makes would 403. Relay those in
+                        // bounded chunks instead of proxying the player's request verbatim.
+                        if (isBoundedOnlyUrl(streamUrl)) {
+                            serveBoundedRangeRelay(call, id, streamUrl, rangeValidation.normalizedHeader)
+                            return@get
+                        }
+
                         val requestBuilder = Request.Builder().url(streamUrl)
                         rangeValidation.normalizedHeader?.let {
                             requestBuilder.header("Range", it)
                         }
-                        upstreamHeaders().forEach { (name, value) ->
+                        upstreamHeadersForUrl(id, streamUrl).forEach { (name, value) ->
                             requestBuilder.header(name, value)
                         }
 
-                        val response = withContext(Dispatchers.IO) {
+                        var response: Response? = withContext(Dispatchers.IO) {
                             streamingClient.newCall(requestBuilder.build()).execute()
+                        }
+
+                        // Self-heal: expired or IP-bound upstream URLs (googlevideo does this
+                        // after ~6h) die with 403/410. Evict both caches, resolve a fresh URL
+                        // and retry once before surfacing the failure to the player.
+                        if (response?.code == 403 || response?.code == 410) {
+                            response?.close()
+                            Timber.w("Upstream %s for %s (videoId %s) — evicting caches and re-resolving once", response?.code, proxyTag, id)
+                            evictResolvedStream(id)
+                            urlCache.remove(id)
+                            val retryUrl = getOrFetchStreamUrl(id)
+                            response = retryUrl
+                                ?.takeIf { it != streamUrl }
+                                ?.takeIf {
+                                    CloudStreamSecurity.isSafeRemoteStreamUrl(
+                                        url = it,
+                                        allowedHostSuffixes = allowedHostSuffixes,
+                                        allowHttpForAllowedHosts = true
+                                    )
+                                }
+                                ?.let { url ->
+                                    val retryBuilder = Request.Builder().url(url)
+                                    rangeValidation.normalizedHeader?.let {
+                                        retryBuilder.header("Range", it)
+                                    }
+                                    upstreamHeadersForUrl(id, url).forEach { (name, value) ->
+                                        retryBuilder.header(name, value)
+                                    }
+                                    withContext(Dispatchers.IO) {
+                                        streamingClient.newCall(retryBuilder.build()).execute()
+                                    }
+                                }
+                        }
+
+                        if (response == null) {
+                            call.respond(HttpStatusCode.BadGateway, "Upstream stream request failed")
+                            return@get
                         }
 
                         response.use { upstream ->
@@ -288,7 +370,6 @@ abstract class CloudStreamProxy<K : Any>(
                             }
 
                             val contentRange = upstream.header("Content-Range")
-                            val acceptRanges = upstream.header("Accept-Ranges")
                             val responseContentType = contentTypeHeader
                                 ?.substringBefore(';')
                                 ?.trim()
@@ -297,16 +378,26 @@ abstract class CloudStreamProxy<K : Any>(
                                 }
                                 ?: ContentType.Audio.Any
 
-                            if (upstream.code == 206) {
-                                call.response.status(HttpStatusCode.PartialContent)
-                            } else {
-                                call.response.status(HttpStatusCode.OK)
-                            }
-                            call.response.header("Accept-Ranges", acceptRanges ?: "bytes")
-                            contentLength?.let { call.response.header("Content-Length", it) }
-                            contentRange?.let { call.response.header("Content-Range", it) }
-
-                            call.respondBytesWriter(contentType = responseContentType) {
+                            Timber.d(
+                                "%s serving %s: upstream=%s upstreamLen=%s playerRange=%s",
+                                proxyTag,
+                                id,
+                                upstream.code,
+                                contentLength,
+                                rangeValidation.normalizedHeader ?: "none"
+                            )
+                            respondWithStream(
+                                call = call,
+                                status = if (upstream.code == 206) {
+                                    HttpStatusCode.PartialContent
+                                } else {
+                                    HttpStatusCode.OK
+                                },
+                                contentType = responseContentType,
+                                contentLength = contentLength?.toLongOrNull()
+                                    ?: body.contentLength().takeIf { it >= 0 },
+                                contentRange = contentRange
+                            ) {
                                 withContext(Dispatchers.IO) {
                                     body.byteStream().use { input ->
                                         val buffer = ByteArray(64 * 1024)
@@ -334,5 +425,240 @@ abstract class CloudStreamProxy<K : Any>(
                 }
             }
         }
+    }
+
+    /**
+     * Responds with a streamed body whose byte length is known up front.
+     *
+     * Ktor only sends `Content-Length` — and only skips chunked transfer encoding — when
+     * the content object declares its length. Setting the header by hand while writing
+     * through `respondBytesWriter` produced a response carrying BOTH `Content-Length`
+     * and `Transfer-Encoding: chunked`, and ExoPlayer/OkHttp then hung with headers
+     * received and no body (reproduced with a raw socket: 139 bytes for the whole
+     * response, then an 8 s read timeout on the player side).
+     */
+    private suspend fun respondWithStream(
+        call: ApplicationCall,
+        status: HttpStatusCode,
+        contentType: ContentType,
+        contentLength: Long?,
+        contentRange: String?,
+        write: suspend ByteWriteChannel.() -> Unit
+    ) {
+        call.respond(object : OutgoingContent.WriteChannelContent() {
+            override val status: HttpStatusCode = status
+            override val contentType: ContentType = contentType
+            override val contentLength: Long? = contentLength
+            override val headers: Headers = Headers.build {
+                append(HttpHeaders.AcceptRanges, "bytes")
+                contentRange?.let { append(HttpHeaders.ContentRange, it) }
+            }
+
+            override suspend fun writeTo(channel: ByteWriteChannel) {
+                channel.write()
+            }
+        })
+    }
+
+    /**
+     * Whether [streamUrl] is restricted by the upstream to bounded-range requests
+     * only. Subclasses whose upstreams emit such URLs (googlevideo rqh=1) must
+     * override this so [serveBoundedRangeRelay] kicks in; those URLs 403 on every
+     * unbounded GET the player makes (verified: bytes=0-1 -> 206, bytes=0- and
+     * no-Range -> 403).
+     */
+    protected open fun isBoundedOnlyUrl(streamUrl: String): Boolean = false
+
+    /**
+     * Serves [id] by relaying an rqh=1-style upstream URL in bounded chunks.
+     *
+     * The player's request is answered with a synthetic full/partial response
+     * covering the remaining byte span; the upstream is then fetched in
+     * [BOUNDED_CHUNK_BYTES]-sized bounded ranges and stitched into one stream.
+     */
+    private suspend fun serveBoundedRangeRelay(
+        call: ApplicationCall,
+        id: K,
+        streamUrl: String,
+        playerRange: String?
+    ) {
+        val total = extractUrlParam(streamUrl, "clen")?.toLongOrNull()
+            ?: fetchTotalLength(id, streamUrl)
+        if (total == null || total <= 0L) {
+            call.respond(HttpStatusCode.BadGateway, "Cannot determine upstream length")
+            return
+        }
+
+        // Player asked for bytes=N-M or bytes=N- (open ended). Default to the full file.
+        val (start, playerEnd) = parsePlayerRange(playerRange, total)
+        val end = playerEnd
+
+        try {
+            // Content-Type comes from the URL's mime= param (googlevideo embeds it).
+            val contentType = extractUrlParam(streamUrl, "mime")?.let { raw ->
+                runCatching { ContentType.parse(raw) }.getOrNull()
+            } ?: ContentType.Audio.Any
+
+            respondWithStream(
+                call = call,
+                status = if (playerRange != null) {
+                    HttpStatusCode.PartialContent
+                } else {
+                    HttpStatusCode.OK
+                },
+                contentType = contentType,
+                contentLength = end - start + 1,
+                contentRange = if (playerRange != null) "bytes $start-$end/$total" else null
+            ) {
+                var pos = start
+                var chunkSize = BOUNDED_CHUNK_BYTES
+                var shrinks = 0
+                while (pos <= end) {
+                    val chunkEnd = minOf(pos + chunkSize - 1, end)
+                    if (fetchAndRelayChunk(id, pos, chunkEnd, this)) {
+                        pos = chunkEnd + 1
+                        continue
+                    }
+                    // The upstream refused this window (its per-request range cap can be
+                    // tighter than ours). Halve the window and retry the same offset
+                    // before giving up on the stream.
+                    if (chunkSize > MIN_BOUNDED_CHUNK_BYTES && shrinks < MAX_CHUNK_SHRINKS) {
+                        chunkSize = maxOf(chunkSize / 2, MIN_BOUNDED_CHUNK_BYTES)
+                        shrinks++
+                        Timber.w(
+                            "%s chunk %s-%s refused upstream; retrying with a %s-byte window",
+                            proxyTag, pos, chunkEnd, chunkSize
+                        )
+                        continue
+                    }
+                    // Upstream chunk failed even after the self-heal retry; abort. The
+                    // player will reconnect and the next request re-resolves.
+                    break
+                }
+            }
+        } catch (e: Exception) {
+            val msg = e.toString()
+            if (msg.contains("ChannelWriteException") ||
+                msg.contains("ClosedChannelException") ||
+                msg.contains("Broken pipe") ||
+                msg.contains("JobCancellationException") ||
+                msg.contains("CancellationException")
+            ) {
+            } else {
+                Timber.w(e, "$proxyTag bounded relay failed (videoId $id)")
+            }
+        }
+    }
+
+    /**
+     * Fetches upstream bytes [start]..[end] as one bounded range and writes them
+     * into the response writer. On 403/410 evicts the caches, re-resolves once
+     * and retries the chunk.
+     */
+    private suspend fun fetchAndRelayChunk(
+        id: K,
+        start: Long,
+        end: Long,
+        writer: ByteWriteChannel
+    ): Boolean {
+        var url = getOrFetchStreamUrl(id) ?: return false
+        repeat(2) { attempt ->
+            val request = Request.Builder().url(url)
+                .header("Range", "bytes=$start-$end")
+            upstreamHeadersForUrl(id, url).forEach { (name, value) ->
+                request.header(name, value)
+            }
+            // A slow or flapping upstream node surfaces as an IOException here (timeouts
+            // were killing playback mid-song); treat it like a 403: evict, re-resolve,
+            // retry once. Returning false lets the caller shrink the window as well.
+            val response = try {
+                withContext(Dispatchers.IO) {
+                    streamingClient.newCall(request.build()).execute()
+                }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Timber.w(e, "%s upstream chunk %s-%s failed before response", proxyTag, start, end)
+                null
+            }
+            if (response == null) {
+                evictResolvedStream(id)
+                urlCache.remove(id)
+                url = getOrFetchStreamUrl(id) ?: return false
+                return@repeat
+            }
+            response.use { upstream ->
+                when (upstream.code) {
+                    200, 206 -> {
+                        // Cap the copy: a 200 (full body) response would over-relay.
+                        val expected = end - start + 1
+                        upstream.body.byteStream().use { input ->
+                            val buffer = ByteArray(64 * 1024)
+                            var remaining = if (upstream.code == 200) expected else Long.MAX_VALUE
+                            withContext(Dispatchers.IO) {
+                                var bytesRead = 0
+                                while (remaining > 0) {
+                                    val toRead = minOf(buffer.size.toLong(), remaining).toInt()
+                                    bytesRead = input.read(buffer, 0, toRead)
+                                    if (bytesRead == -1) break
+                                    writer.writeFully(buffer, 0, bytesRead)
+                                    remaining -= bytesRead
+                                }
+                            }
+                        }
+                        return true
+                    }
+                    403, 410 -> {
+                        Timber.w(
+                            "Upstream %s for %s (videoId %s) chunk %s-%s — evicting and re-resolving once",
+                            upstream.code, proxyTag, id, start, end
+                        )
+                        evictResolvedStream(id)
+                        urlCache.remove(id)
+                        url = getOrFetchStreamUrl(id) ?: return false
+                    }
+                    else -> {
+                        Timber.w(
+                            "%s upstream chunk %s: HTTP %s",
+                            proxyTag, start, upstream.code
+                        )
+                        return false
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    /** Returns the URL's `clen=` via a bounded probe when the param is missing. */
+    private suspend fun fetchTotalLength(id: K, streamUrl: String): Long? {
+        val request = Request.Builder().url(streamUrl)
+            .header("Range", "bytes=0-0")
+        upstreamHeadersForUrl(id, streamUrl).forEach { (name, value) ->
+            request.header(name, value)
+        }
+        val response = withContext(Dispatchers.IO) {
+            streamingClient.newCall(request.build()).execute()
+        }
+        response.use { upstream ->
+            val contentRange = upstream.header("Content-Range") ?: return null
+            return Regex("bytes 0-0/(\\d+)").find(contentRange)?.groupValues?.get(1)?.toLongOrNull()
+        }
+    }
+
+    private fun extractUrlParam(url: String, key: String): String? {
+        val match = Regex("[?&]$key=([^&]+)").find(url) ?: return null
+        return runCatching {
+            java.net.URLDecoder.decode(match.groupValues[1], "UTF-8")
+        }.getOrDefault(match.groupValues[1])
+    }
+
+    private fun parsePlayerRange(playerRange: String?, total: Long): Pair<Long, Long> {
+        if (playerRange.isNullOrBlank()) return 0L to (total - 1)
+        val match = Regex("bytes=(\\d+)-(\\d*)").find(playerRange) ?: return 0L to (total - 1)
+        val start = match.groupValues[1].toLongOrNull()?.coerceIn(0L, total - 1) ?: 0L
+        val end = match.groupValues[2].takeIf { it.isNotBlank() }
+            ?.toLongOrNull()?.coerceAtMost(total - 1) ?: (total - 1)
+        return start to end
     }
 }

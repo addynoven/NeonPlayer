@@ -12,10 +12,10 @@
     <string name="queue_name_selected_songs">Brani selezionati</string>
 
     <!-- Player sheet, mini player and full player chrome -->
-    <string name="cd_player_sheet_collapsed">Pannello del player PixelPlayer compresso, %1$s</string>
-    <string name="cd_player_sheet_expanded">Pannello del player PixelPlayer espanso, %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">Pannello del player PixelPlayer compresso</string>
-    <string name="cd_player_sheet_expanded_no_track">Pannello del player PixelPlayer espanso</string>
+    <string name="cd_player_sheet_collapsed">Pannello del player NeonPlayer compresso, %1$s</string>
+    <string name="cd_player_sheet_expanded">Pannello del player NeonPlayer espanso, %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">Pannello del player NeonPlayer compresso</string>
+    <string name="cd_player_sheet_expanded_no_track">Pannello del player NeonPlayer espanso</string>
     <string name="mini_player_connecting_device">Connessione al dispositivo…</string>
     <string name="mini_player_preparing_playback">Preparazione della riproduzione…</string>
     <string name="mini_player_loading_audio">Caricamento audio…</string>

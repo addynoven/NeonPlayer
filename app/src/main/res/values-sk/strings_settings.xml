@@ -98,7 +98,7 @@
     <string name="setcat_theme_preset_desc">Predvolený motív preberá farby z tapety. Motív AMOLED používa čisto čierne pozadie a zostáva vždy tmavý.</string>
     <string name="setcat_theme_preset_default">Predvolený</string>
     <string name="setcat_system_font_title">Použiť systémové písmo</string>
-    <string name="setcat_system_font_subtitle">Namiesto zaobleného písma PixelPlayeru použiť predvolené písmo Androidu.</string>
+    <string name="setcat_system_font_subtitle">Namiesto zaobleného písma NeonPlayeru použiť predvolené písmo Androidu.</string>
     <string name="setcat_interface_scale_title">Veľkosť rozhrania</string>
     <string name="setcat_interface_scale_subtitle">Zmeňte veľkosť rozhrania aplikácie bez zmeny nastavení displeja v Androide.</string>
     <string name="setcat_interface_scale_percent">%1$d %%</string>
@@ -238,7 +238,7 @@
     <string name="setcat_trigger_crash_title">Spustiť skúšobný pád</string>
     <string name="setcat_trigger_crash_subtitle">Simulovať pád a overiť systém hlásenia pádov.</string>
     <string name="setcat_application">Aplikácia</string>
-    <string name="setcat_about_pixelplayer_title">O aplikácii PixelPlayerOSS</string>
+    <string name="setcat_about_pixelplayer_title">O aplikácii NeonPlayer</string>
     <string name="setcat_about_pixelplayer_subtitle">Verzia aplikácie, autori a ďalšie informácie.</string>
     <string name="backup_summary_none">Nie sú vybrané žiadne sekcie.</string>
     <string name="backup_summary_all">Sú vybrané všetky sekcie.</string>
@@ -335,7 +335,7 @@
     <string name="updates_status_reinstall_signature">Verziu %1$s nemožno nainštalovať cez aktuálnu zostavu, pretože je podpísaná iným kľúčom alebo používa iný názov balíka (napríklad ladiaca zostava).</string>
     <string name="updates_status_downloading">Sťahuje sa %1$s…</string>
     <string name="updates_status_downloading_progress">Sťahuje sa %1$s… %2$d %%</string>
-    <string name="updates_status_permission">Povoľte aplikácii PixelPlayerOSS inštalovať aplikácie, aby sa dokončila aktualizácia na verziu %1$s.</string>
+    <string name="updates_status_permission">Povoľte aplikácii NeonPlayer inštalovať aplikácie, aby sa dokončila aktualizácia na verziu %1$s.</string>
     <string name="updates_status_confirm">V systémovej výzve potvrďte inštaláciu verzie %1$s.</string>
     <string name="updates_status_installing">Inštaluje sa %1$s…</string>
     <string name="updates_error_check">Nepodarilo sa pripojiť k aktualizačnému serveru. Skontrolujte pripojenie a skúste to znova.</string>
@@ -356,7 +356,7 @@
     <string name="updates_switch_dialog_title">Vyžaduje sa preinštalovanie</string>
     <string name="updates_switch_dialog_body">Stabilné zostavy pochádzajú z F-Droidu, alfa zostavy z GitHubu. Sú podpísané rôznymi kľúčmi, preto v Androide nemožno jednu aktualizovať druhou. Odinštalovaním sa vymažú údaje aplikácie, najprv si preto vytvorte zálohu.</string>
     <string name="updates_switch_step_backup">1. Vytvorte zálohu a uložte súbor mimo aplikácie.</string>
-    <string name="updates_switch_step_download_stable">2. Ak ešte nemáte F-Droid, nainštalujte ho a otvorte v ňom PixelPlayerOSS.</string>
+    <string name="updates_switch_step_download_stable">2. Ak ešte nemáte F-Droid, nainštalujte ho a otvorte v ňom NeonPlayer.</string>
     <string name="updates_switch_step_download_alpha">2. Stiahnite súbor APK verzie %1$s.</string>
     <string name="updates_switch_step_uninstall">3. Odinštalujte túto aplikáciu, nainštalujte novú zostavu a obnovte zálohu.</string>
     <string name="updates_switch_action_backup">Zálohovať</string>
@@ -366,7 +366,7 @@
     <string name="updates_switch_action_close">Zavrieť</string>
     <string name="updates_notification_channel">Aktualizácie aplikácie</string>
     <string name="updates_notification_title">Je dostupná aktualizácia</string>
-    <string name="updates_notification_text">PixelPlayerOSS %1$s je pripravený na inštaláciu.</string>
-    <string name="updates_notification_confirm_title">Dokončite aktualizáciu aplikácie PixelPlayerOSS</string>
+    <string name="updates_notification_text">NeonPlayer %1$s je pripravený na inštaláciu.</string>
+    <string name="updates_notification_confirm_title">Dokončite aktualizáciu aplikácie NeonPlayer</string>
     <string name="updates_notification_confirm_text">Ťuknutím potvrďte inštaláciu.</string>
 </resources>

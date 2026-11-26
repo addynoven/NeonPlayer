@@ -22,7 +22,7 @@
     <string name="recap_not_enough_subtitle" tools:ignore="PluralsCandidate">Keep playing music and your %1$d recap will fill up.</string>
 
     <!-- Intro -->
-    <string name="recap_intro_kicker">PixelPlayerOSS Recap</string>
+    <string name="recap_intro_kicker">NeonPlayer Recap</string>
     <string name="recap_intro_title">Your year in music</string>
     <string name="recap_intro_title_so_far">Your year so far</string>
     <string name="recap_intro_subtitle">A look back at the songs, artists and moments that soundtracked your year.</string>
@@ -116,7 +116,7 @@
     <string name="recap_summary_listening_style">Listening style</string>
     <string name="recap_share">Share</string>
     <string name="recap_share_chooser_title">Share your recap</string>
-    <string name="recap_share_text">My %1$d in music, made with PixelPlayerOSS</string>
+    <string name="recap_share_text">My %1$d in music, made with NeonPlayer</string>
     <string name="recap_share_failed">Couldn’t create the recap image</string>
     <string name="recap_play_top_songs">Play top songs</string>
     <string name="recap_top_songs_queue_name">Top songs of %1$d</string>

@@ -139,7 +139,7 @@
     <string name="device_capabilities_report_copy">Kopírovat</string>
     <string name="device_capabilities_report_share">Sdílet</string>
     <string name="device_capabilities_report_copied">Zpráva byla zkopírována do schránky</string>
-    <string name="device_capabilities_report_share_title">Zpráva o výkonu PixelPlayeru</string>
+    <string name="device_capabilities_report_share_title">Zpráva o výkonu NeonPlayeru</string>
     <string name="device_capabilities_advanced_diagnostics_title">Pokročilá diagnostika výkonu</string>
     <string name="device_capabilities_advanced_diagnostics_description">Ve výchozím stavu vypnuto. Zaznamenává krátkou časovou osu zpomalení pro ladění beta verze.</string>
     <string name="device_capabilities_advanced_diagnostics_expires">Aktivní do %1$s</string>
@@ -158,7 +158,7 @@
     <string name="presentation_batch_g_artist_group_by_album_artist">Seskupit podle interpreta alba</string>
     <string name="presentation_batch_g_artist_group_by_album_artist_sub">Karta Interpreti i alba se seskupí podle interpreta alba, takže se v seznamu nebudou míchat hosté ani interpreti z kompilací</string>
     <string name="presentation_batch_g_artist_info_title">Jak funguje rozpoznávání více interpretů</string>
-    <string name="presentation_batch_g_artist_info_body">PixelPlayerOSS rozděluje metadata interpretů pomocí znaků (/, ;, &amp;) a slovních oddělovačů (feat., ft., vs., x). U slovních oddělovačů nezáleží na velikosti písmen.\n\nVolba „Získat interprety z názvu skladby“ rozpozná v názvu vzory jako (feat. Interpret).\n\nZpětné lomítko (\\) zajistí, že se následující znak nebude brát jako oddělovač.</string>
+    <string name="presentation_batch_g_artist_info_body">NeonPlayer rozděluje metadata interpretů pomocí znaků (/, ;, &amp;) a slovních oddělovačů (feat., ft., vs., x). U slovních oddělovačů nezáleží na velikosti písmen.\n\nVolba „Získat interprety z názvu skladby“ rozpozná v názvu vzory jako (feat. Interpret).\n\nZpětné lomítko (\\) zajistí, že se následující znak nebude brát jako oddělovač.</string>
     <string name="presentation_batch_g_artist_examples_title">Příklady</string>
     <string name="presentation_batch_g_artist_ex_1_in">„Interpret1/Interpret2“</string>
     <string name="presentation_batch_g_artist_ex_1_out">Interpret1, Interpret2</string>
@@ -237,7 +237,7 @@
     <string name="presentation_batch_g_presets_cd_pin">Připnout</string>
     <string name="presentation_batch_g_presets_cd_rename">Přejmenovat</string>
     <string name="presentation_batch_g_presets_cd_delete">Smazat</string>
-    <string name="presentation_batch_g_beta_sheet_welcome_title">Vítejte v PixelPlayerOSS %1$s</string>
+    <string name="presentation_batch_g_beta_sheet_welcome_title">Vítejte v NeonPlayer %1$s</string>
     <string name="presentation_batch_g_beta_sheet_welcome_body">Používáte beta verzi, která může obsahovat chyby nebo experimentální funkce a může padat. Hlášením problémů nám pomůžete ji vylepšit.</string>
     <string name="presentation_batch_g_beta_sheet_welcome_body_stable">Používáte stabilní verzi. Novinky najdete v přehledu změn. Pokud něco nefunguje, dejte nám vědět.</string>
     <string name="presentation_batch_g_beta_sheet_expect_title">Co můžete čekat</string>
@@ -254,7 +254,7 @@
     <string name="presentation_batch_g_beta_sheet_report_summary">Krátký seznam bodů před založením nového hlášení.</string>
     <string name="presentation_batch_g_beta_sheet_before_title">Než nahlásíte problém</string>
     <string name="presentation_batch_g_beta_sheet_before_1">Projděte otevřená i uzavřená hlášení, abyste nezakládali duplicitu.</string>
-    <string name="presentation_batch_g_beta_sheet_before_2">Aktualizujte PixelPlayerOSS na nejnovější verzi a ověřte, že problém trvá.</string>
+    <string name="presentation_batch_g_beta_sheet_before_2">Aktualizujte NeonPlayer na nejnovější verzi a ověřte, že problém trvá.</string>
     <string name="presentation_batch_g_beta_sheet_before_3">Restartujte aplikaci a ověřte, že problém trvá.</string>
     <string name="presentation_batch_g_beta_sheet_before_4">Zkuste problém zopakovat a zapište si přesný postup.</string>
     <string name="presentation_batch_g_beta_sheet_issue_type_title">Jaký typ hlášení vybrat?</string>
@@ -272,7 +272,7 @@
     <string name="presentation_batch_g_beta_sheet_bug_screenshot">Snímek obrazovky nebo video, pokud je k dispozici.</string>
     <string name="presentation_batch_g_beta_sheet_bug_logs">Protokol nebo trasování zásobníku, pokud je k dispozici.</string>
     <string name="presentation_batch_g_beta_sheet_env_title">Prostředí</string>
-    <string name="presentation_batch_g_beta_sheet_env_version">Verze PixelPlayerOSS:</string>
+    <string name="presentation_batch_g_beta_sheet_env_version">Verze NeonPlayer:</string>
     <string name="presentation_batch_g_beta_sheet_env_source">Zdroj instalace: vydání z GitHubu, ladicí sestavení, noční sestavení apod.</string>
     <string name="presentation_batch_g_beta_sheet_env_android">Verze Androidu:</string>
     <string name="presentation_batch_g_beta_sheet_env_device">Model zařízení:</string>

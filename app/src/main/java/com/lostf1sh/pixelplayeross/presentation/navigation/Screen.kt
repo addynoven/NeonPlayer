@@ -84,6 +84,7 @@ sealed class Screen(val route: String) {
         fun createRoute(highlightKey: String? = null) =
             if (highlightKey != null) "device_capabilities?highlightKey=$highlightKey" else "device_capabilities"
     }
+    object YouTubeDashboard : Screen("youtube_dashboard")
     object NavidromeDashboard : Screen("navidrome_dashboard")
     object JellyfinDashboard : Screen("jellyfin_dashboard")
     object CloudDownloads : Screen("cloud_downloads")

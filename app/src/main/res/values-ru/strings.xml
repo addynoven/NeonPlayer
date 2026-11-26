@@ -229,8 +229,8 @@
     <string name="widget_bar_4x1_desc">Компактная панель плеера</string>
     <string name="widget_control_4x2_desc">Полное управление с перемешиванием и повтором</string>
     <string name="widget_grid_2x2_desc">Минималистичный квадратный плеер</string>
-    <string name="app_name_change_message">Теперь это приложение называется PixelPlayerOSS. Слушайте дальше!</string>
-    <string name="all_files_access_description">Чтобы редактировать метаданные треков (файлы .mp3), PixelPlayerOSS нужен специальный доступ ко всем файлам. Это позволяет напрямую изменять теги треков. Предоставьте это разрешение на следующем экране, чтобы включить редактирование метаданных.</string>
+    <string name="app_name_change_message">Теперь это приложение называется NeonPlayer. Слушайте дальше!</string>
+    <string name="all_files_access_description">Чтобы редактировать метаданные треков (файлы .mp3), NeonPlayer нужен специальный доступ ко всем файлам. Это позволяет напрямую изменять теги треков. Предоставьте это разрешение на следующем экране, чтобы включить редактирование метаданных.</string>
     <string name="cloud_download_action">Скачать</string>
     <string name="cloud_download_queued">В очереди</string>
     <string name="cloud_downloading">Скачивание…</string>

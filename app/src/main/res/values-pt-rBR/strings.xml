@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name" translatable="false">PixelPlayerOSS</string>
+    <string name="app_name" translatable="false">NeonPlayer</string>
     <string name="app_name_change_title">Alterar nome do aplicativo</string>
-    <string name="app_name_change_message">Este aplicativo agora é o PixelPlayerOSS. Continue ouvindo!</string>
+    <string name="app_name_change_message">Este aplicativo agora é o NeonPlayer. Continue ouvindo!</string>
     <string name="do_not_show_again">Não mostrar novamente</string>
     <string name="dismiss">Dispensar</string>
     <string name="all_files_access_title">Permissão especial necessária</string>
-    <string name="all_files_access_description">Para editar os metadados das músicas (arquivos .mp3), o PixelPlayerOSS precisa de acesso especial a todos os arquivos. Isso permite modificar diretamente as tags das faixas. Conceda essa permissão na próxima tela para ativar a edição de metadados.</string>
+    <string name="all_files_access_description">Para editar os metadados das músicas (arquivos .mp3), o NeonPlayer precisa de acesso especial a todos os arquivos. Isso permite modificar diretamente as tags das faixas. Conceda essa permissão na próxima tela para ativar a edição de metadados.</string>
     <string name="grant_permission_button">Conceder permissão</string>
     <string name="error">Erro</string>
     <string name="ok">OK</string>
@@ -128,7 +128,7 @@
     <string name="playlist_share_failed">Não foi possível compartilhar: %1$s</string>
     <string name="playlist_none_to_export">Não há playlists para exportar</string>
     <string name="playlist_export_failed">Falha ao exportar: %1$s</string>
-    <string name="playlist_export_folder_display" translatable="false">Music/PixelPlayerOSS Exports</string>
+    <string name="playlist_export_folder_display" translatable="false">Music/NeonPlayer Exports</string>
     <string name="error_unknown">Erro desconhecido</string>
 
 
@@ -301,10 +301,10 @@
     <string name="queue_name_liked_songs_shuffled">Músicas favoritas (ordem aleatória)</string>
     <string name="queue_name_selected_songs">Músicas selecionadas</string>
 
-    <string name="cd_player_sheet_collapsed">Painel do reprodutor do PixelPlayer recolhido, %1$s</string>
-    <string name="cd_player_sheet_expanded">Painel do reprodutor do PixelPlayer expandido, %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">Painel do reprodutor do PixelPlayer recolhido</string>
-    <string name="cd_player_sheet_expanded_no_track">Painel do reprodutor do PixelPlayer expandido</string>
+    <string name="cd_player_sheet_collapsed">Painel do reprodutor do NeonPlayer recolhido, %1$s</string>
+    <string name="cd_player_sheet_expanded">Painel do reprodutor do NeonPlayer expandido, %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">Painel do reprodutor do NeonPlayer recolhido</string>
+    <string name="cd_player_sheet_expanded_no_track">Painel do reprodutor do NeonPlayer expandido</string>
     <string name="mini_player_connecting_device">Conectando ao dispositivo…</string>
     <string name="mini_player_preparing_playback">Preparando a reprodução…</string>
     <string name="mini_player_loading_audio">Carregando áudio…</string>

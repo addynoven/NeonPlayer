@@ -12,10 +12,10 @@
     <string name="queue_name_selected_songs">选中的歌曲</string>
 
     <!-- Player sheet, mini player and full player chrome -->
-    <string name="cd_player_sheet_collapsed">PixelPlayer 播放器面板已收起，%1$s</string>
-    <string name="cd_player_sheet_expanded">PixelPlayer 播放器面板已展开，%1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">PixelPlayer 播放器面板已收起</string>
-    <string name="cd_player_sheet_expanded_no_track">PixelPlayer 播放器面板已展开</string>
+    <string name="cd_player_sheet_collapsed">NeonPlayer 播放器面板已收起，%1$s</string>
+    <string name="cd_player_sheet_expanded">NeonPlayer 播放器面板已展开，%1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">NeonPlayer 播放器面板已收起</string>
+    <string name="cd_player_sheet_expanded_no_track">NeonPlayer 播放器面板已展开</string>
     <string name="mini_player_connecting_device">正在连接设备…</string>
     <string name="mini_player_preparing_playback">正在准备播放…</string>
     <string name="mini_player_loading_audio">正在加载音频…</string>

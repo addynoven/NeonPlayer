@@ -12,10 +12,10 @@
     <string name="queue_name_selected_songs">Các bài hát đã chọn</string>
 
     <!-- Player sheet, mini player and full player chrome -->
-    <string name="cd_player_sheet_collapsed">Trình phát PixelPlayer đã thu gọn, %1$s</string>
-    <string name="cd_player_sheet_expanded">Trình phát PixelPlayer đã mở rộng, %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">Trình phát PixelPlayer đã thu gọn</string>
-    <string name="cd_player_sheet_expanded_no_track">Trình phát PixelPlayer đã mở rộng</string>
+    <string name="cd_player_sheet_collapsed">Trình phát NeonPlayer đã thu gọn, %1$s</string>
+    <string name="cd_player_sheet_expanded">Trình phát NeonPlayer đã mở rộng, %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">Trình phát NeonPlayer đã thu gọn</string>
+    <string name="cd_player_sheet_expanded_no_track">Trình phát NeonPlayer đã mở rộng</string>
     <string name="mini_player_connecting_device">Đang kết nối tới thiết bị…</string>
     <string name="mini_player_preparing_playback">Đang chuẩn bị phát…</string>
     <string name="mini_player_loading_audio">Đang tải âm thanh…</string>

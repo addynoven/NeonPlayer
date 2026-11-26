@@ -178,6 +178,6 @@
     <string name="widget_tap_to_open">Açmak için dokun</string>
     <string name="widget_tap_to_play">Oynatmak için dokun</string>
     <string name="widget_wavy_progress_bar_desc">İlerleme çubuğu, yüzde %1$d</string>
-    <string name="song_info_tone_picker_body">PixelPlayerOSS\'in bu sesi nereye yüklemesi gerektiğini seçin.</string>
-    <string name="song_info_ringtone_permission_prompt">Sistem ayarlarını değiştirme iznini etkinleştirin, ardından işlemi otomatik olarak tamamlamak için PixelPlayerOSS\'e dönün.</string>
+    <string name="song_info_tone_picker_body">NeonPlayer\'in bu sesi nereye yüklemesi gerektiğini seçin.</string>
+    <string name="song_info_ringtone_permission_prompt">Sistem ayarlarını değiştirme iznini etkinleştirin, ardından işlemi otomatik olarak tamamlamak için NeonPlayer\'e dönün.</string>
 </resources>

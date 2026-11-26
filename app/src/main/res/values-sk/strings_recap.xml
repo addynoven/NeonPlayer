@@ -17,7 +17,7 @@
     <string name="recap_close">Zavrieť</string>
     <string name="recap_not_enough_title">Zatiaľ málo počúvania</string>
     <string name="recap_not_enough_subtitle">Počúvajte ďalej a váš prehľad za rok %1$d sa postupne naplní.</string>
-    <string name="recap_intro_kicker">Prehľad PixelPlayerOSS</string>
+    <string name="recap_intro_kicker">Prehľad NeonPlayer</string>
     <string name="recap_intro_title">Váš rok v hudbe</string>
     <string name="recap_intro_title_so_far">Váš rok doteraz</string>
     <string name="recap_intro_subtitle">Obzrite sa za skladbami, interpretmi a chvíľami, ktoré tvorili kulisu vášho roka.</string>
@@ -62,7 +62,7 @@
     <string name="recap_summary_listening_style">Štýl počúvania</string>
     <string name="recap_share">Zdieľať</string>
     <string name="recap_share_chooser_title">Zdieľať svoj prehľad</string>
-    <string name="recap_share_text">Môj rok %1$d v hudbe, vytvorené v PixelPlayerOSS</string>
+    <string name="recap_share_text">Môj rok %1$d v hudbe, vytvorené v NeonPlayer</string>
     <string name="recap_share_failed">Obrázok prehľadu sa nepodarilo vytvoriť</string>
     <string name="recap_play_top_songs">Prehrať najpočúvanejšie skladby</string>
     <string name="recap_top_songs_queue_name">Najpočúvanejšie skladby roka %1$d</string>

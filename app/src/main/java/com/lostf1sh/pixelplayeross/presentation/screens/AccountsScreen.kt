@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -116,6 +117,7 @@ fun AccountsScreen(
     onBackClick: () -> Unit,
     onOpenNavidromeDashboard: () -> Unit = {},
     onOpenJellyfinDashboard: () -> Unit = {},
+    onOpenYouTubeDashboard: () -> Unit = {},
     viewModel: AccountsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -222,6 +224,10 @@ fun AccountsScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            item {
+                YouTubeMusicCard(onOpen = onOpenYouTubeDashboard)
+            }
+
             if (uiState.connectedAccounts.isNotEmpty()) {
                 item {
                     Text(
@@ -1115,4 +1121,36 @@ private fun ListenBrainzTokenDialog(
             }
         }
     )
+}
+
+@Composable
+private fun YouTubeMusicCard(onOpen: () -> Unit) {
+    Card(
+        shape = AbsoluteSmoothCornerShape(28.dp, 60),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.accounts_youtube_music_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = stringResource(R.string.accounts_youtube_music_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            FilledTonalButton(
+                onClick = onOpen,
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+            ) {
+                Text(stringResource(R.string.accounts_youtube_music_open))
+            }
+        }
+    }
 }

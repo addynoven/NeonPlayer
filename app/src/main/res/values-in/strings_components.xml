@@ -168,8 +168,8 @@
     <string name="widget_tap_to_open">Ketuk untuk membuka</string>
     <string name="widget_tap_to_play">Ketuk untuk memutar</string>
     <string name="widget_wavy_progress_bar_desc">Bilah progres, %1$d persen</string>
-    <string name="song_info_tone_picker_body">Pilih tempat PixelPlayerOSS harus memasang suara ini.</string>
-    <string name="song_info_ringtone_permission_prompt">Aktifkan Ubah setelan sistem, lalu kembali ke PixelPlayerOSS untuk menyelesaikannya secara otomatis.</string>
+    <string name="song_info_tone_picker_body">Pilih tempat NeonPlayer harus memasang suara ini.</string>
+    <string name="song_info_ringtone_permission_prompt">Aktifkan Ubah setelan sistem, lalu kembali ke NeonPlayer untuk menyelesaikannya secara otomatis.</string>
     <string name="edit_song_custom_metadata_heading">Metadata opsional</string>
     <string name="edit_song_custom_metadata_description">Atur rating 0–5 atau tambahkan kolom teks seperti MOOD, COMMENT, YEAR, atau BPM.</string>
     <string name="edit_song_rating">Rating (0–5)</string>

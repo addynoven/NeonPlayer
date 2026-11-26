@@ -50,7 +50,7 @@
     <string name="device_capabilities_report_generate">Rapor oluştur</string>
     <string name="device_capabilities_report_regenerate">Yeniden Oluştur</string>
     <string name="device_capabilities_report_share">Paylaş</string>
-    <string name="device_capabilities_report_share_title">PixelPlayer performans raporu</string>
+    <string name="device_capabilities_report_share_title">NeonPlayer performans raporu</string>
     <string name="device_capabilities_report_title">Performans raporu</string>
     <string name="device_capabilities_review_title">Oynatmanın gözden geçirilmesi gerekiyor</string>
     <string name="device_capabilities_storage_available">Kullanılabilir</string>
@@ -363,14 +363,14 @@
     <string name="presentation_batch_g_topbar_build_stable">Kararlı</string>
     <string name="presentation_batch_g_topbar_cd_changelog">Değişiklik Günlüğü</string>
     <string name="presentation_batch_g_yes">Evet</string>
-    <string name="presentation_batch_g_artist_info_body">PixelPlayerOSS, sanatçı etiketlerini karakter sınırlayıcılar (/, ;, &amp;) ve kelime sınırlayıcılar (feat., ft., vs., x) kullanarak böler. Kelime sınırlayıcılar büyük/küçük harf duyarsız olarak eşleştirilir.
+    <string name="presentation_batch_g_artist_info_body">NeonPlayer, sanatçı etiketlerini karakter sınırlayıcılar (/, ;, &amp;) ve kelime sınırlayıcılar (feat., ft., vs., x) kullanarak böler. Kelime sınırlayıcılar büyük/küçük harf duyarsız olarak eşleştirilir.
 
 "Başlıktan Sanatçıları Çıkar" seçeneği, şarkı başlıklarındaki (feat. Artist) gibi kalıpları algılar.
 
 Karakter sınırlayıcıları etkisiz hale getirmek için ters eğik çizgi (\) kullanılabilir.</string>
-    <string name="presentation_batch_g_beta_sheet_welcome_title">Hoş geldiniz: PixelPlayerOSS %1$s</string>
-    <string name="presentation_batch_g_beta_sheet_before_2">En son PixelPlayerOSS sürümüne güncelleyin ve sorunun hâlâ devam ettiğini doğrulayın.</string>
-    <string name="presentation_batch_g_beta_sheet_env_version">PixelPlayerOSS sürümü:</string>
+    <string name="presentation_batch_g_beta_sheet_welcome_title">Hoş geldiniz: NeonPlayer %1$s</string>
+    <string name="presentation_batch_g_beta_sheet_before_2">En son NeonPlayer sürümüne güncelleyin ve sorunun hâlâ devam ettiğini doğrulayın.</string>
+    <string name="presentation_batch_g_beta_sheet_env_version">NeonPlayer sürümü:</string>
     <string-array name="presentation_batch_g_changelog_060_whats_new">
         <item>Son Çalınanlar ve kalıcı kuyruk geri yükleme, dinleme oturumunuzu hazır tutar.</item>
         <item>Yedekleme ve Geri Yükleme v3 ile hesap yönetimi araçları artık dahil.</item>
@@ -463,7 +463,7 @@ Karakter sınırlayıcıları etkisiz hale getirmek için ters eğik çizgi (\) 
         <item>Uygulamanın çökmesine neden olan birkaç hata giderildi.</item>
     </string-array>
     <string-array name="presentation_batch_g_changelog_070_whats_new">
-        <item>PixelPlayerOSS\'in ilk herkese açık FOSS sürümü.</item>
+        <item>NeonPlayer\'in ilk herkese açık FOSS sürümü.</item>
         <item>Yerel oynatma, çalma listeleri, favoriler, şarkı sözleri, dinleme istatistikleri, dinamik Material 3 temalandırma, widget\'lar ve yedekleme/geri yükleme içerir.</item>
         <item>Kendi barındırdığınız Navidrome/Subsonic ve Jellyfin desteğini korur; ayrıca isteğe bağlı LRCLIB şarkı sözleri ve Deezer sanatçı görseli aramasını sunar.</item>
     </string-array>

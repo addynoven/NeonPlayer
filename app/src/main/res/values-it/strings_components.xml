@@ -168,8 +168,8 @@
     <string name="widget_tap_to_open">Tocca per aprire</string>
     <string name="widget_tap_to_play">Tocca per riprodurre</string>
     <string name="widget_wavy_progress_bar_desc">Barra di avanzamento, %1$d percento</string>
-    <string name="song_info_tone_picker_body">Scegli dove PixelPlayerOSS deve installare questo suono.</string>
-    <string name="song_info_ringtone_permission_prompt">Attiva Modifica impostazioni di sistema, poi torna a PixelPlayerOSS per completare automaticamente.</string>
+    <string name="song_info_tone_picker_body">Scegli dove NeonPlayer deve installare questo suono.</string>
+    <string name="song_info_ringtone_permission_prompt">Attiva Modifica impostazioni di sistema, poi torna a NeonPlayer per completare automaticamente.</string>
     <string name="edit_song_custom_metadata_heading">Metadati facoltativi</string>
     <string name="edit_song_custom_metadata_description">Imposta una valutazione da 0 a 5 o aggiungi campi di testo come MOOD, COMMENT, YEAR o BPM.</string>
     <string name="edit_song_rating">Valutazione (0–5)</string>

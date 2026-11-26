@@ -229,8 +229,8 @@
     <string name="widget_bar_4x1_desc">Bilah pemutar ringkas</string>
     <string name="widget_control_4x2_desc">Kontrol penuh dengan acak dan ulangi</string>
     <string name="widget_grid_2x2_desc">Pemutar kotak minimalis</string>
-    <string name="app_name_change_message">Aplikasi ini sekarang bernama PixelPlayerOSS. Selamat mendengarkan!</string>
-    <string name="all_files_access_description">Untuk mengedit metadata lagu (file .mp3), PixelPlayerOSS memerlukan akses khusus ke semua file. Ini memungkinkan kami mengubah tag trek secara langsung. Harap berikan izin ini di layar berikutnya untuk mengaktifkan pengeditan metadata.</string>
+    <string name="app_name_change_message">Aplikasi ini sekarang bernama NeonPlayer. Selamat mendengarkan!</string>
+    <string name="all_files_access_description">Untuk mengedit metadata lagu (file .mp3), NeonPlayer memerlukan akses khusus ke semua file. Ini memungkinkan kami mengubah tag trek secara langsung. Harap berikan izin ini di layar berikutnya untuk mengaktifkan pengeditan metadata.</string>
     <string name="cloud_download_action">Unduh</string>
     <string name="cloud_download_queued">Dalam antrean</string>
     <string name="cloud_downloading">Mengunduh…</string>

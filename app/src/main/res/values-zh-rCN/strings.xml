@@ -1,10 +1,10 @@
 <resources>
 <string name="app_name_change_title">应用名称已变更</string>
-<string name="app_name_change_message">本应用现已更名为 PixelPlayerOSS！开启你的音乐之旅吧！</string>
+<string name="app_name_change_message">本应用现已更名为 NeonPlayer！开启你的音乐之旅吧！</string>
 <string name="do_not_show_again">不再提示</string>
 <string name="dismiss">关闭</string>
 <string name="all_files_access_title">需要特殊权限</string>
-<string name="all_files_access_description">为了编辑歌曲元数据（mp3文件），PixelPlayerOSS需要全部文件访问权限，以此直接修改歌曲标签。请在下一界面授予权限，启用元数据编辑功能。</string>
+<string name="all_files_access_description">为了编辑歌曲元数据（mp3文件），NeonPlayer需要全部文件访问权限，以此直接修改歌曲标签。请在下一界面授予权限，启用元数据编辑功能。</string>
 <string name="grant_permission_button">授予权限</string>
 <string name="error">错误</string>
 <string name="ok">确定</string>

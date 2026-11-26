@@ -48,7 +48,7 @@ class JellyfinStreamProxy @Inject constructor(
     override fun extractIdFromUri(uri: Uri): String? =
         uri.host ?: uri.path?.removePrefix("/")
 
-    override fun upstreamHeaders(): Map<String, String> =
+    override fun upstreamHeaders(id: String): Map<String, String> =
         repository.getAuthorizationHeader()?.let { mapOf("Authorization" to it) } ?: emptyMap()
 
     fun resolveJellyfinUri(uriString: String): String? = resolveUri(uriString)

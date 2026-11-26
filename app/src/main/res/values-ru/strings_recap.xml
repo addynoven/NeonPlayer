@@ -17,7 +17,7 @@
     <string name="recap_close">Закрыть</string>
     <string name="recap_not_enough_title">Пока недостаточно прослушиваний</string>
     <string name="recap_not_enough_subtitle">Продолжайте слушать музыку, и ваши итоги %1$d года наполнятся.</string>
-    <string name="recap_intro_kicker">Итоги PixelPlayerOSS</string>
+    <string name="recap_intro_kicker">Итоги NeonPlayer</string>
     <string name="recap_intro_title">Ваш год в музыке</string>
     <string name="recap_intro_title_so_far">Ваш год на данный момент</string>
     <string name="recap_intro_subtitle">Оглянемся на песни, исполнителей и моменты, которые звучали в вашем году.</string>
@@ -105,7 +105,7 @@
     <string name="recap_summary_listening_style">Стиль прослушивания</string>
     <string name="recap_share">Поделиться</string>
     <string name="recap_share_chooser_title">Поделиться итогами</string>
-    <string name="recap_share_text">Мой музыкальный %1$d — итоги из PixelPlayerOSS</string>
+    <string name="recap_share_text">Мой музыкальный %1$d — итоги из NeonPlayer</string>
     <string name="recap_share_failed">Не удалось создать изображение итогов</string>
     <string name="recap_play_top_songs">Слушать топ</string>
     <string name="recap_top_songs_queue_name">Лучшие песни %1$d</string>

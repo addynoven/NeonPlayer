@@ -17,7 +17,7 @@
     <string name="recap_close">Tutup</string>
     <string name="recap_not_enough_title">Belum cukup banyak mendengarkan</string>
     <string name="recap_not_enough_subtitle">Terus putar musik dan rekap %1$d kamu akan terisi.</string>
-    <string name="recap_intro_kicker">Rekap PixelPlayerOSS</string>
+    <string name="recap_intro_kicker">Rekap NeonPlayer</string>
     <string name="recap_intro_title">Tahunmu dalam musik</string>
     <string name="recap_intro_title_so_far">Tahunmu sejauh ini</string>
     <string name="recap_intro_subtitle">Kilas balik lagu, artis, dan momen yang menjadi soundtrack tahunmu.</string>
@@ -84,7 +84,7 @@
     <string name="recap_summary_listening_style">Gaya mendengarkan</string>
     <string name="recap_share">Bagikan</string>
     <string name="recap_share_chooser_title">Bagikan rekapmu</string>
-    <string name="recap_share_text">%1$d-ku dalam musik, dibuat dengan PixelPlayerOSS</string>
+    <string name="recap_share_text">%1$d-ku dalam musik, dibuat dengan NeonPlayer</string>
     <string name="recap_share_failed">Gagal membuat gambar rekap</string>
     <string name="recap_play_top_songs">Putar lagu teratas</string>
     <string name="recap_top_songs_queue_name">Lagu teratas %1$d</string>

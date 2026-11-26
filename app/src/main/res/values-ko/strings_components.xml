@@ -168,8 +168,8 @@
     <string name="widget_tap_to_open">탭하여 열기</string>
     <string name="widget_tap_to_play">탭하여 재생</string>
     <string name="widget_wavy_progress_bar_desc">진행 바, %1$d 퍼센트</string>
-    <string name="song_info_tone_picker_body">PixelPlayerOSS가 이 소리를 설정할 위치를 선택하세요.</string>
-    <string name="song_info_ringtone_permission_prompt">시스템 설정 수정을 활성화한 다음 PixelPlayerOSS로 돌아오면 자동으로 완료됩니다.</string>
+    <string name="song_info_tone_picker_body">NeonPlayer가 이 소리를 설정할 위치를 선택하세요.</string>
+    <string name="song_info_ringtone_permission_prompt">시스템 설정 수정을 활성화한 다음 NeonPlayer로 돌아오면 자동으로 완료됩니다.</string>
     <string name="edit_song_custom_metadata_heading">선택 메타데이터</string>
     <string name="edit_song_custom_metadata_description">0–5점 평점을 설정하거나 MOOD, COMMENT, YEAR, BPM 같은 텍스트 필드를 추가하세요.</string>
     <string name="edit_song_rating">평점 (0–5)</string>

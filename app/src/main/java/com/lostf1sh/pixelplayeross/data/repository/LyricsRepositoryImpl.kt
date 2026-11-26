@@ -144,6 +144,11 @@ class LyricsRepositoryImpl @Inject constructor(
 
     companion object {
         private const val TAG = "LyricsRepository"
+
+        /** Streams served by a proxy; their URIs never map to a readable local file. */
+        private val CLOUD_SCHEMES = setOf(
+            "youtube", "telegram", "netease", "qqmusic", "gdrive", "navidrome", "jellyfin"
+        )
         
         private const val MAX_LYRICS_CACHE_SIZE = 150
         
@@ -1017,7 +1022,7 @@ class LyricsRepositoryImpl @Inject constructor(
      * Load embedded lyrics from audio file metadata
      */
     private suspend fun loadEmbeddedLyricsFromMetadata(song: Song): Lyrics? = withContext(Dispatchers.IO) {
-        if (song.contentUriString.isEmpty()) {
+        if (song.contentUriString.isEmpty() || isCloudScheme(song.contentUriString.substringBefore("://"))) {
             return@withContext null
         }
 
@@ -1553,7 +1558,10 @@ class LyricsRepositoryImpl @Inject constructor(
 
     private fun generateCacheKey(songId: String): String = songId
 
+    private fun isCloudScheme(scheme: String): Boolean = scheme in CLOUD_SCHEMES
+
     private fun createTempFileFromUri(uri: Uri): File? {
+        if (isCloudScheme(uri.scheme.orEmpty())) return null
         return try {
             context.contentResolver.openInputStream(uri)?.use { inputStream ->
                 val fileName = context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->

@@ -21,7 +21,7 @@
         <item quantity="other">Xóa %1$d khoảnh khắc?</item>
     </plurals>
     <string name="audio_bookmarks_delete_moments_message">Các khoảnh khắc đã chọn sẽ bị xóa vĩnh viễn.</string>
-    <string name="easter_egg_thank_you">Cảm ơn bạn đã sử dụng PixelPlayerOSS! ❤️</string>
+    <string name="easter_egg_thank_you">Cảm ơn bạn đã sử dụng NeonPlayer! ❤️</string>
     <string name="word_delimiter_section_title">Từ phân tách hiện tại</string>
     <string name="word_delimiter_section_subtitle">Các từ khóa này tách tên nghệ sĩ khi có khoảng trắng hai bên. Không phân biệt hoa thường. Nhấn để xóa.</string>
     <string name="word_delimiter_empty">Chưa cấu hình từ phân tách nào</string>
@@ -172,7 +172,7 @@
     <string name="crash_report_stack_preview_label">Xem trước nhật ký lỗi (Stack trace):</string>
     <string name="crash_report_clipboard_label">Sao chép nhật ký lỗi vào bộ nhớ tạm</string>
     <string name="toast_crash_log_copied">Đã sao chép nhật ký lỗi</string>
-    <string name="crash_report_share_subject">Báo cáo sự cố PixelPlayerOSS</string>
+    <string name="crash_report_share_subject">Báo cáo sự cố NeonPlayer</string>
     <string name="crash_report_share_chooser">Chia sẻ nhật ký sự cố qua</string>
     <string name="action_copy">Sao chép</string>
     <string name="action_share">Chia sẻ</string>
@@ -197,7 +197,7 @@
     <string name="screen_about">Thông tin ứng dụng</string>
     <string name="about_maintainer_title">Người duy trì dự án</string>
     <string name="about_maintainer_subtitle">Duy trì bản FOSS và bản gốc.</string>
-    <string name="about_project_title">Dự án PixelPlayerOSS</string>
+    <string name="about_project_title">Dự án NeonPlayer</string>
     <string name="about_project_subtitle">Mã nguồn mở hoàn toàn theo giấy phép GPL.</string>
     <string name="about_link_source_title">Mã nguồn GitHub</string>
     <string name="about_link_fdroid_title">F-Droid</string>
@@ -227,7 +227,7 @@
     <string name="about_signal_community_first">Ưu tiên cộng đồng</string>
     <string name="about_signal_material3">Thiết kế Material You</string>
     <string name="about_support_eyebrow">Hỗ trợ dự án</string>
-    <string name="about_support_title">Ủng hộ PixelPlayerOSS</string>
+    <string name="about_support_title">Ủng hộ NeonPlayer</string>
     <string name="about_support_body">Giúp duy trì, đánh giá và kiểm thử phiên bản FOSS trên các thiết bị Android thực tế.</string>
     <string name="about_support_chip_foss">FOSS</string>
     <string name="about_support_chip_ci">Máy chủ CI/CD</string>
@@ -254,7 +254,7 @@
     <string name="dash_libraries_more_count">+%1$d thư viện khác</string>
     <string name="dash_libraries_change">Thay đổi</string>
     <string name="dash_libraries_load_failed">Không thể tải danh sách thư viện</string>
-    <string name="dash_libraries_sheet_subtitle">Chọn các thư viện bạn muốn đồng bộ vào PixelPlayerOSS.</string>
+    <string name="dash_libraries_sheet_subtitle">Chọn các thư viện bạn muốn đồng bộ vào NeonPlayer.</string>
     <string name="dash_libraries_all_subtitle">Đồng bộ tất cả các thư viện âm nhạc có sẵn.</string>
     <string name="dash_libraries_folder_subtitle">Đồng bộ theo thư mục cụ thể.</string>
     <string name="dash_libraries_sync_needed">Cần đồng bộ để cập nhật</string>

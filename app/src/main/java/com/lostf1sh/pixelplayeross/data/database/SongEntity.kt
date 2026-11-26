@@ -21,11 +21,13 @@ object SourceType {
     const val LOCAL = 0
     const val NAVIDROME = 5
     const val JELLYFIN = 6
+    const val YOUTUBE = 7
 
     /** Derive source type from a content URI string (fallback for migration / conversion). */
     fun fromContentUri(uri: String): Int = when {
         uri.startsWith("navidrome://") -> NAVIDROME
         uri.startsWith("jellyfin://") -> JELLYFIN
+        uri.startsWith("youtube://") -> YOUTUBE
         else -> LOCAL
     }
 }

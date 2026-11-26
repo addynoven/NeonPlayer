@@ -17,7 +17,7 @@
     <string name="recap_close">Chiudi</string>
     <string name="recap_not_enough_title">Non hai ancora ascoltato abbastanza</string>
     <string name="recap_not_enough_subtitle">Continua ad ascoltare musica e il tuo recap del %1$d si riempirà.</string>
-    <string name="recap_intro_kicker">Recap di PixelPlayerOSS</string>
+    <string name="recap_intro_kicker">Recap di NeonPlayer</string>
     <string name="recap_intro_title">Il tuo anno in musica</string>
     <string name="recap_intro_title_so_far">Il tuo anno finora</string>
     <string name="recap_intro_subtitle">Uno sguardo ai brani, agli artisti e ai momenti che hanno fatto da colonna sonora al tuo anno.</string>
@@ -98,7 +98,7 @@
     <string name="recap_summary_listening_style">Stile d’ascolto</string>
     <string name="recap_share">Condividi</string>
     <string name="recap_share_chooser_title">Condividi il tuo recap</string>
-    <string name="recap_share_text">Il mio %1$d in musica, creato con PixelPlayerOSS</string>
+    <string name="recap_share_text">Il mio %1$d in musica, creato con NeonPlayer</string>
     <string name="recap_share_failed">Impossibile creare l’immagine del recap</string>
     <string name="recap_play_top_songs">Riproduci i top</string>
     <string name="recap_top_songs_queue_name">Brani top del %1$d</string>

@@ -17,6 +17,7 @@ object CloudStreamSecurity {
 
     private const val MAX_NAVIDROME_SONG_ID_LENGTH = 1024
     private val JELLYFIN_ITEM_ID_REGEX = Regex("^[A-Za-z0-9]{1,100}$")
+    private val YOUTUBE_VIDEO_ID_REGEX = Regex("^[A-Za-z0-9_-]{11}$")
     private val FORBIDDEN_HOSTS = setOf("localhost", "127.0.0.1", "0.0.0.0", "::1", "[::1]")
     private val LOCAL_SERVER_DNS_SUFFIXES =
         listOf(".local", ".lan", ".home", ".internal", ".home.arpa", ".ts.net")
@@ -52,6 +53,9 @@ object CloudStreamSecurity {
             songId.none { it.isISOControl() }
 
     fun validateJellyfinItemId(itemId: String): Boolean = JELLYFIN_ITEM_ID_REGEX.matches(itemId)
+
+    /** YouTube video ids are exactly 11 URL-safe base64 characters. */
+    fun validateYouTubeVideoId(videoId: String): Boolean = YOUTUBE_VIDEO_ID_REGEX.matches(videoId)
 
     fun validateRangeHeader(rawHeader: String?): RangeHeaderValidation {
         if (rawHeader.isNullOrBlank()) {

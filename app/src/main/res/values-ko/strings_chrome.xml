@@ -12,10 +12,10 @@
     <string name="queue_name_selected_songs">선택한 곡</string>
 
     <!-- Player sheet, mini player and full player chrome -->
-    <string name="cd_player_sheet_collapsed">PixelPlayer 플레이어 시트 접힘, %1$s</string>
-    <string name="cd_player_sheet_expanded">PixelPlayer 플레이어 시트 펼쳐짐, %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">PixelPlayer 플레이어 시트 접힘</string>
-    <string name="cd_player_sheet_expanded_no_track">PixelPlayer 플레이어 시트 펼쳐짐</string>
+    <string name="cd_player_sheet_collapsed">NeonPlayer 플레이어 시트 접힘, %1$s</string>
+    <string name="cd_player_sheet_expanded">NeonPlayer 플레이어 시트 펼쳐짐, %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">NeonPlayer 플레이어 시트 접힘</string>
+    <string name="cd_player_sheet_expanded_no_track">NeonPlayer 플레이어 시트 펼쳐짐</string>
     <string name="mini_player_connecting_device">기기에 연결 중…</string>
     <string name="mini_player_preparing_playback">재생 준비 중…</string>
     <string name="mini_player_loading_audio">오디오 로드 중…</string>

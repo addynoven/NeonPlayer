@@ -50,7 +50,7 @@
     <string name="device_capabilities_report_generate">Generer rapport</string>
     <string name="device_capabilities_report_regenerate">Regenerer</string>
     <string name="device_capabilities_report_share">Del</string>
-    <string name="device_capabilities_report_share_title">PixelPlayer ytelsesrapport</string>
+    <string name="device_capabilities_report_share_title">NeonPlayer ytelsesrapport</string>
     <string name="device_capabilities_report_title">Ytelsesrapport</string>
     <string name="device_capabilities_review_title">Avspilling krever gjennomgang</string>
     <string name="device_capabilities_storage_available">Tilgjengelig</string>
@@ -363,14 +363,14 @@
     <string name="presentation_batch_g_topbar_build_stable">Stabil</string>
     <string name="presentation_batch_g_topbar_cd_changelog">Endringslogg</string>
     <string name="presentation_batch_g_yes">Ja</string>
-    <string name="presentation_batch_g_artist_info_body">PixelPlayerOSS deler artisttagger ved hjelp av tegndelimitere (/, ;, &amp;) og orddelimitere (feat., ft., vs., x). Orddelimitere samsvares uten hensyn til store og små bokstaver.
+    <string name="presentation_batch_g_artist_info_body">NeonPlayer deler artisttagger ved hjelp av tegndelimitere (/, ;, &amp;) og orddelimitere (feat., ft., vs., x). Orddelimitere samsvares uten hensyn til store og små bokstaver.
 
 «Hent artister fra tittel» gjenkjenner mønstre som (feat. Artist) i sangtitler.
 
 Skråstrek bakover (\) kan brukes til å escape tegndelimitere.</string>
-    <string name="presentation_batch_g_beta_sheet_welcome_title">Velkommen til PixelPlayerOSS %1$s</string>
-    <string name="presentation_batch_g_beta_sheet_before_2">Oppdater til den nyeste PixelPlayerOSS-versjonen og bekreft at problemet fortsatt oppstår.</string>
-    <string name="presentation_batch_g_beta_sheet_env_version">PixelPlayerOSS-versjon:</string>
+    <string name="presentation_batch_g_beta_sheet_welcome_title">Velkommen til NeonPlayer %1$s</string>
+    <string name="presentation_batch_g_beta_sheet_before_2">Oppdater til den nyeste NeonPlayer-versjonen og bekreft at problemet fortsatt oppstår.</string>
+    <string name="presentation_batch_g_beta_sheet_env_version">NeonPlayer-versjon:</string>
     <string-array name="presentation_batch_g_changelog_060_whats_new">
         <item>Nylig spilt og gjenoppretting av vedvarende kø holder lyttingen din klar.</item>
         <item>Sikkerhetskopiering og gjenoppretting v3 og verktøy for kontoadministrasjon er nå inkludert.</item>
@@ -463,7 +463,7 @@ Skråstrek bakover (\) kan brukes til å escape tegndelimitere.</string>
         <item>Rettet flere feil som fikk appen til å krasje.</item>
     </string-array>
     <string-array name="presentation_batch_g_changelog_070_whats_new">
-        <item>Første offentlige FOSS-utgivelse av PixelPlayerOSS.</item>
+        <item>Første offentlige FOSS-utgivelse av NeonPlayer.</item>
         <item>Inkluderer lokal avspilling, spillelister, favoritter, sangtekster, lyttestatistikk, dynamisk Material 3-tema, widgeter og sikkerhetskopiering/gjenoppretting.</item>
         <item>Beholder støtte for selvhostet Navidrome/Subsonic og Jellyfin, pluss valgfritt oppslag av sangtekster via LRCLIB og av artistbilder fra Deezer.</item>
     </string-array>

@@ -168,8 +168,8 @@
     <string name="widget_tap_to_open">انقر للفتح</string>
     <string name="widget_tap_to_play">انقر للتشغيل</string>
     <string name="widget_wavy_progress_bar_desc">شريط التقدم، %1$d بالمئة</string>
-    <string name="song_info_tone_picker_body">اختر المكان الذي يجب أن يثبّت PixelPlayerOSS هذا الصوت فيه.</string>
-    <string name="song_info_ringtone_permission_prompt">فعّل إذن تعديل إعدادات النظام، ثم عد إلى PixelPlayerOSS لإتمام العملية تلقائياً.</string>
+    <string name="song_info_tone_picker_body">اختر المكان الذي يجب أن يثبّت NeonPlayer هذا الصوت فيه.</string>
+    <string name="song_info_ringtone_permission_prompt">فعّل إذن تعديل إعدادات النظام، ثم عد إلى NeonPlayer لإتمام العملية تلقائياً.</string>
     <string name="edit_song_custom_metadata_heading">بيانات وصفية اختيارية</string>
     <string name="edit_song_custom_metadata_description">عيّن تقييمًا من 0 إلى 5 أو أضف حقولًا نصية مثل MOOD وCOMMENT وYEAR وBPM.</string>
     <string name="edit_song_rating">التقييم (0–5)</string>

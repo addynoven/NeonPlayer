@@ -12,7 +12,7 @@
     <string name="audio_bookmarks_cd_selected">Vybráno</string>
     <string name="audio_bookmarks_cd_delete_selected">Smazat vybrané</string>
     <string name="audio_bookmarks_delete_moments_message">Vybrané uložené pozice budou trvale odstraněny. Tuto akci nelze vrátit zpět.</string>
-    <string name="easter_egg_thank_you">Děkujeme, že používáte PixelPlayerOSS!</string>
+    <string name="easter_egg_thank_you">Děkujeme, že používáte NeonPlayer!</string>
     <string name="word_delimiter_section_title">Aktuální slovní oddělovače</string>
     <string name="word_delimiter_section_subtitle">Tato slova oddělují jména interpretů, pokud jsou obklopená mezerami. Na velikosti písmen nezáleží. Klepnutím oddělovač odeberete.</string>
     <string name="word_delimiter_empty">Nejsou nastavené žádné slovní oddělovače</string>
@@ -50,7 +50,7 @@
     <string name="setup_theme_footer">Později to můžete změnit v Nastavení → Vzhled → Motiv aplikace.</string>
     <string name="setup_recommended">Doporučeno</string>
     <string name="setup_external_services_title">Volitelné online služby</string>
-    <string name="setup_external_services_subtitle">PixelPlayerOSS ve výchozím nastavení funguje offline. Povolte jen vyhledávání, která chcete používat.</string>
+    <string name="setup_external_services_subtitle">NeonPlayer ve výchozím nastavení funguje offline. Povolte jen vyhledávání, která chcete používat.</string>
     <string name="setup_external_lyrics_title">Online texty skladeb z LRCLIB</string>
     <string name="setup_external_lyrics_description">Vyhledá text na lrclib.net, pokud chybí místní i vložený text.</string>
     <string name="setup_external_artist_images_title">Fotky interpretů z Deezeru</string>
@@ -97,7 +97,7 @@
     <string name="setup_excluded_folders_description">Ve výchozím nastavení se prohledávají všechny složky. Vyberte ty, které se mají při sestavování knihovny přeskočit.</string>
     <string name="setup_choose_folders_ignore">Vybrat složky k vyloučení</string>
     <string name="setup_permission_media_title">Přístup k médiím</string>
-    <string name="setup_permission_media_description">PixelPlayerOSS potřebuje přístup ke zvukovým souborům, aby mohl sestavit hudební knihovnu.</string>
+    <string name="setup_permission_media_description">NeonPlayer potřebuje přístup ke zvukovým souborům, aby mohl sestavit hudební knihovnu.</string>
     <string name="setup_permission_granted">Oprávnění uděleno</string>
     <string name="setup_grant_media_permission">Povolit přístup k médiím</string>
     <string name="setup_permission_notifications_title">Oznámení</string>
@@ -106,16 +106,16 @@
     <string name="setup_permission_alarms_title">Budíky a připomenutí</string>
     <string name="setup_permission_alarms_description">Volitelné oprávnění. Doporučujeme ho povolit, pokud chcete, aby časovač vypnutí zastavil přehrávání přesně v nastavenou dobu.</string>
     <string name="setup_battery_optimization_title">Optimalizace baterie</string>
-    <string name="setup_battery_optimization_description">Některá zařízení s Androidem ukončují aplikace na pozadí. Vypněte pro PixelPlayerOSS optimalizaci baterie, aby se přehrávání nepřerušovalo.</string>
+    <string name="setup_battery_optimization_description">Některá zařízení s Androidem ukončují aplikace na pozadí. Vypněte pro NeonPlayer optimalizaci baterie, aby se přehrávání nepřerušovalo.</string>
     <string name="setup_disable_battery_optimization">Vypnout optimalizaci</string>
     <string name="setup_grant_permission_generic">Udělit oprávnění</string>
     <string name="setup_backup_have_title">Máte zálohu?</string>
-    <string name="setup_backup_have_description">Pokud už máte zálohu PixelPlayerOSS, obnovte ji teď a přeskočte většinu zbývajících kroků nastavení tohoto zařízení.</string>
+    <string name="setup_backup_have_description">Pokud už máte zálohu NeonPlayer, obnovte ji teď a přeskočte většinu zbývajících kroků nastavení tohoto zařízení.</string>
     <string name="setup_inspecting_backup">Kontrola zálohy</string>
     <string name="setup_restoring_backup">Obnovování zálohy</string>
     <string name="setup_import_backup">Importovat zálohu</string>
     <string name="setup_theme_dark_title">Tmavý</string>
-    <string name="setup_theme_dark_description">Výchozí tmavý vzhled PixelPlayerOSS ve stylu Material 3.</string>
+    <string name="setup_theme_dark_description">Výchozí tmavý vzhled NeonPlayer ve stylu Material 3.</string>
     <string name="setup_theme_light_title">Světlý</string>
     <string name="setup_theme_light_description">Světlejší vzhled celé aplikace ve stylu Material 3.</string>
     <string name="setup_theme_follow_title">Podle systému</string>
@@ -129,7 +129,7 @@
     <string name="dialog_delete_song_message">„%1$s“ (%2$s)\n\nTato skladba bude trvale smazána ze zařízení a nebude možné ji obnovit.</string>
     <string name="home_your_mix_title">Váš\nmix</string>
     <string name="home_empty_placeholder_title">Zatím není co zobrazit</string>
-    <string name="home_empty_placeholder_subtitle">Váš mix se zobrazí, až PixelPlayerOSS najde skladby nebo synchronizuje některý zdroj.</string>
+    <string name="home_empty_placeholder_subtitle">Váš mix se zobrazí, až NeonPlayer najde skladby nebo synchronizuje některý zdroj.</string>
     <string name="home_empty_placeholder_refresh">Obnovit</string>
     <string name="cd_shuffle_play">Přehrát náhodně</string>
     <string name="cd_album_art_for_title">Obal alba: %1$s</string>
@@ -158,7 +158,7 @@
     <string name="crash_report_stack_preview_label">Trasování zásobníku (náhled):</string>
     <string name="crash_report_clipboard_label">Záznam o pádu</string>
     <string name="toast_crash_log_copied">Záznam o pádu byl zkopírován do schránky</string>
-    <string name="crash_report_share_subject">Hlášení o pádu aplikace PixelPlayerOSS</string>
+    <string name="crash_report_share_subject">Hlášení o pádu aplikace NeonPlayer</string>
     <string name="crash_report_share_chooser">Sdílet hlášení o pádu</string>
     <string name="action_copy">Kopírovat</string>
     <string name="action_share">Sdílet</string>
@@ -211,7 +211,7 @@
     <string name="about_signal_community_first">Komunita na prvním místě</string>
     <string name="about_signal_material3">Ve stylu Material 3 Expressive</string>
     <string name="about_support_eyebrow">Sponzorství na GitHubu</string>
-    <string name="about_support_title">Podpořte PixelPlayerOSS</string>
+    <string name="about_support_title">Podpořte NeonPlayer</string>
     <string name="about_support_body">Pomozte nám udržovat svobodnou verzi, kontrolovat změny a testovat ji na skutečných zařízeních s Androidem.</string>
     <string name="about_support_chip_foss">Údržba svobodného softwaru</string>
     <string name="about_support_chip_ci">Průběžná integrace a vydávání</string>

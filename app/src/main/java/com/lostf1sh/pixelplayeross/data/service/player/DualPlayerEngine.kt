@@ -259,6 +259,7 @@ class DualPlayerEngine @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val navidromeStreamProxy: NavidromeStreamProxy,
     private val jellyfinStreamProxy: com.lostf1sh.pixelplayeross.data.jellyfin.JellyfinStreamProxy,
+    private val youtubeStreamProxy: com.lostf1sh.pixelplayeross.data.youtube.YouTubeStreamProxy,
     private val cloudOfflineRepository: CloudOfflineRepository,
     private val equalizerManager: EqualizerManager
 ) {
@@ -272,8 +273,8 @@ class DualPlayerEngine @Inject constructor(
         private const val POST_TRANSITION_OFFLOAD_GUARD_MS = 2_000L
         private const val MAX_AUXILIARY_TIMELINE_ITEMS = QueueWindowPolicy.MAX_AUXILIARY_TIMELINE_ITEMS
         private val LOCAL_MEDIA_SCHEMES = setOf("content", "file", "android.resource")
-        private val REMOTE_MEDIA_SCHEMES = setOf("http", "https", "navidrome", "jellyfin")
-        private val CLOUD_PROXY_SCHEMES = setOf("navidrome", "jellyfin")
+        private val REMOTE_MEDIA_SCHEMES = setOf("http", "https", "navidrome", "jellyfin", "youtube")
+        private val CLOUD_PROXY_SCHEMES = setOf("navidrome", "jellyfin", "youtube")
     }
 
     data class TransitionTarget(
@@ -1293,6 +1294,9 @@ class DualPlayerEngine @Inject constructor(
             "jellyfin" -> jellyfinStreamProxy
                 .takeIf { it.isReady() }
                 ?.resolveJellyfinUri(uriString)
+            "youtube" -> youtubeStreamProxy
+                .takeIf { it.isReady() }
+                ?.resolveYouTubeUri(uriString)
             else -> null
         }
         return proxyUrl?.let(Uri::parse)
@@ -1491,6 +1495,7 @@ class DualPlayerEngine @Inject constructor(
                 when (uri.scheme) {
                     "navidrome" -> resolveNavidromeUriAsync(uriString)
                     "jellyfin" -> resolveJellyfinUriAsync(uriString)
+                    "youtube" -> resolveYouTubeUriAsync(uriString)
                     else -> null
                 }
             },
@@ -1508,6 +1513,16 @@ class DualPlayerEngine @Inject constructor(
         if (!jellyfinStreamProxy.ensureReady(5_000L)) return@withContext null
         jellyfinStreamProxy.warmUpStreamUrl(uriString)
         jellyfinStreamProxy.resolveJellyfinUri(uriString)?.let { Uri.parse(it) }
+    }
+
+    private suspend fun resolveYouTubeUriAsync(uriString: String): Uri? = withContext(Dispatchers.IO) {
+        if (!youtubeStreamProxy.ensureReady(5_000L)) return@withContext null
+        runCatching { youtubeStreamProxy.warmUpStreamUrl(uriString) }
+            .onFailure { Timber.tag("DualPlayerEngine").w(it, "YouTube stream warm-up failed") }
+        youtubeStreamProxy.resolveYouTubeUri(uriString)?.let {
+            Timber.tag("DualPlayerEngine").d("Resolved YouTube URI %s -> %s", uriString, it)
+            Uri.parse(it)
+        }
     }
 
     suspend fun resolveMediaItem(mediaItem: MediaItem): MediaItem {

@@ -285,7 +285,7 @@
     <string name="toast_regenerated_palettes_partial">%2$d개 중 %1$d개의 앨범 아트 팔레트가 재생성되었습니다</string>
     <string name="toast_stats_regeneration_started">통계 재생성 시작됨</string>
     <string name="working_ellipsis">작업 중…</string>
-    <string name="setcat_about_pixelplayer_title">PixelPlayerOSS 정보</string>
+    <string name="setcat_about_pixelplayer_title">NeonPlayer 정보</string>
     <string name="updates_title">업데이트</string>
     <string name="updates_settings_subtitle">버전 확인 및 릴리스 채널</string>
     <string name="updates_check_row_title">업데이트 확인</string>
@@ -307,7 +307,7 @@
     <string name="updates_status_reinstall_signature">버전 %1$s 업데이트는 현재 빌드 위에 설치할 수 없습니다. 서명 키가 다르거나 패키지 이름이 다르기 때문입니다(예: 디버그 빌드).</string>
     <string name="updates_status_downloading">%1$s 다운로드 중…</string>
     <string name="updates_status_downloading_progress">%1$s 다운로드 중… %2$d%%</string>
-    <string name="updates_status_permission">%1$s(으)로 업데이트를 마치려면 PixelPlayerOSS가 앱을 설치할 수 있도록 허용하세요.</string>
+    <string name="updates_status_permission">%1$s(으)로 업데이트를 마치려면 NeonPlayer가 앱을 설치할 수 있도록 허용하세요.</string>
     <string name="updates_status_confirm">시스템 창에서 %1$s 설치를 확인하세요.</string>
     <string name="updates_status_installing">%1$s 설치 중…</string>
     <string name="updates_error_check">업데이트 서버에 연결할 수 없습니다. 연결 상태를 확인하고 다시 시도해 주세요.</string>
@@ -328,7 +328,7 @@
     <string name="updates_switch_dialog_title">다시 설치 필요</string>
     <string name="updates_switch_dialog_body">안정 빌드는 F-Droid에서, 알파 빌드는 GitHub에서 제공됩니다. 서명 키가 서로 달라 Android에서는 한쪽을 다른 쪽으로 업데이트할 수 없습니다. 제거하면 앱 데이터가 삭제되므로 먼저 백업하세요.</string>
     <string name="updates_switch_step_backup">1. 백업을 생성하고 파일을 앱 밖에 저장하세요.</string>
-    <string name="updates_switch_step_download_stable">2. F-Droid가 없다면 설치한 뒤, 그곳에서 PixelPlayerOSS를 여세요.</string>
+    <string name="updates_switch_step_download_stable">2. F-Droid가 없다면 설치한 뒤, 그곳에서 NeonPlayer를 여세요.</string>
     <string name="updates_switch_step_download_alpha">2. %1$s APK를 다운로드하세요.</string>
     <string name="updates_switch_step_uninstall">3. 이 앱을 제거하고 새 빌드를 설치한 다음 백업을 복구하세요.</string>
     <string name="updates_switch_action_backup">백업</string>
@@ -338,8 +338,8 @@
     <string name="updates_switch_action_close">닫기</string>
     <string name="updates_notification_channel">앱 업데이트</string>
     <string name="updates_notification_title">업데이트 사용 가능</string>
-    <string name="updates_notification_text">PixelPlayerOSS %1$s 버전을 설치할 준비가 되었습니다.</string>
-    <string name="updates_notification_confirm_title">PixelPlayerOSS 업데이트 마무리</string>
+    <string name="updates_notification_text">NeonPlayer %1$s 버전을 설치할 준비가 되었습니다.</string>
+    <string name="updates_notification_confirm_title">NeonPlayer 업데이트 마무리</string>
     <string name="updates_notification_confirm_text">탭하여 설치를 확인하세요.</string>
     <string name="setcat_m3u_sync_section">플레이리스트 동기화</string>
     <string name="setcat_m3u_sync_title">자동 M3U 동기화</string>

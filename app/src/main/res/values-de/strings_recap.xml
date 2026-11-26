@@ -17,7 +17,7 @@
     <string name="recap_close">Schließen</string>
     <string name="recap_not_enough_title">Noch nicht genug gehört</string>
     <string name="recap_not_enough_subtitle">Hör weiter Musik, dann füllt sich dein Rückblick %1$d.</string>
-    <string name="recap_intro_kicker">PixelPlayerOSS Rückblick</string>
+    <string name="recap_intro_kicker">NeonPlayer Rückblick</string>
     <string name="recap_intro_title">Dein Jahr in Musik</string>
     <string name="recap_intro_title_so_far">Dein Jahr bisher</string>
     <string name="recap_intro_subtitle">Ein Blick zurück auf die Songs, Künstler und Momente, die dein Jahr begleitet haben.</string>
@@ -91,7 +91,7 @@
     <string name="recap_summary_listening_style">Hörtyp</string>
     <string name="recap_share">Teilen</string>
     <string name="recap_share_chooser_title">Rückblick teilen</string>
-    <string name="recap_share_text">Mein Musikjahr %1$d, erstellt mit PixelPlayerOSS</string>
+    <string name="recap_share_text">Mein Musikjahr %1$d, erstellt mit NeonPlayer</string>
     <string name="recap_share_failed">Das Rückblick-Bild konnte nicht erstellt werden</string>
     <string name="recap_play_top_songs">Top-Songs abspielen</string>
     <string name="recap_top_songs_queue_name">Top-Songs %1$d</string>

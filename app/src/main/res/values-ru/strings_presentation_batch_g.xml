@@ -50,7 +50,7 @@
     <string name="device_capabilities_report_generate">Создать отчёт</string>
     <string name="device_capabilities_report_regenerate">Пересоздать</string>
     <string name="device_capabilities_report_share">Поделиться</string>
-    <string name="device_capabilities_report_share_title">Отчёт о производительности PixelPlayer</string>
+    <string name="device_capabilities_report_share_title">Отчёт о производительности NeonPlayer</string>
     <string name="device_capabilities_report_title">Отчёт о производительности</string>
     <string name="device_capabilities_review_title">Требуется проверка воспроизведения</string>
     <string name="device_capabilities_storage_available">Доступно</string>
@@ -363,14 +363,14 @@
     <string name="presentation_batch_g_topbar_build_stable">Стабильная</string>
     <string name="presentation_batch_g_topbar_cd_changelog">Список изменений</string>
     <string name="presentation_batch_g_yes">Да</string>
-    <string name="presentation_batch_g_artist_info_body">PixelPlayerOSS разделяет теги исполнителей по символам-разделителям (/, ;, &amp;) и по словам-разделителям (feat., ft., vs., x). Слова-разделители сопоставляются без учёта регистра.
+    <string name="presentation_batch_g_artist_info_body">NeonPlayer разделяет теги исполнителей по символам-разделителям (/, ;, &amp;) и по словам-разделителям (feat., ft., vs., x). Слова-разделители сопоставляются без учёта регистра.
 
 «Извлекать исполнителей из названия» находит шаблоны вида (feat. Artist) в названиях треков.
 
 Обратную косую черту (\) можно использовать для экранирования символов-разделителей.</string>
-    <string name="presentation_batch_g_beta_sheet_welcome_title">Добро пожаловать в PixelPlayerOSS %1$s</string>
-    <string name="presentation_batch_g_beta_sheet_before_2">Обновитесь до последней версии PixelPlayerOSS и убедитесь, что проблема сохраняется.</string>
-    <string name="presentation_batch_g_beta_sheet_env_version">Версия PixelPlayerOSS:</string>
+    <string name="presentation_batch_g_beta_sheet_welcome_title">Добро пожаловать в NeonPlayer %1$s</string>
+    <string name="presentation_batch_g_beta_sheet_before_2">Обновитесь до последней версии NeonPlayer и убедитесь, что проблема сохраняется.</string>
+    <string name="presentation_batch_g_beta_sheet_env_version">Версия NeonPlayer:</string>
     <string-array name="presentation_batch_g_changelog_060_whats_new">
         <item>«Недавно прослушанные» и восстановление сохранённой очереди помогают быстро вернуться к прослушиванию.</item>
         <item>Теперь доступны резервное копирование и восстановление v3, а также инструменты управления аккаунтами.</item>
@@ -463,7 +463,7 @@
         <item>Исправлено несколько ошибок, приводивших к сбоям приложения.</item>
     </string-array>
     <string-array name="presentation_batch_g_changelog_070_whats_new">
-        <item>Первый публичный FOSS-выпуск PixelPlayerOSS.</item>
+        <item>Первый публичный FOSS-выпуск NeonPlayer.</item>
         <item>Включает локальное воспроизведение, плейлисты, избранное, тексты песен, статистику прослушивания, динамическую тему Material 3, виджеты и резервное копирование/восстановление.</item>
         <item>Сохраняет поддержку собственных серверов Navidrome/Subsonic и Jellyfin, а также необязательный поиск текстов в LRCLIB и обложек исполнителей в Deezer.</item>
     </string-array>

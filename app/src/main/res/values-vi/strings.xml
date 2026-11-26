@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name_change_title">Tên ứng dụng đã thay đổi</string>
-    <string name="app_name_change_message">Ứng dụng này hiện là PixelPlayerOSS. Tiếp tục thưởng thức âm nhạc nhé!</string>
+    <string name="app_name_change_message">Ứng dụng này hiện là NeonPlayer. Tiếp tục thưởng thức âm nhạc nhé!</string>
     <string name="do_not_show_again">Không hiển thị lại</string>
     <string name="dismiss">Bỏ qua</string>
     <string name="all_files_access_title">Cần cấp quyền đặc biệt</string>
-    <string name="all_files_access_description">Để chỉnh sửa siêu dữ liệu bài hát (tệp .mp3), PixelPlayerOSS cần quyền truy cập vào tất cả các tệp. Điều này cho phép chỉnh sửa trực tiếp các thẻ bài hát. Vui lòng cấp quyền này ở màn hình tiếp theo để bật tính năng chỉnh sửa siêu dữ liệu.</string>
+    <string name="all_files_access_description">Để chỉnh sửa siêu dữ liệu bài hát (tệp .mp3), NeonPlayer cần quyền truy cập vào tất cả các tệp. Điều này cho phép chỉnh sửa trực tiếp các thẻ bài hát. Vui lòng cấp quyền này ở màn hình tiếp theo để bật tính năng chỉnh sửa siêu dữ liệu.</string>
     <string name="grant_permission_button">Cấp quyền</string>
     <string name="error">Lỗi</string>
     <string name="ok">OK</string>
@@ -107,7 +107,7 @@
     <string name="error_loading_artist">Lỗi tải dữ liệu nghệ sĩ: %s</string>
     <string name="could_not_find_artist">Không thể tìm thấy nghệ sĩ</string>
     <string name="no_valid_songs">Không có bài hát hợp lệ nào</string>
-    <string name="glance_widget_description">Tiện ích màn hình chính của PixelPlayerOSS</string>
+    <string name="glance_widget_description">Tiện ích màn hình chính của NeonPlayer</string>
     <string name="widget_bar_4x1_desc">Thanh điều khiển thu gọn</string>
     <string name="widget_control_4x2_desc">Trình điều khiển kích thước lớn kèm ảnh bìa</string>
     <string name="widget_grid_2x2_desc">Bố cục lưới tiện ích</string>

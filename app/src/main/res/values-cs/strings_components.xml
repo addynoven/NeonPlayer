@@ -94,7 +94,7 @@
     <string name="song_info_choose_tone">Nastavit jako systémový zvuk</string>
     <string name="cd_choose_song_tone">Vybrat, k čemu se má tato skladba použít jako systémový zvuk</string>
     <string name="song_info_tone_picker_title">Použít tuto skladbu jako</string>
-    <string name="song_info_tone_picker_body">Vyberte, k čemu má PixelPlayerOSS tento zvuk nastavit.</string>
+    <string name="song_info_tone_picker_body">Vyberte, k čemu má NeonPlayer tento zvuk nastavit.</string>
     <string name="song_info_tone_ringtone_title">Vyzvánění telefonu</string>
     <string name="song_info_tone_ringtone_subtitle">Příchozí hovory</string>
     <string name="song_info_tone_notification_title">Zvuk oznámení</string>
@@ -108,7 +108,7 @@
     <string name="song_info_tone_ringtone_label">vyzvánění</string>
     <string name="song_info_tone_notification_label">zvuk oznámení</string>
     <string name="song_info_tone_alarm_label">zvuk budíku</string>
-    <string name="song_info_ringtone_permission_prompt">Povolte úpravu systémových nastavení a pak se vraťte do PixelPlayerOSS. Nastavení zvuku se dokončí automaticky.</string>
+    <string name="song_info_ringtone_permission_prompt">Povolte úpravu systémových nastavení a pak se vraťte do NeonPlayer. Nastavení zvuku se dokončí automaticky.</string>
     <string name="song_info_ringtone_permission_missing">Úprava systémových nastavení nebyla povolena.</string>
     <string name="song_info_ringtone_local_only">Jako vyzvánění lze použít jen místní skladby.</string>
     <string name="song_info_ringtone_missing_file">Tento zvukový soubor se nepodařilo připravit pro použití jako vyzvánění.</string>

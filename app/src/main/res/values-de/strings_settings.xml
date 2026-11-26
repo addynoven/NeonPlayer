@@ -285,7 +285,7 @@
     <string name="toast_regenerated_palettes_partial">%1$d von %2$d Cover-Paletten neu generiert</string>
     <string name="toast_stats_regeneration_started">Statistik-Regeneration gestartet</string>
     <string name="working_ellipsis">Wird bearbeitet…</string>
-    <string name="setcat_about_pixelplayer_title">Über PixelPlayerOSS</string>
+    <string name="setcat_about_pixelplayer_title">Über NeonPlayer</string>
     <string name="updates_title">Updates</string>
     <string name="updates_settings_subtitle">Versionsprüfung und Release-Kanal</string>
     <string name="updates_check_row_title">Nach Updates suchen</string>
@@ -307,7 +307,7 @@
     <string name="updates_status_reinstall_signature">Version %1$s kann nicht über diesen Build installiert werden: Sie ist mit einem anderen Schlüssel signiert oder verwendet einen anderen Paketnamen (zum Beispiel ein Debug-Build).</string>
     <string name="updates_status_downloading">%1$s wird heruntergeladen…</string>
     <string name="updates_status_downloading_progress">%1$s wird heruntergeladen… %2$d %%</string>
-    <string name="updates_status_permission">Erlaube PixelPlayerOSS, Apps zu installieren, um das Update auf %1$s abzuschließen.</string>
+    <string name="updates_status_permission">Erlaube NeonPlayer, Apps zu installieren, um das Update auf %1$s abzuschließen.</string>
     <string name="updates_status_confirm">Bestätige die Installation von %1$s im Systemdialog.</string>
     <string name="updates_status_installing">%1$s wird installiert…</string>
     <string name="updates_error_check">Der Update-Server ist nicht erreichbar. Prüfe deine Verbindung und versuche es nochmal.</string>
@@ -328,7 +328,7 @@
     <string name="updates_switch_dialog_title">Neuinstallation erforderlich</string>
     <string name="updates_switch_dialog_body">Stabile Builds stammen von F-Droid, Alpha-Builds von GitHub. Sie sind mit unterschiedlichen Schlüsseln signiert, daher kann Android das eine nicht durch das andere aktualisieren. Beim Deinstallieren werden die Daten der App gelöscht, also erstelle vorher ein Backup.</string>
     <string name="updates_switch_step_backup">1. Erstelle ein Backup und speichere die Datei außerhalb der App.</string>
-    <string name="updates_switch_step_download_stable">2. Installiere F-Droid, falls du es noch nicht hast, und öffne dort PixelPlayerOSS.</string>
+    <string name="updates_switch_step_download_stable">2. Installiere F-Droid, falls du es noch nicht hast, und öffne dort NeonPlayer.</string>
     <string name="updates_switch_step_download_alpha">2. Lade die %1$s-APK herunter.</string>
     <string name="updates_switch_step_uninstall">3. Deinstalliere diese App, installiere den neuen Build und stelle dein Backup wieder her.</string>
     <string name="updates_switch_action_backup">Backup erstellen</string>
@@ -338,8 +338,8 @@
     <string name="updates_switch_action_close">Schließen</string>
     <string name="updates_notification_channel">App-Updates</string>
     <string name="updates_notification_title">Update verfügbar</string>
-    <string name="updates_notification_text">PixelPlayerOSS %1$s ist bereit zur Installation.</string>
-    <string name="updates_notification_confirm_title">PixelPlayerOSS-Update abschließen</string>
+    <string name="updates_notification_text">NeonPlayer %1$s ist bereit zur Installation.</string>
+    <string name="updates_notification_confirm_title">NeonPlayer-Update abschließen</string>
     <string name="updates_notification_confirm_text">Tippe, um die Installation zu bestätigen.</string>
     <string name="setcat_m3u_sync_section">Playlist-Synchronisierung</string>
     <string name="setcat_m3u_sync_title">Automatischer M3U-Sync</string>

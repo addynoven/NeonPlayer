@@ -84,6 +84,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.CoroutineScope
 import com.lostf1sh.pixelplayeross.data.jellyfin.JellyfinRepository
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -100,12 +101,16 @@ class MusicRepositoryImpl @Inject constructor(
     private val favoritesDao: FavoritesDao,
     private val artistImageRepository: ArtistImageRepository,
     private val folderTreeBuilder: FolderTreeBuilder,
-    private val jellyfinRepository: JellyfinRepository? = null
+    private val jellyfinRepository: JellyfinRepository? = null,
+    private val youtubeRepositoryProvider: dagger.Lazy<com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository>
 ) : MusicRepository {
 
     companion object {
         /** Maximum number of search results to load at once to avoid memory issues with large libraries. */
         private const val SEARCH_RESULTS_LIMIT = 100
+
+        /** Hard deadline for the online (YouTube) search contribution before results are dropped. */
+        private const val ONLINE_SEARCH_TIMEOUT_MS = 15_000L
         private const val LYRIC_SEARCH_BATCH_SIZE = 32
         private const val UNKNOWN_GENRE_NAME = "Unknown"
         private const val UNKNOWN_GENRE_ID = "unknown"
@@ -569,7 +574,30 @@ class MusicRepositoryImpl @Inject constructor(
 
     override fun searchSongs(query: String): Flow<List<Song>> {
         if (query.isBlank()) return flowOf(emptyList())
-        return combine(
+
+        // combine() does not emit until every source has emitted once, so without the
+        // placeholder below the whole search screen — local results included — would
+        // wait for the YouTube resolver ladder (multiple clients, HEAD requests and
+        // third-party mirrors, tens of seconds worst case).
+        val youtubeFlow = flow {
+            emit(emptyList())
+            val onlineResults = runCatching {
+                withTimeoutOrNull(ONLINE_SEARCH_TIMEOUT_MS) {
+                    youtubeRepositoryProvider.get().searchSongs(query)
+                }
+            }.fold(
+                onSuccess = { it ?: emptyList() },
+                onFailure = { e ->
+                    // Respect cancellation from rapid retyping instead of emitting on a dead flow.
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    Timber.w(e, "YouTube search failed for query '%s'", query)
+                    emptyList()
+                }
+            )
+            if (onlineResults.isNotEmpty()) emit(onlineResults)
+        }
+
+        val localFlow = combine(
             userPreferencesRepository.allowedDirectoriesFlow,
             userPreferencesRepository.blockedDirectoriesFlow
         ) { allowedDirs, blockedDirs ->
@@ -589,6 +617,11 @@ class MusicRepositoryImpl @Inject constructor(
             }.flatMapLatest { it }
         }.map { entities ->
             entities.map { it.toSong() }
+        }
+
+        return combine(localFlow, youtubeFlow) { local, youtube ->
+            val localIds = local.mapTo(HashSet()) { it.id }
+            local + youtube.filterNot { it.id in localIds }
         }.flowOn(Dispatchers.IO)
     }
 

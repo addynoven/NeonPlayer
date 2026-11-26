@@ -17,7 +17,7 @@
     <string name="recap_close">Đóng</string>
     <string name="recap_not_enough_title">Chưa đủ dữ liệu nghe nhạc</string>
     <string name="recap_not_enough_subtitle">Tiếp tục nghe nhạc và bản nhìn lại năm %1$d của bạn sẽ được hoàn thiện.</string>
-    <string name="recap_intro_kicker">PixelPlayerOSS Recap</string>
+    <string name="recap_intro_kicker">NeonPlayer Recap</string>
     <string name="recap_intro_title">Năm âm nhạc của bạn</string>
     <string name="recap_intro_title_so_far">Năm nay của bạn đến nay</string>
     <string name="recap_intro_subtitle">Nhìn lại những giai điệu, nghệ sĩ và khoảnh khắc đồng hành cùng bạn suốt cả năm.</string>
@@ -84,7 +84,7 @@
     <string name="recap_summary_listening_style">Phong cách nghe nhạc</string>
     <string name="recap_share">Chia sẻ</string>
     <string name="recap_share_chooser_title">Chia sẻ bản nhìn lại của bạn</string>
-    <string name="recap_share_text">Âm nhạc năm %1$d của tôi, tạo với PixelPlayerOSS</string>
+    <string name="recap_share_text">Âm nhạc năm %1$d của tôi, tạo với NeonPlayer</string>
     <string name="recap_share_failed">Không thể tạo ảnh chia sẻ bản nhìn lại</string>
     <string name="recap_play_top_songs">Phát các bài hát hàng đầu</string>
     <string name="recap_top_songs_queue_name">Các bài hát hàng đầu năm %1$d</string>

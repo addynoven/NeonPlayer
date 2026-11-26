@@ -123,6 +123,16 @@ private data class Contributor(
     val contributions: Int? = null,
 )
 
+private val NeonMaintainer = Contributor(
+    id = "addynoven",
+    displayName = "@addynoven",
+    role = "NeonPlayer maintainer",
+    detail = "Maintains NeonPlayer, the fork this build is based on.",
+    avatarUrl = "https://github.com/addynoven.png",
+    iconRes = R.drawable.round_developer_board_24,
+    githubUrl = "https://github.com/addynoven",
+)
+
 private val CoreMaintainer = Contributor(
     id = "lostf1sh",
     displayName = "@lostf1sh",
@@ -146,11 +156,12 @@ private val NonFossMaintainer = Contributor(
 )
 
 private val AboutMaintainers = listOf(
+    NeonMaintainer,
     CoreMaintainer,
     NonFossMaintainer,
 )
 
-private const val SourceRepoUrl = "https://github.com/lostf1sh/PixelPlayerOSS"
+private const val SourceRepoUrl = "https://github.com/addynoven/NeonPlayer"
 private const val FDroidUrl = "https://f-droid.org/packages/com.lostf1sh.pixelplayeross/"
 private const val SponsorUrl = "https://github.com/sponsors/lostf1sh"
 

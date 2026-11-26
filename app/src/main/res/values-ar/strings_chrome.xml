@@ -12,10 +12,10 @@
     <string name="queue_name_selected_songs">الأغاني المحددة</string>
 
     <!-- Player sheet, mini player and full player chrome -->
-    <string name="cd_player_sheet_collapsed">لوحة مشغّل PixelPlayer مطويّة، %1$s</string>
-    <string name="cd_player_sheet_expanded">لوحة مشغّل PixelPlayer موسّعة، %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">لوحة مشغّل PixelPlayer مطويّة</string>
-    <string name="cd_player_sheet_expanded_no_track">لوحة مشغّل PixelPlayer موسّعة</string>
+    <string name="cd_player_sheet_collapsed">لوحة مشغّل NeonPlayer مطويّة، %1$s</string>
+    <string name="cd_player_sheet_expanded">لوحة مشغّل NeonPlayer موسّعة، %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">لوحة مشغّل NeonPlayer مطويّة</string>
+    <string name="cd_player_sheet_expanded_no_track">لوحة مشغّل NeonPlayer موسّعة</string>
     <string name="mini_player_connecting_device">جاري الاتصال بالجهاز…</string>
     <string name="mini_player_preparing_playback">جاري تجهيز التشغيل…</string>
     <string name="mini_player_loading_audio">جاري تحميل الصوت…</string>

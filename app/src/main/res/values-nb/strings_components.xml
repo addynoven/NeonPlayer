@@ -168,8 +168,8 @@
     <string name="widget_tap_to_open">Trykk for å åpne</string>
     <string name="widget_tap_to_play">Trykk for å spille</string>
     <string name="widget_wavy_progress_bar_desc">Fremdriftslinje, %1$d prosent</string>
-    <string name="song_info_tone_picker_body">Velg hvor PixelPlayerOSS skal installere denne lyden.</string>
-    <string name="song_info_ringtone_permission_prompt">Slå på «Endre systeminnstillinger», og gå deretter tilbake til PixelPlayerOSS for å fullføre automatisk.</string>
+    <string name="song_info_tone_picker_body">Velg hvor NeonPlayer skal installere denne lyden.</string>
+    <string name="song_info_ringtone_permission_prompt">Slå på «Endre systeminnstillinger», og gå deretter tilbake til NeonPlayer for å fullføre automatisk.</string>
     <string name="edit_song_custom_metadata_heading">Valgfri metadata</string>
     <string name="edit_song_custom_metadata_description">Angi en vurdering fra 0–5 eller legg til tekstfelt som MOOD, COMMENT, YEAR eller BPM.</string>
     <string name="edit_song_rating">Vurdering (0–5)</string>

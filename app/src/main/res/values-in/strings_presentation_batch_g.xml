@@ -50,7 +50,7 @@
     <string name="device_capabilities_report_generate">Buat laporan</string>
     <string name="device_capabilities_report_regenerate">Regenerasi</string>
     <string name="device_capabilities_report_share">Bagikan</string>
-    <string name="device_capabilities_report_share_title">Laporan performa PixelPlayer</string>
+    <string name="device_capabilities_report_share_title">Laporan performa NeonPlayer</string>
     <string name="device_capabilities_report_title">Laporan performa</string>
     <string name="device_capabilities_review_title">Pemutaran perlu ditinjau</string>
     <string name="device_capabilities_storage_available">Tersedia</string>
@@ -363,14 +363,14 @@
     <string name="presentation_batch_g_topbar_build_stable">Stabil</string>
     <string name="presentation_batch_g_topbar_cd_changelog">Log Perubahan</string>
     <string name="presentation_batch_g_yes">Ya</string>
-    <string name="presentation_batch_g_artist_info_body">PixelPlayerOSS memisahkan tag artis menggunakan pemisah karakter (/, ;, &amp;) dan pemisah kata (feat., ft., vs., x). Pemisah kata dicocokkan tanpa peka huruf besar-kecil.
+    <string name="presentation_batch_g_artist_info_body">NeonPlayer memisahkan tag artis menggunakan pemisah karakter (/, ;, &amp;) dan pemisah kata (feat., ft., vs., x). Pemisah kata dicocokkan tanpa peka huruf besar-kecil.
 
 \"Ekstrak Artis dari Judul\" mendeteksi pola seperti (feat. Artis) pada judul lagu.
 
 Garis miring terbalik (\) dapat digunakan untuk meloloskan pemisah karakter.</string>
-    <string name="presentation_batch_g_beta_sheet_welcome_title">Selamat datang di PixelPlayerOSS %1$s</string>
-    <string name="presentation_batch_g_beta_sheet_before_2">Perbarui ke versi PixelPlayerOSS terbaru dan pastikan masalah tetap terjadi.</string>
-    <string name="presentation_batch_g_beta_sheet_env_version">Versi PixelPlayerOSS:</string>
+    <string name="presentation_batch_g_beta_sheet_welcome_title">Selamat datang di NeonPlayer %1$s</string>
+    <string name="presentation_batch_g_beta_sheet_before_2">Perbarui ke versi NeonPlayer terbaru dan pastikan masalah tetap terjadi.</string>
+    <string name="presentation_batch_g_beta_sheet_env_version">Versi NeonPlayer:</string>
     <string-array name="presentation_batch_g_changelog_060_whats_new">
         <item>Fitur Baru-baru Ini Diputar dan pemulihan antrean persisten menjaga sesi mendengarkan Anda tetap siap.</item>
         <item>Alat Cadangan &amp; Pemulihan v3 dan pengelolaan akun kini disertakan.</item>
@@ -463,7 +463,7 @@ Garis miring terbalik (\) dapat digunakan untuk meloloskan pemisah karakter.</st
         <item>Memperbaiki beberapa bug yang menyebabkan aplikasi crash.</item>
     </string-array>
     <string-array name="presentation_batch_g_changelog_070_whats_new">
-        <item>Rilis FOSS publik pertama dari PixelPlayerOSS.</item>
+        <item>Rilis FOSS publik pertama dari NeonPlayer.</item>
         <item>Mencakup pemutaran lokal, playlist, favorit, lirik, statistik mendengarkan, tema dinamis Material 3, widget, dan cadangan/pemulihan.</item>
         <item>Tetap mendukung Navidrome/Subsonic dan Jellyfin yang dihosting sendiri, ditambah lirik LRCLIB opsional dan pencarian gambar artis Deezer.</item>
     </string-array>

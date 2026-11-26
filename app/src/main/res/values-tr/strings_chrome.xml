@@ -12,10 +12,10 @@
     <string name="queue_name_selected_songs">Seçilen Şarkılar</string>
 
     <!-- Player sheet, mini player and full player chrome -->
-    <string name="cd_player_sheet_collapsed">PixelPlayer oynatıcı paneli daraltıldı, %1$s</string>
-    <string name="cd_player_sheet_expanded">PixelPlayer oynatıcı paneli genişletildi, %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">PixelPlayer oynatıcı paneli daraltıldı</string>
-    <string name="cd_player_sheet_expanded_no_track">PixelPlayer oynatıcı paneli genişletildi</string>
+    <string name="cd_player_sheet_collapsed">NeonPlayer oynatıcı paneli daraltıldı, %1$s</string>
+    <string name="cd_player_sheet_expanded">NeonPlayer oynatıcı paneli genişletildi, %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">NeonPlayer oynatıcı paneli daraltıldı</string>
+    <string name="cd_player_sheet_expanded_no_track">NeonPlayer oynatıcı paneli genişletildi</string>
     <string name="mini_player_connecting_device">Cihaza bağlanılıyor…</string>
     <string name="mini_player_preparing_playback">Oynatma hazırlanıyor…</string>
     <string name="mini_player_loading_audio">Ses yükleniyor…</string>

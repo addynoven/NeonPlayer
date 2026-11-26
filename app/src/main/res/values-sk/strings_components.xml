@@ -108,7 +108,7 @@
     <string name="song_info_tone_ringtone_label">vyzváňanie</string>
     <string name="song_info_tone_notification_label">zvuk upozornenia</string>
     <string name="song_info_tone_alarm_label">zvuk budíka</string>
-    <string name="song_info_ringtone_permission_prompt">Povoľte možnosť Meniť nastavenia systému a vráťte sa do PixelPlayerOSS. Nastavenie sa dokončí automaticky.</string>
+    <string name="song_info_ringtone_permission_prompt">Povoľte možnosť Meniť nastavenia systému a vráťte sa do NeonPlayer. Nastavenie sa dokončí automaticky.</string>
     <string name="song_info_ringtone_permission_missing">Povolenie meniť nastavenia systému nebolo udelené.</string>
     <string name="song_info_ringtone_local_only">Ako vyzváňanie možno použiť iba miestne skladby.</string>
     <string name="song_info_ringtone_missing_file">Zvukový súbor sa nepodarilo pripraviť na použitie ako vyzváňanie.</string>

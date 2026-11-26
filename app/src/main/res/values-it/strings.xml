@@ -229,8 +229,8 @@
     <string name="widget_bar_4x1_desc">Barra di riproduzione compatta</string>
     <string name="widget_control_4x2_desc">Controlli completi con modalità casuale e ripetizione</string>
     <string name="widget_grid_2x2_desc">Lettore quadrato minimalista</string>
-    <string name="app_name_change_message">Questa app ora si chiama PixelPlayerOSS. Continua ad ascoltare!</string>
-    <string name="all_files_access_description">Per modificare i metadati dei brani (file .mp3), PixelPlayerOSS ha bisogno di un accesso speciale a tutti i file. Questo ci permette di modificare direttamente i tag delle tracce. Concedi questo permesso nella schermata successiva per abilitare la modifica dei metadati.</string>
+    <string name="app_name_change_message">Questa app ora si chiama NeonPlayer. Continua ad ascoltare!</string>
+    <string name="all_files_access_description">Per modificare i metadati dei brani (file .mp3), NeonPlayer ha bisogno di un accesso speciale a tutti i file. Questo ci permette di modificare direttamente i tag delle tracce. Concedi questo permesso nella schermata successiva per abilitare la modifica dei metadati.</string>
     <string name="cloud_download_action">Scarica</string>
     <string name="cloud_download_queued">In coda</string>
     <string name="cloud_downloading">Scaricamento…</string>

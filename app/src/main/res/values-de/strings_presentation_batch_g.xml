@@ -50,7 +50,7 @@
     <string name="device_capabilities_report_generate">Bericht generieren</string>
     <string name="device_capabilities_report_regenerate">Neu generieren</string>
     <string name="device_capabilities_report_share">Teilen</string>
-    <string name="device_capabilities_report_share_title">PixelPlayer Leistungsbericht</string>
+    <string name="device_capabilities_report_share_title">NeonPlayer Leistungsbericht</string>
     <string name="device_capabilities_report_title">Leistungsbericht</string>
     <string name="device_capabilities_review_title">Wiedergabe überprüfen</string>
     <string name="device_capabilities_storage_available">Verfügbar</string>
@@ -363,14 +363,14 @@
     <string name="presentation_batch_g_topbar_build_stable">Stabil</string>
     <string name="presentation_batch_g_topbar_cd_changelog">Changelog</string>
     <string name="presentation_batch_g_yes">Ja</string>
-    <string name="presentation_batch_g_artist_info_body">PixelPlayerOSS teilt Künstler-Tags anhand von Zeichen-Trennzeichen (/, ;, &amp;) und Wort-Trennzeichen (feat., ft., vs., x). Bei Wort-Trennzeichen wird die Groß-/Kleinschreibung nicht beachtet.
+    <string name="presentation_batch_g_artist_info_body">NeonPlayer teilt Künstler-Tags anhand von Zeichen-Trennzeichen (/, ;, &amp;) und Wort-Trennzeichen (feat., ft., vs., x). Bei Wort-Trennzeichen wird die Groß-/Kleinschreibung nicht beachtet.
 
 „Künstler aus Titel extrahieren“ erkennt Muster wie (feat. Künstler) in Songtiteln.
 
 Mit einem Backslash (\) lassen sich Zeichen-Trennzeichen maskieren.</string>
-    <string name="presentation_batch_g_beta_sheet_welcome_title">Willkommen bei PixelPlayerOSS %1$s</string>
-    <string name="presentation_batch_g_beta_sheet_before_2">Aktualisiere auf die neueste PixelPlayerOSS-Version und prüfe, ob das Problem weiterhin auftritt.</string>
-    <string name="presentation_batch_g_beta_sheet_env_version">PixelPlayerOSS-Version:</string>
+    <string name="presentation_batch_g_beta_sheet_welcome_title">Willkommen bei NeonPlayer %1$s</string>
+    <string name="presentation_batch_g_beta_sheet_before_2">Aktualisiere auf die neueste NeonPlayer-Version und prüfe, ob das Problem weiterhin auftritt.</string>
+    <string name="presentation_batch_g_beta_sheet_env_version">NeonPlayer-Version:</string>
     <string-array name="presentation_batch_g_changelog_060_whats_new">
         <item>Zuletzt gespielt und die Wiederherstellung der dauerhaften Queue halten deine Hörsitzung bereit.</item>
         <item>Backup &amp; Wiederherstellung v3 und Tools zur Kontoverwaltung sind jetzt enthalten.</item>
@@ -463,7 +463,7 @@ Mit einem Backslash (\) lassen sich Zeichen-Trennzeichen maskieren.</string>
         <item>Mehrere Fehler behoben, die zu App-Abstürzen führten.</item>
     </string-array>
     <string-array name="presentation_batch_g_changelog_070_whats_new">
-        <item>Erste öffentliche FOSS-Version von PixelPlayerOSS.</item>
+        <item>Erste öffentliche FOSS-Version von NeonPlayer.</item>
         <item>Enthält lokale Wiedergabe, Playlists, Favoriten, Lyrics, Hörstatistiken, dynamisches Material-3-Theming, Widgets sowie Backup/Wiederherstellung.</item>
         <item>Behält die Unterstützung für selbst gehostetes Navidrome/Subsonic und Jellyfin bei, dazu optionale LRCLIB-Lyrics und die Deezer-Suche nach Künstlerbildern.</item>
     </string-array>

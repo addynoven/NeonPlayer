@@ -12,10 +12,10 @@
     <string name="queue_name_selected_songs">Ausgewählte Songs</string>
 
     <!-- Player sheet, mini player and full player chrome -->
-    <string name="cd_player_sheet_collapsed">PixelPlayer-Player minimiert, %1$s</string>
-    <string name="cd_player_sheet_expanded">PixelPlayer-Player erweitert, %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">PixelPlayer-Player minimiert</string>
-    <string name="cd_player_sheet_expanded_no_track">PixelPlayer-Player erweitert</string>
+    <string name="cd_player_sheet_collapsed">NeonPlayer-Player minimiert, %1$s</string>
+    <string name="cd_player_sheet_expanded">NeonPlayer-Player erweitert, %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">NeonPlayer-Player minimiert</string>
+    <string name="cd_player_sheet_expanded_no_track">NeonPlayer-Player erweitert</string>
     <string name="mini_player_connecting_device">Verbinde mit Gerät…</string>
     <string name="mini_player_preparing_playback">Wiedergabe wird vorbereitet…</string>
     <string name="mini_player_loading_audio">Audio wird geladen…</string>

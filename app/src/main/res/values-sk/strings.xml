@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name_change_title">Zmena názvu aplikácie</string>
-    <string name="app_name_change_message">Aplikácia sa teraz volá PixelPlayerOSS. Príjemné počúvanie!</string>
+    <string name="app_name_change_message">Aplikácia sa teraz volá NeonPlayer. Príjemné počúvanie!</string>
     <string name="do_not_show_again">Viac nezobrazovať</string>
     <string name="dismiss">Zavrieť</string>
     <string name="all_files_access_title">Vyžaduje sa osobitné povolenie</string>
-    <string name="all_files_access_description">Na úpravu metadát skladieb (súborov .mp3) potrebuje PixelPlayerOSS osobitný prístup ku všetkým súborom. Vďaka nemu môže meniť značky priamo v súboroch. Ak chcete povoliť úpravy metadát, udeľte prístup na nasledujúcej obrazovke.</string>
+    <string name="all_files_access_description">Na úpravu metadát skladieb (súborov .mp3) potrebuje NeonPlayer osobitný prístup ku všetkým súborom. Vďaka nemu môže meniť značky priamo v súboroch. Ak chcete povoliť úpravy metadát, udeľte prístup na nasledujúcej obrazovke.</string>
     <string name="grant_permission_button">Udeliť povolenie</string>
     <string name="error">Chyba</string>
     <string name="cancel">Zrušiť</string>
@@ -257,7 +257,7 @@
     <string name="cloud_download_batch_queued">Sťahovania vo fronte: %1$d</string>
     <string name="cloud_download_batch_failed">Nie všetky sťahovania z cloudu sa podarilo zaradiť do frontu. V časti Stiahnuté súbory nájdete tie, ktoré už sú vo fronte.</string>
     <string name="cloud_download_export_folder_title">Priečinok exportu</string>
-    <string name="cloud_download_export_folder_description">Kópie na počúvanie offline zostávajú prístupné len v aplikácii PixelPlayer. Ak chcete ukladať aj samostatné kópie nových súborov, vyberte priečinok, napríklad Hudba.</string>
+    <string name="cloud_download_export_folder_description">Kópie na počúvanie offline zostávajú prístupné len v aplikácii NeonPlayer. Ak chcete ukladať aj samostatné kópie nových súborov, vyberte priečinok, napríklad Hudba.</string>
     <string name="cloud_download_export_folder_selected">Kópie sa ukladajú do: %1$s</string>
     <string name="cloud_download_export_choose_folder">Vybrať priečinok</string>
     <string name="cloud_download_export_change_folder">Zmeniť priečinok</string>

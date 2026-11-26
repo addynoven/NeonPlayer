@@ -229,8 +229,8 @@
     <string name="widget_bar_4x1_desc">Kompakt spillerlinje</string>
     <string name="widget_control_4x2_desc">Full kontroll med blanding og repetisjon</string>
     <string name="widget_grid_2x2_desc">Minimalistisk kvadratisk spiller</string>
-    <string name="app_name_change_message">Denne appen heter nå PixelPlayerOSS. Fortsett å lytte!</string>
-    <string name="all_files_access_description">For å redigere sangmetadata (.mp3-filer) trenger PixelPlayerOSS spesiell tilgang til alle filer. Dette lar oss endre sporenes tagger direkte. Gi denne tillatelsen på neste skjerm for å aktivere redigering av metadata.</string>
+    <string name="app_name_change_message">Denne appen heter nå NeonPlayer. Fortsett å lytte!</string>
+    <string name="all_files_access_description">For å redigere sangmetadata (.mp3-filer) trenger NeonPlayer spesiell tilgang til alle filer. Dette lar oss endre sporenes tagger direkte. Gi denne tillatelsen på neste skjerm for å aktivere redigering av metadata.</string>
     <string name="cloud_download_action">Last ned</string>
     <string name="cloud_download_queued">I kø</string>
     <string name="cloud_downloading">Laster ned…</string>

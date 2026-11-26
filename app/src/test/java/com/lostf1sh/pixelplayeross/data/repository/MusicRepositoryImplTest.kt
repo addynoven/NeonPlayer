@@ -21,7 +21,10 @@ import com.lostf1sh.pixelplayeross.utils.GenreParser
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import app.cash.turbine.test
@@ -39,6 +42,8 @@ import org.junit.jupiter.api.Test
 class MusicRepositoryImplTest {
 
     private lateinit var musicRepository: MusicRepositoryImpl
+    private val mockYouTubeRepository: com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository =
+        mockk(relaxed = true)
     private val mockMusicDao: MusicDao = mockk()
     private val mockDatabase: PixelPlayerDatabase = mockk()
     private val mockSearchHistoryDao: SearchHistoryDao = mockk(relaxed = true)
@@ -111,7 +116,8 @@ class MusicRepositoryImplTest {
 
             favoritesDao = mockFavoritesDao,
             artistImageRepository = mockArtistImageRepository,
-            folderTreeBuilder = mockk(relaxed = true)
+            folderTreeBuilder = mockk(relaxed = true),
+            youtubeRepositoryProvider = dagger.Lazy { mockYouTubeRepository }
         )
     }
 
@@ -525,6 +531,43 @@ class MusicRepositoryImplTest {
             assertEquals(all.filterIsInstance<SearchResultItem.ArtistItem>(), artists)
             assertEquals(listOf("p1"), playlists.map { (it as SearchResultItem.PlaylistItem).playlist.id })
             assertEquals(all.filterIsInstance<SearchResultItem.PlaylistItem>(), playlists)
+        }
+
+        @Test
+        fun `searchSongs emits local results without waiting for the online search`() = runTest(testDispatcher) {
+            // The YouTube resolver can take tens of seconds (or never answer).
+            // Local results must still appear immediately.
+            coEvery { mockYouTubeRepository.searchSongs("aurora") } coAnswers { awaitCancellation() }
+
+            val first = musicRepository.searchSongs("aurora").first()
+
+            assertEquals(listOf("1", "2"), first.map { it.id })
+        }
+
+        @Test
+        fun `searchSongs appends online results when they arrive`() = runTest(testDispatcher) {
+            val onlineSong = Song(
+                id = "yt1",
+                title = "Imagine",
+                artist = "John Lennon",
+                artistId = 1,
+                album = "YouTube Music",
+                albumId = 2,
+                path = "youtube://yt1",
+                contentUriString = "youtube://yt1",
+                albumArtUriString = null,
+                duration = 180_000L,
+                mimeType = "audio/opus",
+                bitrate = 160,
+                sampleRate = 48000
+            )
+            coEvery { mockYouTubeRepository.searchSongs("aurora") } returns listOf(onlineSong)
+
+            // Emission counts are racy (YouTube's two emissions can land before local's first),
+            // so assert on the final merged state.
+            val merged = musicRepository.searchSongs("aurora").toList().last()
+
+            assertEquals(listOf("1", "2", "yt1"), merged.map { it.id })
         }
     }
 

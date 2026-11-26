@@ -105,7 +105,7 @@
     </string-array>
 
     <string-array name="presentation_batch_g_changelog_070_whats_new">
-        <item>První veřejné vydání PixelPlayerOSS jako svobodného softwaru.</item>
+        <item>První veřejné vydání NeonPlayer jako svobodného softwaru.</item>
         <item>Místní přehrávání, playlisty, oblíbené skladby, texty, statistiky poslechu, dynamické motivy Material 3, widgety a zálohování s obnovením.</item>
         <item>Zůstává podpora vlastních serverů Navidrome, Subsonic a Jellyfin i volitelné hledání textů na LRCLIB a fotek interpretů na Deezeru.</item>
     </string-array>

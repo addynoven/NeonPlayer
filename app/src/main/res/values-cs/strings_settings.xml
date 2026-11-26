@@ -98,7 +98,7 @@
     <string name="setcat_theme_preset_desc">Výchozí předvolba přebírá barvy tapety. AMOLED používá čistě černé plochy a je vždy tmavý.</string>
     <string name="setcat_theme_preset_default">Výchozí</string>
     <string name="setcat_system_font_title">Použít systémové písmo</string>
-    <string name="setcat_system_font_subtitle">Místo zaobleného písma PixelPlayeru použije výchozí písmo Androidu.</string>
+    <string name="setcat_system_font_subtitle">Místo zaobleného písma NeonPlayeru použije výchozí písmo Androidu.</string>
     <string name="setcat_interface_scale_title">Velikost rozhraní</string>
     <string name="setcat_interface_scale_subtitle">Změní velikost rozhraní aplikace bez zásahu do nastavení zobrazení Androidu.</string>
     <string name="setcat_interface_scale_percent">%1$d %%</string>
@@ -238,7 +238,7 @@
     <string name="setcat_trigger_crash_title">Vyvolat zkušební pád</string>
     <string name="setcat_trigger_crash_subtitle">Simuluje pád aplikace a umožní otestovat systém hlášení chyb.</string>
     <string name="setcat_application">Aplikace</string>
-    <string name="setcat_about_pixelplayer_title">O aplikaci PixelPlayerOSS</string>
+    <string name="setcat_about_pixelplayer_title">O aplikaci NeonPlayer</string>
     <string name="setcat_about_pixelplayer_subtitle">Verze aplikace, poděkování a další informace.</string>
     <string name="backup_summary_none">Nejsou vybrány žádné sekce.</string>
     <string name="backup_summary_all">Jsou vybrány všechny sekce.</string>
@@ -335,7 +335,7 @@
     <string name="updates_status_reinstall_signature">Verzi %1$s nelze nainstalovat přes tuto verzi. Má jiný podpisový klíč nebo název balíčku (například u ladicí verze).</string>
     <string name="updates_status_downloading">Stahování verze %1$s…</string>
     <string name="updates_status_downloading_progress">Stahování verze %1$s… %2$d %%</string>
-    <string name="updates_status_permission">Aby se aktualizace na verzi %1$s dokončila, povolte aplikaci PixelPlayerOSS instalovat aplikace.</string>
+    <string name="updates_status_permission">Aby se aktualizace na verzi %1$s dokončila, povolte aplikaci NeonPlayer instalovat aplikace.</string>
     <string name="updates_status_confirm">Potvrďte instalaci verze %1$s v systémové výzvě.</string>
     <string name="updates_status_installing">Instalace verze %1$s…</string>
     <string name="updates_error_check">Nepodařilo se připojit k aktualizačnímu serveru. Zkontrolujte připojení a zkuste to znovu.</string>
@@ -356,7 +356,7 @@
     <string name="updates_switch_dialog_title">Je nutná přeinstalace</string>
     <string name="updates_switch_dialog_body">Stabilní verze pocházejí z F-Droidu a alfa verze z GitHubu. Jsou podepsané různými klíči, takže Android nemůže jednu aktualizovat druhou. Odinstalace smaže data aplikace, proto je nejdřív zazálohujte.</string>
     <string name="updates_switch_step_backup">1. Vytvořte zálohu a uložte ji mimo aplikaci.</string>
-    <string name="updates_switch_step_download_stable">2. Pokud F-Droid ještě nemáte, nainstalujte ho a otevřete v něm stránku PixelPlayerOSS.</string>
+    <string name="updates_switch_step_download_stable">2. Pokud F-Droid ještě nemáte, nainstalujte ho a otevřete v něm stránku NeonPlayer.</string>
     <string name="updates_switch_step_download_alpha">2. Stáhněte soubor APK verze %1$s.</string>
     <string name="updates_switch_step_uninstall">3. Odinstalujte tuto aplikaci, nainstalujte novou verzi a obnovte zálohu.</string>
     <string name="updates_switch_action_backup">Zálohovat</string>
@@ -366,7 +366,7 @@
     <string name="updates_switch_action_close">Zavřít</string>
     <string name="updates_notification_channel">Aktualizace aplikace</string>
     <string name="updates_notification_title">Je k dispozici aktualizace</string>
-    <string name="updates_notification_text">PixelPlayerOSS %1$s je připraven k instalaci.</string>
-    <string name="updates_notification_confirm_title">Dokončete aktualizaci PixelPlayerOSS</string>
+    <string name="updates_notification_text">NeonPlayer %1$s je připraven k instalaci.</string>
+    <string name="updates_notification_confirm_title">Dokončete aktualizaci NeonPlayer</string>
     <string name="updates_notification_confirm_text">Klepnutím potvrďte instalaci.</string>
 </resources>

@@ -103,7 +103,7 @@
     <string name="song_info_choose_tone">Đặt làm âm thanh</string>
     <string name="cd_choose_song_tone">Chọn cách dùng bài hát này làm âm thanh hệ thống</string>
     <string name="song_info_tone_picker_title">Dùng bài hát này làm</string>
-    <string name="song_info_tone_picker_body">Chọn nơi PixelPlayerOSS sẽ cài đặt âm thanh này.</string>
+    <string name="song_info_tone_picker_body">Chọn nơi NeonPlayer sẽ cài đặt âm thanh này.</string>
     <string name="song_info_tone_ringtone_title">Nhạc chuông điện thoại</string>
     <string name="song_info_tone_ringtone_subtitle">Cuộc gọi đến</string>
     <string name="song_info_tone_notification_title">Âm thanh thông báo</string>
@@ -117,7 +117,7 @@
     <string name="song_info_tone_ringtone_label">nhạc chuông</string>
     <string name="song_info_tone_notification_label">âm thanh thông báo</string>
     <string name="song_info_tone_alarm_label">âm báo thức</string>
-    <string name="song_info_ringtone_permission_prompt">Bật quyền Thay đổi cài đặt hệ thống, sau đó quay lại PixelPlayerOSS để tự động hoàn tất.</string>
+    <string name="song_info_ringtone_permission_prompt">Bật quyền Thay đổi cài đặt hệ thống, sau đó quay lại NeonPlayer để tự động hoàn tất.</string>
     <string name="song_info_ringtone_permission_missing">Quyền Thay đổi cài đặt hệ thống chưa được bật.</string>
     <string name="song_info_ringtone_local_only">Chỉ các bài hát cục bộ mới có thể dùng làm nhạc chuông.</string>
     <string name="song_info_ringtone_missing_file">Không thể chuẩn bị tệp âm thanh này để làm nhạc chuông.</string>

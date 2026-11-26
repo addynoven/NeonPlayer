@@ -17,7 +17,7 @@
     <string name="recap_close">Lukk</string>
     <string name="recap_not_enough_title">Ikke nok lytting ennå</string>
     <string name="recap_not_enough_subtitle">Fortsett å spille musikk, så fylles %1$d-oppsummeringen din opp.</string>
-    <string name="recap_intro_kicker">PixelPlayerOSS-oppsummering</string>
+    <string name="recap_intro_kicker">NeonPlayer-oppsummering</string>
     <string name="recap_intro_title">Året ditt i musikk</string>
     <string name="recap_intro_title_so_far">Året ditt så langt</string>
     <string name="recap_intro_subtitle">Et tilbakeblikk på sangene, artistene og øyeblikkene som ga året ditt et lydspor.</string>
@@ -91,7 +91,7 @@
     <string name="recap_summary_listening_style">Lyttestil</string>
     <string name="recap_share">Del</string>
     <string name="recap_share_chooser_title">Del oppsummeringen</string>
-    <string name="recap_share_text">Mitt %1$d i musikk, laget med PixelPlayerOSS</string>
+    <string name="recap_share_text">Mitt %1$d i musikk, laget med NeonPlayer</string>
     <string name="recap_share_failed">Kunne ikke lage oppsummeringsbildet</string>
     <string name="recap_play_top_songs">Spill toppsanger</string>
     <string name="recap_top_songs_queue_name">Toppsanger %1$d</string>

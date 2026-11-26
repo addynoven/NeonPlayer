@@ -121,7 +121,7 @@
     <string name="setcat_theme_preset_default">Default</string>
     <string name="setcat_theme_preset_amoled">AMOLED</string>
     <string name="setcat_system_font_title">Use system font</string>
-    <string name="setcat_system_font_subtitle">Use Android’s default typeface instead of PixelPlayer’s rounded font.</string>
+    <string name="setcat_system_font_subtitle">Use Android’s default typeface instead of NeonPlayer’s rounded font.</string>
     <string name="setcat_interface_scale_title">Interface size</string>
     <string name="setcat_interface_scale_subtitle">Resize the app’s interface without changing Android’s display settings.</string>
     <string name="setcat_interface_scale_percent">%1$d%%</string>
@@ -270,7 +270,7 @@
     <string name="setcat_trigger_crash_title">Trigger Test Crash</string>
     <string name="setcat_trigger_crash_subtitle">Simulate a crash to test the crash reporting system.</string>
     <string name="setcat_application">Application</string>
-    <string name="setcat_about_pixelplayer_title">About PixelPlayerOSS</string>
+    <string name="setcat_about_pixelplayer_title">About NeonPlayer</string>
     <string name="setcat_about_pixelplayer_subtitle">App version, credits, and more.</string>
 
     <string name="backup_summary_none">No sections selected.</string>
@@ -325,7 +325,7 @@
     <string name="dialog_regenerate_stats_title">Regenerate Stats?</string>
     <string name="dialog_regenerate_stats_body">This will clear the statistics cache and force a recalculation from the database history.</string>
     <string name="toast_stats_regeneration_started">Stats regeneration started</string>
-    <string name="backup_file_name_format" translatable="false">PixelPlayerOSS_Backup_%1$d.pxpl</string>
+    <string name="backup_file_name_format" translatable="false">NeonPlayer_Backup_%1$d.pxpl</string>
 
     <string name="setcat_regenerate_daily_mix_action">Regenerate Daily Mix</string>
     <string name="setcat_regenerate_stats_action">Regenerate Stats</string>
@@ -376,7 +376,7 @@
     <string name="updates_status_reinstall_signature">Version %1$s can\'t be installed over this build: it is signed with a different key or uses a different package name (for example, a debug build).</string>
     <string name="updates_status_downloading">Downloading %1$s…</string>
     <string name="updates_status_downloading_progress">Downloading %1$s… %2$d%%</string>
-    <string name="updates_status_permission">Allow PixelPlayerOSS to install apps to finish updating to %1$s.</string>
+    <string name="updates_status_permission">Allow NeonPlayer to install apps to finish updating to %1$s.</string>
     <string name="updates_status_confirm">Confirm the installation of %1$s in the system prompt.</string>
     <string name="updates_status_installing">Installing %1$s…</string>
     <string name="updates_error_check">Couldn\'t reach the update server. Check your connection and try again.</string>
@@ -397,7 +397,7 @@
     <string name="updates_switch_dialog_title">Reinstall required</string>
     <string name="updates_switch_dialog_body">Stable builds come from F-Droid and alpha builds from GitHub. They are signed with different keys, so Android can\'t update one with the other. Uninstalling deletes the app\'s data, so back up first.</string>
     <string name="updates_switch_step_backup">1. Create a backup and save the file outside the app.</string>
-    <string name="updates_switch_step_download_stable">2. Install F-Droid if you don\'t have it, and open PixelPlayerOSS there.</string>
+    <string name="updates_switch_step_download_stable">2. Install F-Droid if you don\'t have it, and open NeonPlayer there.</string>
     <string name="updates_switch_step_download_alpha">2. Download the %1$s APK.</string>
     <string name="updates_switch_step_uninstall">3. Uninstall this app, install the new build, and restore your backup.</string>
     <string name="updates_switch_action_backup">Back up</string>
@@ -407,7 +407,7 @@
     <string name="updates_switch_action_close">Close</string>
     <string name="updates_notification_channel">App updates</string>
     <string name="updates_notification_title">Update available</string>
-    <string name="updates_notification_text">PixelPlayerOSS %1$s is ready to install.</string>
-    <string name="updates_notification_confirm_title">Finish updating PixelPlayerOSS</string>
+    <string name="updates_notification_text">NeonPlayer %1$s is ready to install.</string>
+    <string name="updates_notification_confirm_title">Finish updating NeonPlayer</string>
     <string name="updates_notification_confirm_text">Tap to confirm the installation.</string>
 </resources>

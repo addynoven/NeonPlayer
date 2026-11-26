@@ -285,7 +285,7 @@
     <string name="toast_regenerated_palettes_partial">Regenererte %1$d av %2$d paletter</string>
     <string name="toast_stats_regeneration_started">Regenerering av statistikk startet</string>
     <string name="working_ellipsis">Arbeider…</string>
-    <string name="setcat_about_pixelplayer_title">Om PixelPlayerOSS</string>
+    <string name="setcat_about_pixelplayer_title">Om NeonPlayer</string>
     <string name="updates_title">Oppdateringer</string>
     <string name="updates_settings_subtitle">Versjonskontroll og utgivelseskanal</string>
     <string name="updates_check_row_title">Se etter oppdateringer</string>
@@ -307,7 +307,7 @@
     <string name="updates_status_reinstall_signature">Versjon %1$s kan ikke installeres over dette bygget: den er signert med en annen nøkkel eller bruker et annet pakkenavn (for eksempel et debug-bygg).</string>
     <string name="updates_status_downloading">Laster ned %1$s…</string>
     <string name="updates_status_downloading_progress">Laster ned %1$s… %2$d %%</string>
-    <string name="updates_status_permission">La PixelPlayerOSS installere apper for å fullføre oppdateringen til %1$s.</string>
+    <string name="updates_status_permission">La NeonPlayer installere apper for å fullføre oppdateringen til %1$s.</string>
     <string name="updates_status_confirm">Bekreft installasjonen av %1$s i systemdialogen.</string>
     <string name="updates_status_installing">Installerer %1$s…</string>
     <string name="updates_error_check">Fikk ikke kontakt med oppdateringsserveren. Sjekk tilkoblingen din og prøv igjen.</string>
@@ -328,7 +328,7 @@
     <string name="updates_switch_dialog_title">Ominstallering kreves</string>
     <string name="updates_switch_dialog_body">Stabile bygg kommer fra F-Droid og alpha-bygg fra GitHub. De er signert med ulike nøkler, så Android kan ikke oppdatere det ene med det andre. Avinstallering sletter appens data, så ta sikkerhetskopi først.</string>
     <string name="updates_switch_step_backup">1. Lag en sikkerhetskopi og lagre filen utenfor appen.</string>
-    <string name="updates_switch_step_download_stable">2. Installer F-Droid hvis du ikke har det, og åpne PixelPlayerOSS der.</string>
+    <string name="updates_switch_step_download_stable">2. Installer F-Droid hvis du ikke har det, og åpne NeonPlayer der.</string>
     <string name="updates_switch_step_download_alpha">2. Last ned %1$s-APK-en.</string>
     <string name="updates_switch_step_uninstall">3. Avinstaller denne appen, installer det nye bygget og gjenopprett sikkerhetskopien.</string>
     <string name="updates_switch_action_backup">Ta sikkerhetskopi</string>
@@ -338,8 +338,8 @@
     <string name="updates_switch_action_close">Lukk</string>
     <string name="updates_notification_channel">Appoppdateringer</string>
     <string name="updates_notification_title">Oppdatering tilgjengelig</string>
-    <string name="updates_notification_text">PixelPlayerOSS %1$s er klar til å installeres.</string>
-    <string name="updates_notification_confirm_title">Fullfør oppdateringen av PixelPlayerOSS</string>
+    <string name="updates_notification_text">NeonPlayer %1$s er klar til å installeres.</string>
+    <string name="updates_notification_confirm_title">Fullfør oppdateringen av NeonPlayer</string>
     <string name="updates_notification_confirm_text">Trykk for å bekrefte installasjonen.</string>
     <string name="setcat_m3u_sync_section">Synkronisering av spillelister</string>
     <string name="setcat_m3u_sync_title">Automatisk M3U-synkronisering</string>

@@ -308,7 +308,8 @@ object AppModule {
         favoritesDao: FavoritesDao,
         artistImageRepository: ArtistImageRepository,
         folderTreeBuilder: FolderTreeBuilder,
-        jellyfinRepository: com.lostf1sh.pixelplayeross.data.jellyfin.JellyfinRepository
+        jellyfinRepository: com.lostf1sh.pixelplayeross.data.jellyfin.JellyfinRepository,
+        youtubeMusicRepository: com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
     ): MusicRepository {
         return MusicRepositoryImpl(
             context = context,
@@ -322,7 +323,8 @@ object AppModule {
             favoritesDao = favoritesDao,
             artistImageRepository = artistImageRepository,
             folderTreeBuilder = folderTreeBuilder,
-            jellyfinRepository = jellyfinRepository
+            jellyfinRepository = jellyfinRepository,
+            youtubeRepositoryProvider = dagger.Lazy { youtubeMusicRepository }
         )
 
     }

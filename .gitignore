@@ -45,3 +45,6 @@ markdown.xml
 /AGENTS.md
 
 graphify-out/
+
+# Local tooling sandbox (nested checkout, never part of the app)
+/sdk/

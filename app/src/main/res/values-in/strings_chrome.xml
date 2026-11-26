@@ -12,10 +12,10 @@
     <string name="queue_name_selected_songs">Lagu Terpilih</string>
 
     <!-- Player sheet, mini player and full player chrome -->
-    <string name="cd_player_sheet_collapsed">Panel pemutar PixelPlayer diciutkan, %1$s</string>
-    <string name="cd_player_sheet_expanded">Panel pemutar PixelPlayer diperluas, %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">Panel pemutar PixelPlayer diciutkan</string>
-    <string name="cd_player_sheet_expanded_no_track">Panel pemutar PixelPlayer diperluas</string>
+    <string name="cd_player_sheet_collapsed">Panel pemutar NeonPlayer diciutkan, %1$s</string>
+    <string name="cd_player_sheet_expanded">Panel pemutar NeonPlayer diperluas, %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">Panel pemutar NeonPlayer diciutkan</string>
+    <string name="cd_player_sheet_expanded_no_track">Panel pemutar NeonPlayer diperluas</string>
     <string name="mini_player_connecting_device">Menghubungkan ke perangkat…</string>
     <string name="mini_player_preparing_playback">Menyiapkan pemutaran…</string>
     <string name="mini_player_loading_audio">Memuat audio…</string>

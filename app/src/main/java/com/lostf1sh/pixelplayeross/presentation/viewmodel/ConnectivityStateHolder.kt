@@ -70,6 +70,30 @@ class ConnectivityStateHolder @Inject constructor(
     private val _isOnline = MutableStateFlow(false)
     val isOnline: StateFlow<Boolean> = _isOnline.asStateFlow()
 
+    /**
+     * Reads the platform's current view of the active network instead of waiting for the
+     * callback to update [isOnline]. NET_CAPABILITY_VALIDATED is deliberately not required:
+     * captive portals, VPNs and some OEM builds never report it, which used to leave the app
+     * convinced it was offline while the network was perfectly usable. Updates [isOnline]
+     * so callers observing the flow converge on the same answer.
+     */
+    fun checkIsOnlineNow(): Boolean {
+        val activeNetwork = connectivityManager.activeNetwork
+        val capabilities = activeNetwork?.let { connectivityManager.getNetworkCapabilities(it) }
+        val online = when {
+            capabilities == null -> connectivityManager.allNetworks.any { network ->
+                connectivityManager.getNetworkCapabilities(network)
+                    ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+            }
+            else -> capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ||
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
+        }
+        if (online != _isOnline.value) {
+            _isOnline.value = online
+        }
+        return online
+    }
+
     private val _isBluetoothEnabled = MutableStateFlow(false)
     val isBluetoothEnabled: StateFlow<Boolean> = _isBluetoothEnabled.asStateFlow()
 
@@ -127,8 +151,7 @@ class ConnectivityStateHolder @Inject constructor(
             updateWifiInfo()
         }
         
-        _isOnline.value = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true &&
-                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        _isOnline.value = checkIsOnlineNow()
 
         updateBluetoothEnabledState()
 
@@ -136,6 +159,7 @@ class ConnectivityStateHolder @Inject constructor(
             private val availableNetworks = mutableSetOf<Network>()
 
             override fun onAvailable(network: Network) {
+                checkConnectivity()
             }
 
             override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
@@ -167,7 +191,7 @@ class ConnectivityStateHolder @Inject constructor(
             }
             
             private fun checkConnectivity() {
-                _isOnline.value = availableNetworks.isNotEmpty()
+                _isOnline.value = availableNetworks.isNotEmpty() || checkIsOnlineNow()
             }
         }
         

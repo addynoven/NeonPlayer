@@ -12,10 +12,10 @@
     <string name="queue_name_selected_songs">Выбранные треки</string>
 
     <!-- Player sheet, mini player and full player chrome -->
-    <string name="cd_player_sheet_collapsed">Панель плеера PixelPlayer свёрнута, %1$s</string>
-    <string name="cd_player_sheet_expanded">Панель плеера PixelPlayer развёрнута, %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">Панель плеера PixelPlayer свёрнута</string>
-    <string name="cd_player_sheet_expanded_no_track">Панель плеера PixelPlayer развёрнута</string>
+    <string name="cd_player_sheet_collapsed">Панель плеера NeonPlayer свёрнута, %1$s</string>
+    <string name="cd_player_sheet_expanded">Панель плеера NeonPlayer развёрнута, %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">Панель плеера NeonPlayer свёрнута</string>
+    <string name="cd_player_sheet_expanded_no_track">Панель плеера NeonPlayer развёрнута</string>
     <string name="mini_player_connecting_device">Подключение к устройству…</string>
     <string name="mini_player_preparing_playback">Подготовка воспроизведения…</string>
     <string name="mini_player_loading_audio">Загрузка аудио…</string>

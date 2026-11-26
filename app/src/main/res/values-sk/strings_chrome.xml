@@ -12,10 +12,10 @@
     <string name="queue_name_all_songs_shuffled">Všetky skladby (náhodné poradie)</string>
     <string name="queue_name_liked_songs_shuffled">Obľúbené skladby (náhodné poradie)</string>
     <string name="queue_name_selected_songs">Vybrané skladby</string>
-    <string name="cd_player_sheet_collapsed">Panel prehrávača PixelPlayer je zbalený, %1$s</string>
-    <string name="cd_player_sheet_expanded">Panel prehrávača PixelPlayer je rozbalený, %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">Panel prehrávača PixelPlayer je zbalený</string>
-    <string name="cd_player_sheet_expanded_no_track">Panel prehrávača PixelPlayer je rozbalený</string>
+    <string name="cd_player_sheet_collapsed">Panel prehrávača NeonPlayer je zbalený, %1$s</string>
+    <string name="cd_player_sheet_expanded">Panel prehrávača NeonPlayer je rozbalený, %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">Panel prehrávača NeonPlayer je zbalený</string>
+    <string name="cd_player_sheet_expanded_no_track">Panel prehrávača NeonPlayer je rozbalený</string>
     <string name="mini_player_connecting_device">Pripája sa k zariadeniu…</string>
     <string name="mini_player_preparing_playback">Pripravuje sa prehrávanie…</string>
     <string name="mini_player_loading_audio">Načítava sa zvuk…</string>

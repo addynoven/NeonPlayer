@@ -168,8 +168,8 @@
     <string name="widget_tap_to_open">Antippen zum Öffnen</string>
     <string name="widget_tap_to_play">Antippen zum Abspielen</string>
     <string name="widget_wavy_progress_bar_desc">Fortschrittsbalken, %1$d Prozent</string>
-    <string name="song_info_tone_picker_body">Wähle aus, wo PixelPlayerOSS diesen Sound installieren soll.</string>
-    <string name="song_info_ringtone_permission_prompt">Aktiviere „Systemeinstellungen ändern“ und kehre dann zu PixelPlayerOSS zurück, damit der Vorgang automatisch abgeschlossen wird.</string>
+    <string name="song_info_tone_picker_body">Wähle aus, wo NeonPlayer diesen Sound installieren soll.</string>
+    <string name="song_info_ringtone_permission_prompt">Aktiviere „Systemeinstellungen ändern“ und kehre dann zu NeonPlayer zurück, damit der Vorgang automatisch abgeschlossen wird.</string>
     <string name="edit_song_custom_metadata_heading">Optionale Metadaten</string>
     <string name="edit_song_custom_metadata_description">Lege eine Bewertung von 0–5 fest oder füge Textfelder wie MOOD, COMMENT, YEAR oder BPM hinzu.</string>
     <string name="edit_song_rating">Bewertung (0–5)</string>

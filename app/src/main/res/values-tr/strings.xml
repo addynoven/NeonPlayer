@@ -253,8 +253,8 @@
     <string name="cloud_downloads_empty_subtitle">İndirdiğiniz bulut parçaları burada görünür.</string>
     <string name="cloud_download_selected">Seçili bulut parçalarını indir</string>
     <string name="cloud_download_selected_count">%1$d bulut parçasını indir</string>
-    <string name="app_name_change_message">Bu uygulamanın yeni adı PixelPlayerOSS. Keyifli dinlemeler!</string>
-    <string name="all_files_access_description">Şarkı meta verilerini (.mp3 dosyaları) düzenlemek için PixelPlayerOSS\'in tüm dosyalara özel erişime ihtiyacı vardır. Bu, parça etiketlerini doğrudan değiştirmemizi sağlar. Meta veri düzenlemeyi etkinleştirmek için lütfen sonraki ekranda bu izni verin.</string>
+    <string name="app_name_change_message">Bu uygulamanın yeni adı NeonPlayer. Keyifli dinlemeler!</string>
+    <string name="all_files_access_description">Şarkı meta verilerini (.mp3 dosyaları) düzenlemek için NeonPlayer\'in tüm dosyalara özel erişime ihtiyacı vardır. Bu, parça etiketlerini doğrudan değiştirmemizi sağlar. Meta veri düzenlemeyi etkinleştirmek için lütfen sonraki ekranda bu izni verin.</string>
     <string name="musicbrainz_lookup">MusicBrainz\'te bul</string>
     <string name="musicbrainz_searching">Kayıt eşleşmeleri aranıyor…</string>
     <string name="musicbrainz_lookup_failed">MusicBrainz sorgusu başarısız oldu</string>

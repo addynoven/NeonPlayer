@@ -140,7 +140,7 @@
     <string name="device_capabilities_report_copy">Kopírovať</string>
     <string name="device_capabilities_report_share">Zdieľať</string>
     <string name="device_capabilities_report_copied">Správa je skopírovaná do schránky</string>
-    <string name="device_capabilities_report_share_title">Správa o výkone prehrávača PixelPlayer</string>
+    <string name="device_capabilities_report_share_title">Správa o výkone prehrávača NeonPlayer</string>
     <string name="device_capabilities_advanced_diagnostics_title">Rozšírená diagnostika výkonu</string>
     <string name="device_capabilities_advanced_diagnostics_description">Predvolene vypnuté. Zaznamenáva krátky priebeh oneskorení na riešenie problémov vo verzii beta.</string>
     <string name="device_capabilities_advanced_diagnostics_expires">Aktívne do %1$s</string>
@@ -159,7 +159,7 @@
     <string name="presentation_batch_g_artist_group_by_album_artist">Zoskupiť podľa interpreta albumu</string>
     <string name="presentation_batch_g_artist_group_by_album_artist_sub">Kartu Interpreti aj albumy zoskupiť podľa interpreta albumu, aby v zozname nepribúdali hosťujúci interpreti a interpreti z kompilácií.</string>
     <string name="presentation_batch_g_artist_info_title">Ako sa rozpoznávajú viacerí interpreti</string>
-    <string name="presentation_batch_g_artist_info_body">PixelPlayerOSS rozdeľuje mená interpretov v metadátach podľa znakových (/, ;, &amp;) a slovných oddeľovačov (feat., ft., vs., x). Pri slovných oddeľovačoch nezáleží na veľkosti písmen.\n\nMožnosť „Získať mená interpretov z názvu“ hľadá v názvoch skladieb výrazy ako (feat. Interpret).\n\nSpätnou lomkou (\\) možno označiť, že nasledujúci znak sa nemá použiť ako oddeľovač.</string>
+    <string name="presentation_batch_g_artist_info_body">NeonPlayer rozdeľuje mená interpretov v metadátach podľa znakových (/, ;, &amp;) a slovných oddeľovačov (feat., ft., vs., x). Pri slovných oddeľovačoch nezáleží na veľkosti písmen.\n\nMožnosť „Získať mená interpretov z názvu“ hľadá v názvoch skladieb výrazy ako (feat. Interpret).\n\nSpätnou lomkou (\\) možno označiť, že nasledujúci znak sa nemá použiť ako oddeľovač.</string>
     <string name="presentation_batch_g_artist_examples_title">Príklady</string>
     <string name="presentation_batch_g_artist_ex_1_in">„Interpret1/Interpret2“</string>
     <string name="presentation_batch_g_artist_ex_1_out">Interpret1, Interpret2</string>
@@ -241,7 +241,7 @@
     <string name="presentation_batch_g_presets_cd_pin">Pripnúť</string>
     <string name="presentation_batch_g_presets_cd_rename">Premenovať</string>
     <string name="presentation_batch_g_presets_cd_delete">Odstrániť</string>
-    <string name="presentation_batch_g_beta_sheet_welcome_title">Vitajte v aplikácii PixelPlayerOSS %1$s</string>
+    <string name="presentation_batch_g_beta_sheet_welcome_title">Vitajte v aplikácii NeonPlayer %1$s</string>
     <string name="presentation_batch_g_beta_sheet_welcome_body">Používate skúšobnú verziu, ktorá môže obsahovať chyby a experimentálne funkcie alebo sa nečakane ukončiť. Pomôžte nám ju zlepšiť hlásením problémov.</string>
     <string name="presentation_batch_g_beta_sheet_welcome_body_stable">Používate stabilné vydanie. Pozrite si novinky v prehľade zmien a nahláste, ak niečo nefunguje správne.</string>
     <string name="presentation_batch_g_beta_sheet_expect_title">Čo môžete očakávať</string>
@@ -258,7 +258,7 @@
     <string name="presentation_batch_g_beta_sheet_report_summary">Čo skontrolovať pred vytvorením hlásenia.</string>
     <string name="presentation_batch_g_beta_sheet_before_title">Pred vytvorením hlásenia</string>
     <string name="presentation_batch_g_beta_sheet_before_1">Prehľadajte otvorené aj uzavreté hlásenia, aby ste predišli duplicitám.</string>
-    <string name="presentation_batch_g_beta_sheet_before_2">Aktualizujte PixelPlayerOSS na najnovšiu verziu a overte, či problém stále pretrváva.</string>
+    <string name="presentation_batch_g_beta_sheet_before_2">Aktualizujte NeonPlayer na najnovšiu verziu a overte, či problém stále pretrváva.</string>
     <string name="presentation_batch_g_beta_sheet_before_3">Spustite aplikáciu znova a overte, či problém pretrváva.</string>
     <string name="presentation_batch_g_beta_sheet_before_4">Pokúste sa problém zopakovať a zapíšte presné kroky.</string>
     <string name="presentation_batch_g_beta_sheet_issue_type_title">Aký typ hlásenia vybrať?</string>
@@ -276,7 +276,7 @@
     <string name="presentation_batch_g_beta_sheet_bug_screenshot">Snímka obrazovky alebo video, ak je k dispozícii:</string>
     <string name="presentation_batch_g_beta_sheet_bug_logs">Záznamy alebo zásobník volaní, ak sú k dispozícii:</string>
     <string name="presentation_batch_g_beta_sheet_env_title">Prostredie</string>
-    <string name="presentation_batch_g_beta_sheet_env_version">Verzia PixelPlayerOSS:</string>
+    <string name="presentation_batch_g_beta_sheet_env_version">Verzia NeonPlayer:</string>
     <string name="presentation_batch_g_beta_sheet_env_source">Zdroj inštalácie: vydanie z GitHubu, ladiaca zostava, nočná zostava atď.</string>
     <string name="presentation_batch_g_beta_sheet_env_android">Verzia Androidu:</string>
     <string name="presentation_batch_g_beta_sheet_env_device">Model zariadenia:</string>
@@ -449,7 +449,7 @@
         <item>Opravené viaceré chyby spôsobujúce pády aplikácie.</item>
     </string-array>
     <string-array name="presentation_batch_g_changelog_070_whats_new">
-        <item>Prvé verejné vydanie PixelPlayerOSS s otvoreným zdrojovým kódom.</item>
+        <item>Prvé verejné vydanie NeonPlayer s otvoreným zdrojovým kódom.</item>
         <item>Obsahuje miestne prehrávanie, zoznamy skladieb, obľúbené, texty, štatistiky počúvania, dynamické motívy Material 3, miniaplikácie, zálohovanie a obnovenie.</item>
         <item>Naďalej podporuje vlastné servery Navidrome, Subsonic a Jellyfin, ako aj voliteľné vyhľadávanie textov cez LRCLIB a fotografií interpretov cez Deezer.</item>
     </string-array>

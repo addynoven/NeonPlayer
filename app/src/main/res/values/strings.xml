@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name" translatable="false">PixelPlayerOSS</string>
+    <string name="app_name" translatable="false">NeonPlayer</string>
     <string name="app_name_change_title">App Name Change</string>
-    <string name="app_name_change_message">This app is now PixelPlayerOSS. Keep playing!</string>
+    <string name="app_name_change_message">This app is now NeonPlayer. Keep playing!</string>
     <string name="do_not_show_again">Do not show again</string>
     <string name="dismiss">Dismiss</string>
     <string name="all_files_access_title">Special Permission Required</string>
-    <string name="all_files_access_description">To edit song metadata (.mp3 files), PixelPlayerOSS needs special access to all files. This allows us to modify track tags directly. Please grant this permission on the next screen to enable metadata editing.</string>
+    <string name="all_files_access_description">To edit song metadata (.mp3 files), NeonPlayer needs special access to all files. This allows us to modify track tags directly. Please grant this permission on the next screen to enable metadata editing.</string>
     <string name="grant_permission_button">Grant Permission</string>
     <string name="error">Error</string>
     <string name="ok">OK</string>
@@ -126,7 +126,7 @@
     <string name="playlist_share_failed">Share failed: %1$s</string>
     <string name="playlist_none_to_export">No playlists to export</string>
     <string name="playlist_export_failed">Export failed: %1$s</string>
-    <string name="playlist_export_folder_display" translatable="false">Music/PixelPlayerOSS Exports</string>
+    <string name="playlist_export_folder_display" translatable="false">Music/NeonPlayer Exports</string>
     <string name="error_unknown">Unknown error</string>
 
 
@@ -287,7 +287,7 @@
     <string name="cloud_download_batch_queued">Queued downloads: %1$d</string>
     <string name="cloud_download_batch_failed">Could not queue all cloud downloads. Check Downloads for any tracks already queued.</string>
     <string name="cloud_download_export_folder_title">Export folder</string>
-    <string name="cloud_download_export_folder_description">Offline copies always stay private to PixelPlayer. Choose a folder, such as Music, to also save a separate copy of new downloads.</string>
+    <string name="cloud_download_export_folder_description">Offline copies always stay private to NeonPlayer. Choose a folder, such as Music, to also save a separate copy of new downloads.</string>
     <string name="cloud_download_export_folder_selected">Saving copies to: %1$s</string>
     <string name="cloud_download_export_choose_folder">Choose folder</string>
     <string name="cloud_download_export_change_folder">Change folder</string>
@@ -309,5 +309,10 @@
     <string name="musicbrainz_no_results">No suitable recordings were found.</string>
     <string name="musicbrainz_match_score">Match confidence: %1$d%%</string>
     <string name="musicbrainz_applied">MusicBrainz identifiers saved. Missing year and placeholder names were enriched.</string>
+
+    <!-- YouTube Music streaming (NeonPlayer port) -->
+    <string name="accounts_youtube_music_title">YouTube Music</string>
+    <string name="accounts_youtube_music_description">Search YouTube Music and stream the results. Audio is proxied on this device; saved tracks stay in your library.</string>
+    <string name="accounts_youtube_music_open">Open YouTube Music</string>
 
 </resources>

@@ -285,7 +285,7 @@
     <string name="toast_regenerated_palettes_partial">تم إعادة توليد %1$d من أصل %2$d من لوحات ألوان الألبومات</string>
     <string name="toast_stats_regeneration_started">بدأت عملية إعادة توليد الإحصائيات</string>
     <string name="working_ellipsis">جاري العمل…</string>
-    <string name="setcat_about_pixelplayer_title">حول PixelPlayerOSS</string>
+    <string name="setcat_about_pixelplayer_title">حول NeonPlayer</string>
     <string name="updates_title">التحديثات</string>
     <string name="updates_settings_subtitle">فحص الإصدارات وقناة الإصدار</string>
     <string name="updates_check_row_title">التحقق من وجود تحديثات</string>
@@ -307,7 +307,7 @@
     <string name="updates_status_reinstall_signature">لا يمكن تثبيت الإصدار %1$s فوق هذه النسخة: فهو موقّع بمفتاح مختلف أو يستخدم اسم حزمة مختلفاً (مثل نسخة تصحيح الأخطاء).</string>
     <string name="updates_status_downloading">جاري تنزيل %1$s…</string>
     <string name="updates_status_downloading_progress">جاري تنزيل %1$s… %2$d%%</string>
-    <string name="updates_status_permission">اسمح لـ PixelPlayerOSS بتثبيت التطبيقات لإكمال التحديث إلى %1$s.</string>
+    <string name="updates_status_permission">اسمح لـ NeonPlayer بتثبيت التطبيقات لإكمال التحديث إلى %1$s.</string>
     <string name="updates_status_confirm">أكّد تثبيت %1$s في نافذة النظام.</string>
     <string name="updates_status_installing">جاري تثبيت %1$s…</string>
     <string name="updates_error_check">تعذر الوصول إلى خادم التحديثات. تحقق من اتصالك وحاول مرة أخرى.</string>
@@ -328,7 +328,7 @@
     <string name="updates_switch_dialog_title">إعادة التثبيت مطلوبة</string>
     <string name="updates_switch_dialog_body">تأتي النسخ المستقرة من F-Droid ونسخ ألفا من GitHub. وهي موقّعة بمفاتيح مختلفة، لذا لا يستطيع أندرويد تحديث إحداهما بالأخرى. إلغاء التثبيت يحذف بيانات التطبيق، فأنشئ نسخة احتياطية أولاً.</string>
     <string name="updates_switch_step_backup">1. أنشئ نسخة احتياطية واحفظ الملف خارج التطبيق.</string>
-    <string name="updates_switch_step_download_stable">2. ثبّت F-Droid إن لم يكن لديك، وافتح PixelPlayerOSS من هناك.</string>
+    <string name="updates_switch_step_download_stable">2. ثبّت F-Droid إن لم يكن لديك، وافتح NeonPlayer من هناك.</string>
     <string name="updates_switch_step_download_alpha">2. نزّل ملف APK الخاص بالإصدار %1$s.</string>
     <string name="updates_switch_step_uninstall">3. ألغِ تثبيت هذا التطبيق، وثبّت النسخة الجديدة، ثم استعد نسختك الاحتياطية.</string>
     <string name="updates_switch_action_backup">نسخ احتياطي</string>
@@ -338,8 +338,8 @@
     <string name="updates_switch_action_close">إغلاق</string>
     <string name="updates_notification_channel">تحديثات التطبيق</string>
     <string name="updates_notification_title">يتوفر تحديث</string>
-    <string name="updates_notification_text">PixelPlayerOSS %1$s جاهز للتثبيت.</string>
-    <string name="updates_notification_confirm_title">إكمال تحديث PixelPlayerOSS</string>
+    <string name="updates_notification_text">NeonPlayer %1$s جاهز للتثبيت.</string>
+    <string name="updates_notification_confirm_title">إكمال تحديث NeonPlayer</string>
     <string name="updates_notification_confirm_text">انقر لتأكيد التثبيت.</string>
     <string name="setcat_m3u_sync_section">مزامنة قوائم التشغيل</string>
     <string name="setcat_m3u_sync_title">مزامنة M3U التلقائية</string>

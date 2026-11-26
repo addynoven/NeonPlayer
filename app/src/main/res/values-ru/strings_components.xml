@@ -168,8 +168,8 @@
     <string name="widget_tap_to_open">Нажмите, чтобы открыть</string>
     <string name="widget_tap_to_play">Нажмите для воспроизведения</string>
     <string name="widget_wavy_progress_bar_desc">Индикатор прогресса, %1$d%%</string>
-    <string name="song_info_tone_picker_body">Выберите, куда PixelPlayerOSS должен установить этот звук.</string>
-    <string name="song_info_ringtone_permission_prompt">Включите «Изменение системных настроек», затем вернитесь в PixelPlayerOSS, чтобы завершить установку автоматически.</string>
+    <string name="song_info_tone_picker_body">Выберите, куда NeonPlayer должен установить этот звук.</string>
+    <string name="song_info_ringtone_permission_prompt">Включите «Изменение системных настроек», затем вернитесь в NeonPlayer, чтобы завершить установку автоматически.</string>
     <string name="edit_song_custom_metadata_heading">Дополнительные метаданные</string>
     <string name="edit_song_custom_metadata_description">Укажите оценку от 0 до 5 или добавьте текстовые поля, например MOOD, COMMENT, YEAR или BPM.</string>
     <string name="edit_song_rating">Оценка (0–5)</string>

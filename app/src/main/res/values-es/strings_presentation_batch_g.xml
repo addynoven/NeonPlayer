@@ -50,7 +50,7 @@
     <string name="device_capabilities_report_generate">Generar informe</string>
     <string name="device_capabilities_report_regenerate">Regenerar</string>
     <string name="device_capabilities_report_share">Compartir</string>
-    <string name="device_capabilities_report_share_title">Informe de rendimiento de PixelPlayer</string>
+    <string name="device_capabilities_report_share_title">Informe de rendimiento de NeonPlayer</string>
     <string name="device_capabilities_report_title">Informe de rendimiento</string>
     <string name="device_capabilities_review_title">La reproducción necesita revisión</string>
     <string name="device_capabilities_storage_available">Disponible</string>
@@ -363,14 +363,14 @@
     <string name="presentation_batch_g_topbar_build_stable">Estable</string>
     <string name="presentation_batch_g_topbar_cd_changelog">Registro de cambios</string>
     <string name="presentation_batch_g_yes">Sí</string>
-    <string name="presentation_batch_g_artist_info_body">PixelPlayerOSS divide las etiquetas de artista usando delimitadores de caracteres (/, ;, &amp;) y delimitadores de palabras (feat., ft., vs., x). Los delimitadores de palabras no distinguen entre mayúsculas y minúsculas.
+    <string name="presentation_batch_g_artist_info_body">NeonPlayer divide las etiquetas de artista usando delimitadores de caracteres (/, ;, &amp;) y delimitadores de palabras (feat., ft., vs., x). Los delimitadores de palabras no distinguen entre mayúsculas y minúsculas.
 
 "Extraer artistas del título" detecta patrones como (feat. Artista) en los títulos de las canciones.
 
 La barra invertida (\) se puede usar para escapar los delimitadores de caracteres.</string>
-    <string name="presentation_batch_g_beta_sheet_welcome_title">Bienvenido a PixelPlayerOSS %1$s</string>
-    <string name="presentation_batch_g_beta_sheet_before_2">Actualiza a la última versión de PixelPlayerOSS y confirma que el problema sigue ocurriendo.</string>
-    <string name="presentation_batch_g_beta_sheet_env_version">Versión de PixelPlayerOSS:</string>
+    <string name="presentation_batch_g_beta_sheet_welcome_title">Bienvenido a NeonPlayer %1$s</string>
+    <string name="presentation_batch_g_beta_sheet_before_2">Actualiza a la última versión de NeonPlayer y confirma que el problema sigue ocurriendo.</string>
+    <string name="presentation_batch_g_beta_sheet_env_version">Versión de NeonPlayer:</string>
     <string-array name="presentation_batch_g_changelog_060_whats_new">
         <item>Reproducidas recientemente y la restauración de la cola persistente mantienen lista tu sesión de escucha.</item>
         <item>Ahora se incluyen Copia de seguridad y restauración v3 y herramientas de gestión de cuentas.</item>
@@ -463,7 +463,7 @@ La barra invertida (\) se puede usar para escapar los delimitadores de caractere
         <item>Se corrigieron varios errores que provocaban cierres inesperados de la app.</item>
     </string-array>
     <string-array name="presentation_batch_g_changelog_070_whats_new">
-        <item>Primera versión FOSS pública de PixelPlayerOSS.</item>
+        <item>Primera versión FOSS pública de NeonPlayer.</item>
         <item>Incluye reproducción local, listas de reproducción, favoritos, letras, estadísticas de escucha, temas dinámicos Material 3, widgets y copia de seguridad/restauración.</item>
         <item>Mantiene la compatibilidad con Navidrome/Subsonic y Jellyfin autoalojados, además de la búsqueda opcional de letras en LRCLIB y de imágenes de artista en Deezer.</item>
     </string-array>

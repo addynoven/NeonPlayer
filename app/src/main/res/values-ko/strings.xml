@@ -229,8 +229,8 @@
     <string name="widget_bar_4x1_desc">컴팩트 플레이어 바</string>
     <string name="widget_control_4x2_desc">셔플 및 반복 기능이 포함된 전체 컨트롤</string>
     <string name="widget_grid_2x2_desc">미니멀한 사각형 플레이어</string>
-    <string name="app_name_change_message">이제 이 앱은 PixelPlayerOSS입니다. 계속 음악을 즐겨 보세요!</string>
-    <string name="all_files_access_description">곡 메타데이터(.mp3 파일)를 편집하려면 PixelPlayerOSS에 모든 파일에 대한 특별 접근 권한이 필요합니다. 이 권한이 있어야 트랙 태그를 직접 수정할 수 있습니다. 다음 화면에서 이 권한을 허용하여 메타데이터 편집을 활성화하세요.</string>
+    <string name="app_name_change_message">이제 이 앱은 NeonPlayer입니다. 계속 음악을 즐겨 보세요!</string>
+    <string name="all_files_access_description">곡 메타데이터(.mp3 파일)를 편집하려면 NeonPlayer에 모든 파일에 대한 특별 접근 권한이 필요합니다. 이 권한이 있어야 트랙 태그를 직접 수정할 수 있습니다. 다음 화면에서 이 권한을 허용하여 메타데이터 편집을 활성화하세요.</string>
     <string name="cloud_download_action">다운로드</string>
     <string name="cloud_download_queued">대기 중</string>
     <string name="cloud_downloading">다운로드 중…</string>

@@ -285,7 +285,7 @@
     <string name="toast_regenerated_palettes_partial">Meregenerasi %1$d dari %2$d palet sampul album</string>
     <string name="toast_stats_regeneration_started">Regenerasi statistik dimulai</string>
     <string name="working_ellipsis">Bekerja…</string>
-    <string name="setcat_about_pixelplayer_title">Tentang PixelPlayerOSS</string>
+    <string name="setcat_about_pixelplayer_title">Tentang NeonPlayer</string>
     <string name="updates_title">Pembaruan</string>
     <string name="updates_settings_subtitle">Pemeriksaan versi dan saluran rilis</string>
     <string name="updates_check_row_title">Periksa pembaruan</string>
@@ -307,7 +307,7 @@
     <string name="updates_status_reinstall_signature">Versi %1$s tidak dapat diinstal di atas build ini: ditandatangani dengan kunci yang berbeda atau menggunakan nama paket yang berbeda (misalnya, build debug).</string>
     <string name="updates_status_downloading">Mengunduh %1$s…</string>
     <string name="updates_status_downloading_progress">Mengunduh %1$s… %2$d%%</string>
-    <string name="updates_status_permission">Izinkan PixelPlayerOSS menginstal aplikasi untuk menyelesaikan pembaruan ke %1$s.</string>
+    <string name="updates_status_permission">Izinkan NeonPlayer menginstal aplikasi untuk menyelesaikan pembaruan ke %1$s.</string>
     <string name="updates_status_confirm">Konfirmasikan instalasi %1$s pada dialog sistem.</string>
     <string name="updates_status_installing">Menginstal %1$s…</string>
     <string name="updates_error_check">Tidak dapat menjangkau server pembaruan. Periksa koneksi Anda dan coba lagi.</string>
@@ -328,7 +328,7 @@
     <string name="updates_switch_dialog_title">Perlu instal ulang</string>
     <string name="updates_switch_dialog_body">Build stabil berasal dari F-Droid dan build alpha dari GitHub. Keduanya ditandatangani dengan kunci yang berbeda, sehingga Android tidak dapat memperbarui yang satu dengan yang lain. Mencopot pemasangan akan menghapus data aplikasi, jadi buat cadangan terlebih dahulu.</string>
     <string name="updates_switch_step_backup">1. Buat cadangan dan simpan file tersebut di luar aplikasi.</string>
-    <string name="updates_switch_step_download_stable">2. Instal F-Droid jika belum ada, lalu buka PixelPlayerOSS di sana.</string>
+    <string name="updates_switch_step_download_stable">2. Instal F-Droid jika belum ada, lalu buka NeonPlayer di sana.</string>
     <string name="updates_switch_step_download_alpha">2. Unduh APK %1$s.</string>
     <string name="updates_switch_step_uninstall">3. Copot pemasangan aplikasi ini, instal build baru, lalu pulihkan cadangan Anda.</string>
     <string name="updates_switch_action_backup">Cadangkan</string>
@@ -338,8 +338,8 @@
     <string name="updates_switch_action_close">Tutup</string>
     <string name="updates_notification_channel">Pembaruan aplikasi</string>
     <string name="updates_notification_title">Pembaruan tersedia</string>
-    <string name="updates_notification_text">PixelPlayerOSS %1$s siap diinstal.</string>
-    <string name="updates_notification_confirm_title">Selesaikan pembaruan PixelPlayerOSS</string>
+    <string name="updates_notification_text">NeonPlayer %1$s siap diinstal.</string>
+    <string name="updates_notification_confirm_title">Selesaikan pembaruan NeonPlayer</string>
     <string name="updates_notification_confirm_text">Ketuk untuk mengonfirmasi instalasi.</string>
     <string name="setcat_m3u_sync_section">Sinkronisasi playlist</string>
     <string name="setcat_m3u_sync_title">Sinkronisasi M3U otomatis</string>

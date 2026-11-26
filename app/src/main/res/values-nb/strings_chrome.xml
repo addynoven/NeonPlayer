@@ -12,10 +12,10 @@
     <string name="queue_name_selected_songs">Valgte sanger</string>
 
     <!-- Player sheet, mini player and full player chrome -->
-    <string name="cd_player_sheet_collapsed">PixelPlayer-spillerpanel minimert, %1$s</string>
-    <string name="cd_player_sheet_expanded">PixelPlayer-spillerpanel utvidet, %1$s</string>
-    <string name="cd_player_sheet_collapsed_no_track">PixelPlayer-spillerpanel minimert</string>
-    <string name="cd_player_sheet_expanded_no_track">PixelPlayer-spillerpanel utvidet</string>
+    <string name="cd_player_sheet_collapsed">NeonPlayer-spillerpanel minimert, %1$s</string>
+    <string name="cd_player_sheet_expanded">NeonPlayer-spillerpanel utvidet, %1$s</string>
+    <string name="cd_player_sheet_collapsed_no_track">NeonPlayer-spillerpanel minimert</string>
+    <string name="cd_player_sheet_expanded_no_track">NeonPlayer-spillerpanel utvidet</string>
     <string name="mini_player_connecting_device">Kobler til enhet…</string>
     <string name="mini_player_preparing_playback">Forbereder avspilling…</string>
     <string name="mini_player_loading_audio">Laster inn lyd…</string>

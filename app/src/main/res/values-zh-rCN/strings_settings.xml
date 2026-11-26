@@ -219,7 +219,7 @@
     <string name="setcat_trigger_crash_title">触发测试崩溃</string>
     <string name="setcat_trigger_crash_subtitle">模拟程序崩溃，用于测试崩溃上报系统</string>
     <string name="setcat_application">应用信息</string>
-    <string name="setcat_about_pixelplayer_title">关于 PixelPlayerOSS</string>
+    <string name="setcat_about_pixelplayer_title">关于 NeonPlayer</string>
     <string name="setcat_about_pixelplayer_subtitle">版本、致谢等更多信息</string>
 
     <string name="backup_summary_none">未选择任何备份模块</string>
@@ -322,7 +322,7 @@
     <string name="updates_status_reinstall_signature">版本 %1$s 无法覆盖安装到当前构建上：它使用了不同的签名密钥或包名（例如调试版本）。</string>
     <string name="updates_status_downloading">正在下载 %1$s…</string>
     <string name="updates_status_downloading_progress">正在下载 %1$s… %2$d%%</string>
-    <string name="updates_status_permission">请允许 PixelPlayerOSS 安装应用，以完成向 %1$s 的更新。</string>
+    <string name="updates_status_permission">请允许 NeonPlayer 安装应用，以完成向 %1$s 的更新。</string>
     <string name="updates_status_confirm">请在系统提示中确认安装 %1$s。</string>
     <string name="updates_status_installing">正在安装 %1$s…</string>
     <string name="updates_error_check">无法连接更新服务器，请检查网络后重试。</string>
@@ -343,7 +343,7 @@
     <string name="updates_switch_dialog_title">需要重新安装</string>
     <string name="updates_switch_dialog_body">稳定版构建来自 F-Droid，Alpha 版构建来自 GitHub。两者使用不同的密钥签名，因此 Android 无法在二者之间直接更新。卸载会删除应用数据，请先备份。</string>
     <string name="updates_switch_step_backup">1. 创建备份，并将文件保存到应用之外。</string>
-    <string name="updates_switch_step_download_stable">2. 若尚未安装 F-Droid，请先安装，然后在其中打开 PixelPlayerOSS。</string>
+    <string name="updates_switch_step_download_stable">2. 若尚未安装 F-Droid，请先安装，然后在其中打开 NeonPlayer。</string>
     <string name="updates_switch_step_download_alpha">2. 下载 %1$s APK。</string>
     <string name="updates_switch_step_uninstall">3. 卸载本应用，安装新构建，然后恢复备份。</string>
     <string name="updates_switch_action_backup">备份</string>
@@ -353,8 +353,8 @@
     <string name="updates_switch_action_close">关闭</string>
     <string name="updates_notification_channel">应用更新</string>
     <string name="updates_notification_title">有可用更新</string>
-    <string name="updates_notification_text">PixelPlayerOSS %1$s 已可安装。</string>
-    <string name="updates_notification_confirm_title">完成 PixelPlayerOSS 更新</string>
+    <string name="updates_notification_text">NeonPlayer %1$s 已可安装。</string>
+    <string name="updates_notification_confirm_title">完成 NeonPlayer 更新</string>
     <string name="updates_notification_confirm_text">点击以确认安装。</string>
     <string name="setcat_m3u_sync_section">歌单同步</string>
     <string name="setcat_m3u_sync_title">自动 M3U 同步</string>

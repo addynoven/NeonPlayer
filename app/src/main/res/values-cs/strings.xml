@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name_change_title">Změna názvu aplikace</string>
-    <string name="app_name_change_message">Aplikace se teď jmenuje PixelPlayerOSS. Příjemný poslech!</string>
+    <string name="app_name_change_message">Aplikace se teď jmenuje NeonPlayer. Příjemný poslech!</string>
     <string name="do_not_show_again">Znovu nezobrazovat</string>
     <string name="dismiss">Zavřít</string>
     <string name="all_files_access_title">Je potřeba zvláštní oprávnění</string>
-    <string name="all_files_access_description">K úpravě metadat skladeb v souborech MP3 potřebuje PixelPlayerOSS přístup ke všem souborům. Díky tomu může zapisovat metadata přímo do skladeb. Povolte přístup na další obrazovce.</string>
+    <string name="all_files_access_description">K úpravě metadat skladeb v souborech MP3 potřebuje NeonPlayer přístup ke všem souborům. Díky tomu může zapisovat metadata přímo do skladeb. Povolte přístup na další obrazovce.</string>
     <string name="grant_permission_button">Udělit oprávnění</string>
     <string name="error">Chyba</string>
     <string name="cancel">Zrušit</string>
@@ -256,7 +256,7 @@
     <string name="cloud_download_batch_queued">Stahování ve frontě: %1$d</string>
     <string name="cloud_download_batch_failed">Do fronty se nepodařilo zařadit všechna stahování z cloudu. Už zařazené skladby najdete v přehledu stažených souborů.</string>
     <string name="cloud_download_export_folder_title">Složka pro export</string>
-    <string name="cloud_download_export_folder_description">Kopie pro offline poslech zůstávají vždy v soukromém úložišti PixelPlayeru. Vyberte složku, například Hudba, pokud chcete ukládat i samostatné kopie nově stažených skladeb.</string>
+    <string name="cloud_download_export_folder_description">Kopie pro offline poslech zůstávají vždy v soukromém úložišti NeonPlayeru. Vyberte složku, například Hudba, pokud chcete ukládat i samostatné kopie nově stažených skladeb.</string>
     <string name="cloud_download_export_folder_selected">Kopie se ukládají do: %1$s</string>
     <string name="cloud_download_export_choose_folder">Vybrat složku</string>
     <string name="cloud_download_export_change_folder">Změnit složku</string>

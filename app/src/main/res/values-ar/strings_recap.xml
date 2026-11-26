@@ -17,7 +17,7 @@
     <string name="recap_close">إغلاق</string>
     <string name="recap_not_enough_title">لا يوجد استماع كافٍ بعد</string>
     <string name="recap_not_enough_subtitle">واصل الاستماع إلى الموسيقى وسيمتلئ ملخّص %1$d الخاص بك.</string>
-    <string name="recap_intro_kicker">ملخّص PixelPlayerOSS</string>
+    <string name="recap_intro_kicker">ملخّص NeonPlayer</string>
     <string name="recap_intro_title">عامك في الموسيقى</string>
     <string name="recap_intro_title_so_far">عامك حتى الآن</string>
     <string name="recap_intro_subtitle">نظرة إلى الأغاني والفنانين واللحظات التي رافقت عامك.</string>
@@ -119,7 +119,7 @@
     <string name="recap_summary_listening_style">أسلوب الاستماع</string>
     <string name="recap_share">مشاركة</string>
     <string name="recap_share_chooser_title">شارك ملخّصك</string>
-    <string name="recap_share_text">عامي %1$d في الموسيقى، من إنشاء PixelPlayerOSS</string>
+    <string name="recap_share_text">عامي %1$d في الموسيقى، من إنشاء NeonPlayer</string>
     <string name="recap_share_failed">تعذّر إنشاء صورة الملخّص</string>
     <string name="recap_play_top_songs">تشغيل الأفضل</string>
     <string name="recap_top_songs_queue_name">أفضل أغاني %1$d</string>
