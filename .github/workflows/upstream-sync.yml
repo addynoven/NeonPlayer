@@ -12,6 +12,7 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
+  actions: write
 
 concurrency:
   group: upstream-sync
@@ -70,6 +71,14 @@ jobs:
           else
             echo "Existing sync pull request refreshed by the force push."
           fi
+
+      # A pull request opened with GITHUB_TOKEN does not start other workflows (GitHub
+      # suppresses those runs to avoid recursion), so kick the build off explicitly.
+      - name: Build the sync branch
+        if: steps.merge.outputs.count != '0' && steps.merge.outputs.conflicts == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run build-apk.yml --ref sync/upstream
 
       - name: Report conflicts
         if: steps.merge.outputs.count != '0' && steps.merge.outputs.conflicts == 'true'
