@@ -264,4 +264,13 @@
     <string name="musicbrainz_match_score">Confianza de la coincidencia: %1$d%%</string>
     <string name="musicbrainz_applied">Identificadores de MusicBrainz guardados. Se completaron el año que faltaba y los nombres provisionales.</string>
     <string name="cloud_playlist_download">Descargar lista de reproducción</string>
+    <string name="youtube_search_placeholder">Buscar canciones o artistas en YouTube</string>
+    <string name="youtube_search_hint">Busca en YouTube música que no esté en tu biblioteca.</string>
+    <string name="youtube_no_results">No hay resultados de YouTube para «%1$s»</string>
+    <string name="youtube_search_failed">No se pudo conectar con YouTube</string>
+    <string name="save_all">Guardar todo</string>
+    <string name="play_all">Reproducir todo</string>
+    <string name="retry">Reintentar</string>
+    <string name="back">Atrás</string>
+
 </resources>

@@ -264,4 +264,13 @@
     <string name="musicbrainz_match_score">Tingkat kecocokan: %1$d%%</string>
     <string name="musicbrainz_applied">ID MusicBrainz disimpan. Tahun yang hilang dan nama placeholder telah dilengkapi.</string>
     <string name="cloud_playlist_download">Unduh playlist</string>
+    <string name="youtube_search_placeholder">Cari lagu atau artis di YouTube</string>
+    <string name="youtube_search_hint">Cari musik yang belum ada di pustaka Anda di YouTube.</string>
+    <string name="youtube_no_results">Tidak ada hasil YouTube untuk “%1$s”</string>
+    <string name="youtube_search_failed">Tidak dapat menghubungi YouTube</string>
+    <string name="save_all">Simpan semua</string>
+    <string name="play_all">Putar semua</string>
+    <string name="retry">Coba lagi</string>
+    <string name="back">Kembali</string>
+
 </resources>

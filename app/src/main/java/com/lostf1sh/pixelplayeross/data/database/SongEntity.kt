@@ -7,6 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.lostf1sh.pixelplayeross.data.model.ArtistRef
 import com.lostf1sh.pixelplayeross.data.model.Song
+import com.lostf1sh.pixelplayeross.data.model.SongSource
 import com.lostf1sh.pixelplayeross.data.navidrome.NavidromeSongUri
 import com.lostf1sh.pixelplayeross.utils.GenreParser
 import com.lostf1sh.pixelplayeross.utils.LocalArtworkUri
@@ -139,6 +140,12 @@ private fun SongEntity.toSongInternal(artists: List<ArtistRef>): Song {
         jellyfinId = if (this.contentUriString.startsWith("jellyfin://")) {
             this.contentUriString.removePrefix("jellyfin://")
         } else null,
+        sourceType = when (this.sourceType) {
+            SourceType.NAVIDROME -> SongSource.NAVIDROME
+            SourceType.JELLYFIN -> SongSource.JELLYFIN
+            SourceType.YOUTUBE -> SongSource.YOUTUBE
+            else -> SongSource.LOCAL
+        },
         mimeType = this.mimeType,
         bitrate = this.bitrate,
         sampleRate = this.sampleRate

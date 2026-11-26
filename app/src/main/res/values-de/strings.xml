@@ -264,4 +264,13 @@
     <string name="musicbrainz_match_score">Übereinstimmung: %1$d %%</string>
     <string name="musicbrainz_applied">MusicBrainz-IDs gespeichert. Fehlendes Jahr und Platzhalternamen wurden ergänzt.</string>
     <string name="cloud_playlist_download">Playlist herunterladen</string>
+    <string name="youtube_search_placeholder">YouTube-Songs oder Künstler suchen</string>
+    <string name="youtube_search_hint">Suche auf YouTube nach Musik, die nicht in deiner Bibliothek ist.</string>
+    <string name="youtube_no_results">Keine YouTube-Ergebnisse für „%1$s“</string>
+    <string name="youtube_search_failed">YouTube ist nicht erreichbar</string>
+    <string name="save_all">Alle speichern</string>
+    <string name="play_all">Alle abspielen</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="back">Zurück</string>
+
 </resources>

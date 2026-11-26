@@ -18,7 +18,12 @@ data class YouTubeDashboardUiState(
     val isSearching: Boolean = false,
     val searchResults: List<Song> = emptyList(),
     val isSyncing: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    /**
+     * Last query that reached the network. Keeps "no results" from showing before the user
+     * has searched at all, which otherwise looks like the feature is broken on first open.
+     */
+    val lastQuery: String? = null
 )
 
 @HiltViewModel
@@ -38,7 +43,11 @@ class YouTubeDashboardViewModel @Inject constructor(
         if (query.isEmpty()) return
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isSearching = true, errorMessage = null)
+            _uiState.value = _uiState.value.copy(
+                isSearching = true,
+                errorMessage = null,
+                lastQuery = query
+            )
             repository.searchSongs(query).fold(
                 onSuccess = { results ->
                     _uiState.value = _uiState.value.copy(
@@ -57,6 +66,13 @@ class YouTubeDashboardViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    /** Plays the current results as a queue, starting at the first one. */
+    fun playAll(playerViewModel: PlayerViewModel, queueName: String) {
+        val results = _uiState.value.searchResults
+        if (results.isEmpty()) return
+        playerViewModel.playSongs(results, results.first(), queueName)
     }
 
     fun playTrack(song: Song, playerViewModel: PlayerViewModel) {

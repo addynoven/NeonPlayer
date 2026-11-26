@@ -278,4 +278,13 @@
     <string name="musicbrainz_no_results">Nenašly se žádné vhodné nahrávky.</string>
     <string name="musicbrainz_match_score">Spolehlivost shody: %1$d %%</string>
     <string name="musicbrainz_applied">Identifikátory MusicBrainz byly uloženy. Chybějící rok byl doplněn a zástupné názvy nahrazeny.</string>
+    <string name="youtube_search_placeholder">Hledat skladby nebo interprety na YouTube</string>
+    <string name="youtube_search_hint">Hledejte na YouTube hudbu, která není ve vaší knihovně.</string>
+    <string name="youtube_no_results">Na YouTube nic nenalezeno pro „%1$s“</string>
+    <string name="youtube_search_failed">YouTube je nedostupný</string>
+    <string name="save_all">Uložit vše</string>
+    <string name="play_all">Přehrát vše</string>
+    <string name="retry">Zkusit znovu</string>
+    <string name="back">Zpět</string>
+
 </resources>

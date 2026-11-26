@@ -264,4 +264,13 @@
     <string name="musicbrainz_match_score">Степень совпадения: %1$d%%</string>
     <string name="musicbrainz_applied">Идентификаторы MusicBrainz сохранены. Отсутствующий год и названия-заглушки были дополнены.</string>
     <string name="cloud_playlist_download">Скачать плейлист</string>
+    <string name="youtube_search_placeholder">Поиск песен и исполнителей на YouTube</string>
+    <string name="youtube_search_hint">Найдите на YouTube музыку, которой нет в вашей библиотеке.</string>
+    <string name="youtube_no_results">На YouTube ничего не найдено по запросу «%1$s»</string>
+    <string name="youtube_search_failed">Не удалось связаться с YouTube</string>
+    <string name="save_all">Сохранить всё</string>
+    <string name="play_all">Воспроизвести всё</string>
+    <string name="retry">Повторить</string>
+    <string name="back">Назад</string>
+
 </resources>

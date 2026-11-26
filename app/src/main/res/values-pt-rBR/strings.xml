@@ -338,5 +338,14 @@
     <string name="setcat_audio_output_mode_bit_perfect_usb">USB bit-perfect (experimental)</string>
     <string name="setcat_audio_output_mode_bit_perfect_usb_description">Envia cada faixa sem alterações para um DAC USB em sua própria taxa de amostragem. Requer celular e DAC compatíveis com saída USB bit-perfect; caso contrário, usa o caminho normal. O volume passa a ser controlado pelo DAC e ativar o equalizador altera o sinal.</string>
     <string name="setcat_audio_output_mode_bit_perfect_usb_unsupported">Requer Android 14 ou superior e suporte à saída PCM_FLOAT.</string>
+    <string name="youtube_search_placeholder">Pesquisar músicas ou artistas no YouTube</string>
+    <string name="youtube_search_hint">Pesquise no YouTube músicas que não estejam na sua biblioteca.</string>
+    <string name="youtube_no_results">Nenhum resultado do YouTube para “%1$s”</string>
+    <string name="youtube_search_failed">Não foi possível acessar o YouTube</string>
+    <string name="save_all">Salvar tudo</string>
+    <string name="play_all">Reproduzir tudo</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="back">Voltar</string>
+
 </resources>
 

@@ -37,6 +37,12 @@ data class Song(
     val sampleRate: Int?,
     val navidromeId: String? = null,
     val jellyfinId: String? = null,
+    /**
+     * Backing source. Kept as the last parameter with a default so every existing
+     * constructor call keeps compiling, and so a Song built before the DB round-trip
+     * (search results, previews) does not claim to be a local file by accident.
+     */
+    val sourceType: SongSource = SongSource.LOCAL,
 ) : Parcelable {
     /**
      * Returns the display string for artists.

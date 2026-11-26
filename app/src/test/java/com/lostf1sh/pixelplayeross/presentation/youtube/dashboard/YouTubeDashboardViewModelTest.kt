@@ -2,6 +2,7 @@ package com.lostf1sh.pixelplayeross.presentation.youtube.dashboard
 
 import com.lostf1sh.pixelplayeross.data.model.Song
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
+import com.lostf1sh.pixelplayeross.presentation.viewmodel.PlayerViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -101,5 +102,19 @@ class YouTubeDashboardViewModelTest {
 
         assertFalse(viewModel.uiState.value.isSearching)
         io.mockk.coVerify(exactly = 0) { repository.searchSongs(any()) }
+    }
+
+    @Test
+    fun `play all queues every result and starts at the first`() = runTest(dispatcher) {
+        val songs = listOf(song("yt1"), song("yt2"))
+        coEvery { repository.searchSongs("aurora") } returns Result.success(songs)
+        viewModel.onSearchQueryChanged("aurora")
+        viewModel.search()
+        advanceUntilIdle()
+
+        val player: PlayerViewModel = mockk(relaxed = true)
+        viewModel.playAll(player, "YouTube Music")
+
+        io.mockk.verify { player.playSongs(songs, songs.first(), "YouTube Music", null) }
     }
 }

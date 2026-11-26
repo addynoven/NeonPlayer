@@ -264,4 +264,13 @@
     <string name="musicbrainz_match_score">일치도: %1$d%%</string>
     <string name="musicbrainz_applied">MusicBrainz 식별자가 저장되었습니다. 누락된 연도와 임시 이름이 보완되었습니다.</string>
     <string name="cloud_playlist_download">플레이리스트 다운로드</string>
+    <string name="youtube_search_placeholder">YouTube에서 곡 또는 아티스트 검색</string>
+    <string name="youtube_search_hint">라이브러리에 없는 음악을 YouTube에서 검색하세요.</string>
+    <string name="youtube_no_results">“%1$s”에 대한 YouTube 결과가 없습니다</string>
+    <string name="youtube_search_failed">YouTube에 연결할 수 없습니다</string>
+    <string name="save_all">모두 저장</string>
+    <string name="play_all">모두 재생</string>
+    <string name="retry">다시 시도</string>
+    <string name="back">뒤로</string>
+
 </resources>

@@ -264,4 +264,13 @@
     <string name="musicbrainz_no_results">Không tìm thấy bản ghi phù hợp nào.</string>
     <string name="musicbrainz_match_score">Độ khớp: %1$d%%</string>
     <string name="musicbrainz_applied">Đã lưu mã định danh MusicBrainz. Đã bổ sung năm còn thiếu và tên bài hát.</string>
+    <string name="youtube_search_placeholder">Tìm bài hát hoặc nghệ sĩ trên YouTube</string>
+    <string name="youtube_search_hint">Tìm trên YouTube những bản nhạc chưa có trong thư viện của bạn.</string>
+    <string name="youtube_no_results">Không có kết quả YouTube cho “%1$s”</string>
+    <string name="youtube_search_failed">Không kết nối được với YouTube</string>
+    <string name="save_all">Lưu tất cả</string>
+    <string name="play_all">Phát tất cả</string>
+    <string name="retry">Thử lại</string>
+    <string name="back">Quay lại</string>
+
 </resources>

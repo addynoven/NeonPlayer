@@ -6,6 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.lostf1sh.pixelplayeross.data.jellyfin.model.JellyfinSong
 import com.lostf1sh.pixelplayeross.data.model.Song
+import com.lostf1sh.pixelplayeross.data.model.SongSource
 import com.lostf1sh.pixelplayeross.data.stream.CloudMusicUtils
 
 @Entity(
@@ -57,7 +58,8 @@ fun JellyfinSongEntity.toSong(): Song {
         trackNumber = trackNumber,
         discNumber = CloudMusicUtils.normalizeDiscNumber(discNumber),
         dateAdded = dateAdded,
-        isFavorite = false
+        isFavorite = false,
+        sourceType = SongSource.JELLYFIN
     )
 }
 

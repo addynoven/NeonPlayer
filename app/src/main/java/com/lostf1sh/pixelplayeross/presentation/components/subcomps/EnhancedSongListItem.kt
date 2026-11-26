@@ -61,6 +61,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp as lerpDp
 import coil.size.Size
 import com.lostf1sh.pixelplayeross.data.model.Song
+import com.lostf1sh.pixelplayeross.data.model.SongSource
+import com.lostf1sh.pixelplayeross.presentation.components.SourceBadge
 import com.lostf1sh.pixelplayeross.presentation.components.AutoScrollingText
 import com.lostf1sh.pixelplayeross.presentation.components.ShimmerBox
 import androidx.compose.ui.res.stringResource
@@ -408,13 +410,23 @@ fun EnhancedSongListItem(
                         )
                     }
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = song.displayArtist,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = contentColor.copy(alpha = 0.7f),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = song.displayArtist,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = contentColor.copy(alpha = 0.7f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                        if (song.sourceType != SongSource.LOCAL) {
+                            Spacer(modifier = Modifier.width(6.dp))
+                            SourceBadge(
+                                source = song.sourceType,
+                                tint = contentColor.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
                 }
                 
                 val showPlayingIndicator = isCurrentSong && !isSelectionMode

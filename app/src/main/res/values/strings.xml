@@ -315,4 +315,19 @@
     <string name="accounts_youtube_music_description">Search YouTube Music and stream the results. Audio is proxied on this device; saved tracks stay in your library.</string>
     <string name="accounts_youtube_music_open">Open YouTube Music</string>
 
+    <!-- YouTube dashboard -->
+    <string name="youtube_search_placeholder">Search YouTube songs or artists</string>
+    <string name="youtube_search_hint">Search YouTube to add music that is not in your library.</string>
+    <string name="youtube_no_results">No YouTube results for “%1$s”</string>
+    <string name="youtube_search_failed">Could not reach YouTube</string>
+    <string name="save_all">Save all</string>
+    <string name="play_all">Play all</string>
+    <string name="retry">Retry</string>
+    <string name="back">Back</string>
+
+    <!-- Source badges shown next to a song; brand names, not translated. -->
+    <string name="source_youtube" translatable="false">YouTube</string>
+    <string name="source_navidrome" translatable="false">Navidrome</string>
+    <string name="source_jellyfin" translatable="false">Jellyfin</string>
+
 </resources>

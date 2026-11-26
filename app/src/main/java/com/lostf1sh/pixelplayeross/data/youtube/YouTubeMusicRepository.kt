@@ -8,6 +8,7 @@ import com.lostf1sh.pixelplayeross.data.database.SongEntity
 import com.lostf1sh.pixelplayeross.data.database.SourceType
 import com.lostf1sh.pixelplayeross.data.model.ArtistRef
 import com.lostf1sh.pixelplayeross.data.model.Song
+import com.lostf1sh.pixelplayeross.data.model.SongSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -840,7 +841,8 @@ class YouTubeMusicRepository @Inject constructor(
             genre = YOUTUBE_GENRE,
             mimeType = "audio/opus",
             bitrate = 160,
-            sampleRate = 48000
+            sampleRate = 48000,
+            sourceType = SongSource.YOUTUBE
         )
     }
 
