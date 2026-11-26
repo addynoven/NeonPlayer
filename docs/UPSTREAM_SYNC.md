@@ -27,11 +27,14 @@ Rules that keep this cheap:
 
 ## Branch protection
 
-The repository ruleset forbids deleting branches and force pushing to them, which is
-why `master` can no longer be rewritten in place. `refs/heads/sync/**` is excluded
-from that ruleset so the weekly job can recreate its own throwaway branch; `main` and
-everything else stays protected. `master` is the pre-port fork, kept read-only and
-also preserved by the `backup-pre-oss-port` tag.
+The ruleset ("Protect Master") covers `main` and `master` only: it forbids deleting
+those two and force pushing to them. Ordinary commits and pushes are untouched, and
+working branches (`sync/**`, feature branches) are free to be amended, rebased or
+deleted.
+
+Practically, on `main` you push normally; what gets rejected is `git push --force`,
+rewriting a commit that is already pushed, and deleting the branch. `master` is the
+pre-port fork, kept as history and also preserved by the `backup-pre-oss-port` tag.
 
 ## One-time setup (per clone)
 
