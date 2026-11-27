@@ -360,7 +360,8 @@ class YouTubeMusicRepository @Inject constructor(
      */
     suspend fun fetchPlaylist(
         linkOrId: String,
-        maxItems: Int = MAX_PLAYLIST_ITEMS
+        maxItems: Int = MAX_PLAYLIST_ITEMS,
+        prefetch: Boolean = true
     ): Result<YouTubePlaylist> = withContext(Dispatchers.IO) {
         val playlistId = extractYouTubePlaylistId(linkOrId)
             ?: return@withContext Result.failure(
@@ -394,7 +395,7 @@ class YouTubeMusicRepository @Inject constructor(
                     IllegalStateException("Playlist $playlistId has no playable items")
                 )
             }
-            prefetchStreamUrls(ordered, limit = PREFETCH_LIMIT)
+            if (prefetch) prefetchStreamUrls(ordered, limit = PREFETCH_LIMIT)
             Timber.d("Loaded playlist %s (%d items in %d pages)", playlistId, ordered.size, pages)
             Result.success(
                 YouTubePlaylist(
@@ -410,6 +411,19 @@ class YouTubeMusicRepository @Inject constructor(
             Result.failure(e)
         }
     }
+    /**
+     * The first few track covers of a playlist, for the stacked cover in search results.
+     *
+     * Only the first page is read and no stream URL is resolved: this runs for every playlist
+     * card that scrolls into view, so it has to stay cheap. Returns an empty list when the
+     * playlist has no artwork at all, and the caller falls back to the playlist thumbnail.
+     */
+    suspend fun fetchPlaylistCovers(
+        playlistId: String,
+        limit: Int = 3
+    ): Result<List<String>> = fetchPlaylist(playlistId, maxItems = limit, prefetch = false)
+        .map { playlist -> playlist.songs.mapNotNull { it.albumArtUriString }.distinct().take(limit) }
+
     /**
      * Resolve the direct audio stream URL for a given YouTube [videoId].
      *

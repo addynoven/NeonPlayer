@@ -9,6 +9,7 @@ import com.lostf1sh.pixelplayeross.data.model.Lyrics
 data class StablePlayerState(
     val currentSong: Song? = null,
     val currentMediaItemIndex: Int = -1,
+    val currentPlaylistId: String? = null,
     val isPlaying: Boolean = false,
     val playWhenReady: Boolean = false,
     val totalDuration: Long = 0L,

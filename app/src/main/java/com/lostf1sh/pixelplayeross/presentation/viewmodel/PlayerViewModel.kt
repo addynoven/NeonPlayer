@@ -116,6 +116,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -319,6 +321,33 @@ class PlayerViewModel @Inject constructor(
     private val _loadingYouTubePlaylistId = MutableStateFlow<String?>(null)
     val loadingYouTubePlaylistId: StateFlow<String?> = _loadingYouTubePlaylistId.asStateFlow()
 
+    /** Track covers per playlist, so the stacked cover can show the real songs behind the front one. */
+    private val _playlistCovers = MutableStateFlow<Map<String, List<String>>>(emptyMap())
+    val playlistCovers: StateFlow<Map<String, List<String>>> = _playlistCovers.asStateFlow()
+    private val playlistCoversInFlight = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+    private val playlistCoverLoads = Semaphore(3)
+
+    /**
+     * Fill in the covers for one playlist card. Called when a card scrolls into view, so it must
+     * be cheap, idempotent and limited: at most a few playlist lookups run at the same time.
+     */
+    fun ensurePlaylistCovers(playlistId: String, fallbackCover: String?) {
+        if (!_playlistCovers.value[playlistId].isNullOrEmpty()) return
+        if (!playlistCoversInFlight.add(playlistId)) return
+        viewModelScope.launch {
+            try {
+                val covers = playlistCoverLoads.withPermit {
+                    youtubeMusicRepository.fetchPlaylistCovers(playlistId).getOrElse { emptyList() }
+                }
+                val resolved = covers.ifEmpty { listOfNotNull(fallbackCover?.takeIf { it.isNotBlank() }) }
+                Timber.d("Playlist covers for %s: %d", playlistId, resolved.size)
+                _playlistCovers.update { current -> current + (playlistId to resolved) }
+            } finally {
+                playlistCoversInFlight.remove(playlistId)
+            }
+        }
+    }
+
     /**
      * Queue a whole YouTube playlist. Tapping it is already a decision to listen to all of it, so
      * the tracks are fetched here and playback starts as soon as the list resolves.
@@ -334,7 +363,7 @@ class PlayerViewModel @Inject constructor(
                         if (loaded.songs.isEmpty()) {
                             sendToast("Empty playlist")
                         } else {
-                            playSongs(loaded.songs, loaded.songs.first(), loaded.title)
+                            playSongs(loaded.songs, loaded.songs.first(), loaded.title, playlistId = playlist.id)
                         }
                     }
                     .onFailure { e ->
@@ -3197,6 +3226,7 @@ class PlayerViewModel @Inject constructor(
             it.copy(
                 currentSong = effectiveStartSong,
                 currentMediaItemIndex = 0,
+                currentPlaylistId = playlistId,
                 isPlaying = true,
                 playWhenReady = true,
                 totalDuration = effectiveStartSong.duration.coerceAtLeast(0L)

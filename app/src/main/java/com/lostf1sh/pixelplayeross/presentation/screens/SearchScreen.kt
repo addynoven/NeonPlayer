@@ -84,6 +84,7 @@ import com.lostf1sh.pixelplayeross.data.model.SearchHistoryItem
 import com.lostf1sh.pixelplayeross.data.model.SearchResultItem
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistSummary
 import com.lostf1sh.pixelplayeross.data.model.Song
+import com.lostf1sh.pixelplayeross.presentation.components.PlaylistStackCover
 import com.lostf1sh.pixelplayeross.presentation.components.SmartImage
 import com.lostf1sh.pixelplayeross.presentation.components.SmartImageListTargetSize
 import com.lostf1sh.pixelplayeross.presentation.components.SongInfoBottomSheet
@@ -1168,6 +1169,7 @@ fun SearchResultsList(
     val localDensity = LocalDensity.current
     val playerStableState by playerViewModel.stablePlayerState.collectAsStateWithLifecycle()
     val loadingYouTubePlaylistId by playerViewModel.loadingYouTubePlaylistId.collectAsStateWithLifecycle()
+    val playlistCovers by playerViewModel.playlistCovers.collectAsStateWithLifecycle()
 
     if (results.isEmpty()) {
         Box(
@@ -1448,10 +1450,29 @@ fun SearchResultsList(
                             is SearchResultItem.YouTubePlaylistItem -> {
                                 SearchResultYouTubePlaylistItem(
                                     playlist = item.playlist,
+                                    covers = playlistCovers[item.playlist.id].orEmpty(),
+                                    isPlaying = playerStableState.currentPlaylistId == item.playlist.id &&
+                                        playerStableState.isPlaying,
                                     isLoading = loadingYouTubePlaylistId == item.playlist.id,
                                     onClick = {
                                         playerViewModel.playYouTubePlaylist(item.playlist)
                                         onItemSelected()
+                                    },
+                                    onPlayClick = {
+                                        if (playerStableState.currentPlaylistId == item.playlist.id) {
+                                            // Already the queue in the player: the button toggles instead
+                                            // of re-fetching the playlist and starting it over.
+                                            playerViewModel.playPause()
+                                        } else {
+                                            playerViewModel.playYouTubePlaylist(item.playlist)
+                                            onItemSelected()
+                                        }
+                                    },
+                                    onCoversNeeded = {
+                                        playerViewModel.ensurePlaylistCovers(
+                                            item.playlist.id,
+                                            item.playlist.thumbnailUrl
+                                        )
                                     }
                                 )
                             }
@@ -1656,9 +1677,14 @@ fun SearchResultArtistItem(
 @Composable
 fun SearchResultYouTubePlaylistItem(
     playlist: YouTubePlaylistSummary,
+    covers: List<String>,
+    isPlaying: Boolean,
     isLoading: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onPlayClick: () -> Unit,
+    onCoversNeeded: () -> Unit
 ) {
+    LaunchedEffect(playlist.id) { onCoversNeeded() }
     val itemShape = remember {
         AbsoluteSmoothCornerShape(
             cornerRadiusTL = 26.dp,
@@ -1687,30 +1713,19 @@ fun SearchResultYouTubePlaylistItem(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHighest),
-                contentAlignment = Alignment.Center
-            ) {
-                val thumbnail = playlist.thumbnailUrl
-                if (thumbnail != null) {
-                    AsyncImage(
-                        model = thumbnail,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Rounded.PlayArrow,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            Spacer(Modifier.width(12.dp))
+            PlaylistStackCover(
+                title = playlist.title,
+                songCovers = covers.ifEmpty { listOfNotNull(playlist.thumbnailUrl) },
+                songCount = playlist.trackCount?.toInt() ?: covers.size,
+                isPlaying = isPlaying,
+                onClick = onClick,
+                onPlayClick = onPlayClick,
+                cardSize = 56.dp,
+                isLoading = isLoading,
+                showMetadata = false,
+                playContentDescription = stringResource(R.string.cd_play_playlist)
+            )
+            Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(
                     text = playlist.title,
@@ -1735,18 +1750,6 @@ fun SearchResultYouTubePlaylistItem(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-            }
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(22.dp),
-                    strokeWidth = 2.dp
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Rounded.PlayArrow,
-                    contentDescription = stringResource(R.string.cd_play_playlist),
-                    tint = MaterialTheme.colorScheme.primary
-                )
             }
         }
     }
