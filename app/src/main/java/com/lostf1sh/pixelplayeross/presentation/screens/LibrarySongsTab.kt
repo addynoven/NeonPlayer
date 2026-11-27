@@ -95,6 +95,12 @@ fun LibrarySongsTab(
     val visibilityCallback by rememberUpdatedState(onLocateCurrentSongVisibilityChanged)
     val registerActionCallback by rememberUpdatedState(onRegisterLocateCurrentSongAction)
     val dragSelectState = rememberDragToSelectState<Song>()
+    // A YouTube row costs a resolver round trip before it can make a sound unless its URL
+    // is already cached, so warm the rows at the top of the list the user is looking at.
+    val topSongs = remember(songs) { songs.itemSnapshotList.items.take(2) }
+    LaunchedEffect(topSongs.map { it.id }) {
+        playerViewModel.prefetchUpcoming(topSongs)
+    }
     val dragSelectSongAt: (Int) -> Song? = remember(songs) {
         { index -> if (index in 0 until songs.itemCount) songs.peek(index) else null }
     }

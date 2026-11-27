@@ -487,12 +487,18 @@ abstract class CloudStreamProxy<K : Any>(
         streamUrl: String,
         playerRange: String?
     ) {
+        val totalLookupStartedAtMs = System.currentTimeMillis()
         val total = extractUrlParam(streamUrl, "clen")?.toLongOrNull()
             ?: fetchTotalLength(id, streamUrl)
         if (total == null || total <= 0L) {
             call.respond(HttpStatusCode.BadGateway, "Cannot determine upstream length")
             return
         }
+        Timber.d(
+            "%s bounded relay for %s: total=%s found in %d ms, playerRange=%s",
+            proxyTag, id, total, System.currentTimeMillis() - totalLookupStartedAtMs,
+            playerRange ?: "none"
+        )
 
         // Player asked for bytes=N-M or bytes=N- (open ended). Default to the full file.
         val (start, playerEnd) = parsePlayerRange(playerRange, total)
@@ -520,7 +526,17 @@ abstract class CloudStreamProxy<K : Any>(
                 var shrinks = 0
                 while (pos <= end) {
                     val chunkEnd = minOf(pos + chunkSize - 1, end)
-                    if (fetchAndRelayChunk(id, pos, chunkEnd, this)) {
+                    val chunkStartedAtMs = System.currentTimeMillis()
+                    val chunkServed = fetchAndRelayChunk(id, pos, chunkEnd, this)
+                    // Startup latency lives here: each bounded window is a separate upstream
+                    // request, so a slow node shows up as a few seconds per 512 KB chunk.
+                    Timber.d(
+                        "%s chunk %s-%s %s in %d ms",
+                        proxyTag, pos, chunkEnd,
+                        if (chunkServed) "served" else "failed",
+                        System.currentTimeMillis() - chunkStartedAtMs
+                    )
+                    if (chunkServed) {
                         pos = chunkEnd + 1
                         continue
                     }

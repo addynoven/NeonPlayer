@@ -258,7 +258,8 @@ class PlayerViewModelTest {
             mockPlaylistSelectionStateHolder,
             sessionToken,
             mockMediaControllerFactory,
-            testDispatchers
+            testDispatchers,
+            mockk(relaxed = true)
         )
     }
 

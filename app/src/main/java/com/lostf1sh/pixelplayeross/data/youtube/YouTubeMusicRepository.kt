@@ -10,7 +10,10 @@ import com.lostf1sh.pixelplayeross.data.model.ArtistRef
 import com.lostf1sh.pixelplayeross.data.model.Song
 import com.lostf1sh.pixelplayeross.data.model.SongSource
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -18,16 +21,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONObject
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.search.SearchInfo
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import timber.log.Timber
+import java.io.IOException
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
@@ -47,6 +58,17 @@ class YouTubeMusicRepository @Inject constructor(
         /** googlevideo URLs are IP-bound and expire; cache resolved URLs well inside that window. */
         private const val STREAM_CACHE_TTL_MS = 60L * 60 * 1000
         private const val EXPIRY_BUFFER_MS = 5L * 60 * 1000
+
+        private const val YOUTUBE_URI_PREFIX = "youtube://"
+
+        /** How many results ahead of the tap get resolved in the background. */
+        private const val PREFETCH_LIMIT = 2
+
+        /** Joined budget for both probe requests; the resolver falls through on timeout. */
+        private const val PROBE_TIMEOUT_MS = 8_000L
+
+        private const val PROBE_USER_AGENT =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
 
         // InnerTube client strategies, tried in parallel (first verified success wins).
         // Order mirrors battle-tested FOSS resolvers (Metrolist defaults): ANDROID_VR /
@@ -175,7 +197,30 @@ class YouTubeMusicRepository @Inject constructor(
             }
     }
 
-    private val resolvedStreamCache = java.util.concurrent.ConcurrentHashMap<String, CachedStreamUrl>()
+    private val resolvedStreamCache = ConcurrentHashMap<String, CachedStreamUrl>()
+
+    /**
+     * Resolving a stream URL is the slow half of starting playback: the extractor fetches the
+     * watch page, picks a format and probes it (measured 5.6 s cold vs 0.19 s cached on the
+     * emulator). None of that work needs the user's tap, so the tracks a user is most likely
+     * to play next are resolved ahead of time and the tap lands on the cache instead.
+     *
+     * Two workers: a single worker made a tap on the second row wait for the first row's
+     * resolution to finish, which is worse than no prefetch at all.
+     */
+    private val prefetchScope = CoroutineScope(SupervisorJob() + Dispatchers.IO.limitedParallelism(2))
+
+    /** Ids with a prefetch already running, so repeated searches don't queue duplicates. */
+    private val prefetchInFlight: MutableSet<String> = ConcurrentHashMap.newKeySet()
+
+    /**
+     * Resolutions currently running, keyed by video id.
+     *
+     * Without this, tapping a row while its prefetch is still in flight starts the whole
+     * extractor ladder a second time — the user waits for a duplicate of work that was
+     * already three seconds along, and both requests hit YouTube.
+     */
+    private val pendingResolutions = ConcurrentHashMap<String, CompletableDeferred<Result<String>>>()
 
     private val _isInitialized = MutableStateFlow(false)
     val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
@@ -187,6 +232,41 @@ class YouTubeMusicRepository @Inject constructor(
         } catch (e: Exception) {
             Timber.e(e, "Failed to initialize NewPipeExtractor")
         }
+    }
+
+    /** The video id behind a YouTube [song], or null for anything else. */
+    fun videoIdOf(song: Song): String? =
+        song.contentUriString
+            .takeIf { it.startsWith(YOUTUBE_URI_PREFIX) }
+            ?.removePrefix(YOUTUBE_URI_PREFIX)
+            ?.substringBefore('?')
+            ?.takeIf { it.isNotBlank() }
+
+    /**
+     * Resolve the first [limit] tracks' stream URLs in the background, so tapping one is a
+     * cache hit instead of a five second wait. Best effort: a failure here is invisible and
+     * simply means the tap pays the normal price.
+     */
+    fun prefetchStreamUrls(songs: List<Song>, limit: Int = PREFETCH_LIMIT) {
+        songs.asSequence()
+            .mapNotNull(::videoIdOf)
+            .distinct()
+            .filter { resolvedStreamCache[it]?.isUsable != true }
+            .take(limit)
+            .forEach { videoId ->
+                if (!prefetchInFlight.add(videoId)) return@forEach
+                prefetchScope.launch {
+                    try {
+                        getAudioStreamUrl(videoId)
+                    } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Timber.d(e, "Prefetch failed for %s", videoId)
+                    } finally {
+                        prefetchInFlight.remove(videoId)
+                    }
+                }
+            }
     }
 
     /**
@@ -208,6 +288,9 @@ class YouTubeMusicRepository @Inject constructor(
                     songs.add(song)
                 }
             }
+            // The first rows are the ones a tap reaches for; resolving them now turns a five
+            // second cold start into an instant one.
+            prefetchStreamUrls(songs)
             Result.success(songs)
         } catch (e: kotlin.coroutines.cancellation.CancellationException) {
             throw e
@@ -227,6 +310,34 @@ class YouTubeMusicRepository @Inject constructor(
      * replays and queue skips don't pay the resolver ladder again.
      */
     suspend fun getAudioStreamUrl(videoId: String): Result<String> = withContext(Dispatchers.IO) {
+        resolvedStreamCache[videoId]?.let { cached ->
+            if (cached.isUsable) {
+                Timber.d("Stream cache hit for %s", videoId)
+                return@withContext Result.success(cached.url)
+            }
+            resolvedStreamCache.remove(videoId)
+        }
+
+        // Join a resolution that is already running (a prefetch, or a second tap on the same
+        // row) instead of paying for the same ladder twice.
+        val pending = CompletableDeferred<Result<String>>()
+        pendingResolutions.putIfAbsent(videoId, pending)?.let { running ->
+            return@withContext running.await()
+        }
+        try {
+            resolveAudioStreamUrl(videoId).also { pending.complete(it) }
+        } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+            pending.complete(Result.failure(e))
+            throw e
+        } catch (e: Exception) {
+            pending.complete(Result.failure(e))
+            Result.failure(e)
+        } finally {
+            pendingResolutions.remove(videoId, pending)
+        }
+    }
+
+    private suspend fun resolveAudioStreamUrl(videoId: String): Result<String> = withContext(Dispatchers.IO) {
         resolvedStreamCache[videoId]?.let { cached ->
             if (cached.isUsable) {
                 Timber.d("Stream cache hit for %s", videoId)
@@ -684,12 +795,23 @@ class YouTubeMusicRepository @Inject constructor(
         // bytes=0-99999 with 206 and then 403 every byte past ~1 MB, which makes a song
         // die a few seconds in. So probe the head AND a tiny window past the 1 MB mark,
         // and only accept URLs that serve both.
-        val head = probeStreamRange(streamUrl, "bytes=0-99999")
+        //
+        // The two probes are independent, so they are issued at the same time: running them
+        // one after the other added a full round trip to every cold start, and this sits on
+        // the path between the tap and the first audible sample.
+        val headCode = AtomicInteger(0)
+        val pastFirstMegabyteCode = AtomicInteger(0)
+        val bothDone = CountDownLatch(2)
+        enqueueProbe(streamUrl, "bytes=0-99999", headCode, bothDone)
+        enqueueProbe(streamUrl, "bytes=1048576-1099999", pastFirstMegabyteCode, bothDone)
+        bothDone.await(PROBE_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+
+        val head = headCode.get()
         if (head !in 200..206) {
             Timber.d("Stream probe rejected %s: head HTTP %s", describeStreamHost(streamUrl), head)
             return false
         }
-        val pastFirstMegabyte = probeStreamRange(streamUrl, "bytes=1048576-1099999")
+        val pastFirstMegabyte = pastFirstMegabyteCode.get()
         if (pastFirstMegabyte in 200..206) return true
         // 416 means the track simply ends before the 1 MB mark; the head probe already
         // proved it can be played, so a short track is fine.
@@ -701,18 +823,35 @@ class YouTubeMusicRepository @Inject constructor(
         return false
     }
 
-    /** Runs one bounded GET probe; returns the HTTP code, or 0 when the request failed. */
-    private fun probeStreamRange(streamUrl: String, range: String): Int {
-        return try {
-            val request = Request.Builder()
-                .url(streamUrl)
-                .header("Range", range)
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-                .build()
-            okHttpClient.newCall(request).execute().use { response -> response.code }
+    /** Queues one bounded GET probe; records the HTTP code (0 when it failed) and counts down. */
+    private fun enqueueProbe(
+        streamUrl: String,
+        range: String,
+        code: AtomicInteger,
+        done: CountDownLatch
+    ) {
+        val request = Request.Builder()
+            .url(streamUrl)
+            .header("Range", range)
+            .header("User-Agent", PROBE_USER_AGENT)
+            .build()
+        try {
+            okHttpClient.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    Timber.w(e, "Stream probe failed for %s (%s)", describeStreamHost(streamUrl), range)
+                    code.set(0)
+                    done.countDown()
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    code.set(response.code)
+                    response.close()
+                    done.countDown()
+                }
+            })
         } catch (e: Exception) {
-            Timber.w(e, "Stream probe failed for %s (%s)", describeStreamHost(streamUrl), range)
-            0
+            Timber.w(e, "Stream probe could not be queued for %s", describeStreamHost(streamUrl))
+            done.countDown()
         }
     }
 
@@ -727,7 +866,13 @@ class YouTubeMusicRepository @Inject constructor(
         return try {
             val url = "https://www.youtube.com/watch?v=$videoId"
             val extractor = ServiceList.YouTube.getStreamExtractor(url)
+            val fetchStartedAtMs = System.currentTimeMillis()
             extractor.fetchPage()
+            Timber.d(
+                "NewPipe fetchPage took %d ms for %s",
+                System.currentTimeMillis() - fetchStartedAtMs,
+                videoId
+            )
 
             val audioStreams = extractor.audioStreams
             if (audioStreams.isEmpty()) {

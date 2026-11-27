@@ -301,8 +301,19 @@ class PlayerViewModel @Inject constructor(
     val playlistSelectionStateHolder: PlaylistSelectionStateHolder,
     private val sessionToken: SessionToken,
     private val mediaControllerFactory: com.lostf1sh.pixelplayeross.data.media.MediaControllerFactory,
-    private val dispatchers: DispatcherProvider
+    private val dispatchers: DispatcherProvider,
+    private val youtubeMusicRepository: com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
 ) : ViewModel() {
+
+    /**
+     * Resolve stream URLs for the tracks a user is looking at, so tapping one is a cache hit
+     * instead of a multi-second resolver round trip. Best effort and silent: a failure just
+     * means the tap pays the normal price.
+     */
+    fun prefetchUpcoming(songs: List<Song>) {
+        if (songs.isEmpty()) return
+        youtubeMusicRepository.prefetchStreamUrls(songs, limit = 2)
+    }
 
     private val _playerUiState = MutableStateFlow(PlayerUiState())
     val playerUiState: StateFlow<PlayerUiState> = _playerUiState.asStateFlow()

@@ -83,6 +83,9 @@ class PixelPlayerApplication : Application(), ImageLoaderFactory, Configuration.
     @Inject
     lateinit var songMetadataEditor: dagger.Lazy<SongMetadataEditor>
 
+    @Inject
+    lateinit var youTubeStreamProxy: dagger.Lazy<com.lostf1sh.pixelplayeross.data.youtube.YouTubeStreamProxy>
+
     private val startupScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     companion object {
@@ -140,6 +143,10 @@ class PixelPlayerApplication : Application(), ImageLoaderFactory, Configuration.
         ProcessLifecycleOwner.get().lifecycle.addObserver(appLifecycleObserver)
 
         registerActivityLifecycleCallbacks(PhoneOrientationPolicy)
+
+        // Bringing the local relay up takes a few hundred milliseconds. Starting it with the
+        // app means the first YouTube tap pays only for resolution, not for the server boot.
+        startupScope.launch { youTubeStreamProxy.get().startIfNeeded() }
 
         syncManager.get().start()
 
