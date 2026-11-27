@@ -228,6 +228,9 @@ class PlayerViewModelTest {
         }
         every { mockMediaControllerFactory.create(any(), any(), any()) } returns mockFuture
         
+        val mockPlaylistCache = mockk<com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistCache>(relaxed = true)
+        every { mockPlaylistCache.changes } returns kotlinx.coroutines.flow.MutableStateFlow(0L)
+
         playerViewModel = PlayerViewModel(
             mockContext,
             mockMusicRepository,
@@ -259,7 +262,8 @@ class PlayerViewModelTest {
             sessionToken,
             mockMediaControllerFactory,
             testDispatchers,
-            mockk(relaxed = true)
+            mockk(relaxed = true),
+            mockPlaylistCache
         )
     }
 

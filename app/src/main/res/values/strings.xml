@@ -331,4 +331,5 @@
     <string name="source_navidrome" translatable="false">Navidrome</string>
     <string name="source_jellyfin" translatable="false">Jellyfin</string>
 
+    <string name="youtube_playlist_offline_notice">Offline — showing the saved copy of this playlist</string>
 </resources>

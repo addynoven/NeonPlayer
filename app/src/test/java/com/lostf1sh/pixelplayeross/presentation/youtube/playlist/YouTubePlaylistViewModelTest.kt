@@ -6,11 +6,13 @@ import com.lostf1sh.pixelplayeross.MainCoroutineExtension
 import com.lostf1sh.pixelplayeross.data.model.Song
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylist
+import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistCache
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -19,6 +21,13 @@ import org.junit.jupiter.api.extension.ExtendWith
 class YouTubePlaylistViewModelTest {
 
     private val repository = mockk<YouTubeMusicRepository>()
+    private val cache = mockk<YouTubePlaylistCache>(relaxed = true)
+
+    @BeforeEach
+    fun setUp() {
+        // A relaxed mock would invent a playlist here; the real cache returns null on a miss.
+        coEvery { cache.read(any()) } returns null
+    }
 
     @Test
     fun `loading exposes the playlist and its tracks`() = runTest {
@@ -58,6 +67,35 @@ class YouTubePlaylistViewModelTest {
     }
 
     @Test
+    fun `a failed load falls back to the saved copy`() = runTest {
+        val saved = playlist("PL4", songs("e", "f"))
+        coEvery { repository.fetchPlaylist("PL4", prefetch = false) } returns
+            Result.failure(IllegalStateException("offline"))
+        coEvery { cache.read("PL4") } returns saved
+
+        val viewModel = viewModel("PL4")
+        viewModel.load()
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.errorMessage).isNull()
+        assertThat(viewModel.uiState.value.isFromCache).isTrue()
+        assertThat(viewModel.uiState.value.playlist?.songs?.map { it.id })
+            .containsExactly("e", "f").inOrder()
+    }
+
+    @Test
+    fun `a successful load is written to the cache for later`() = runTest {
+        val loaded = playlist("PL5", songs("g"))
+        coEvery { repository.fetchPlaylist("PL5", prefetch = false) } returns Result.success(loaded)
+
+        val viewModel = viewModel("PL5")
+        viewModel.load()
+        advanceUntilIdle()
+
+        io.mockk.coVerify { cache.write(loaded) }
+    }
+
+    @Test
     fun `loading twice only asks the repository once`() = runTest {
         coEvery { repository.fetchPlaylist("PL3", prefetch = false) } returns
             Result.success(playlist("PL3", songs("d")))
@@ -73,6 +111,7 @@ class YouTubePlaylistViewModelTest {
 
     private fun viewModel(playlistId: String) = YouTubePlaylistViewModel(
         youtubeMusicRepository = repository,
+        playlistCache = cache,
         savedStateHandle = SavedStateHandle(mapOf("playlistId" to playlistId))
     )
 

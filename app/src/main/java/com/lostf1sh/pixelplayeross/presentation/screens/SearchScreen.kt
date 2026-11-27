@@ -608,8 +608,12 @@ fun SearchScreen(
                             )
                         }
                         Box(modifier = Modifier.fillMaxSize()) {
+                            val cachedYouTubePlaylists by
+                                playerViewModel.cachedYouTubePlaylists.collectAsStateWithLifecycle()
                             Crossfade(
-                                targetState = searchResults.isEmpty(),
+                                // Saved playlists are still a result: without this, an offline search
+                                // shows "no results" and the playlists cannot be opened at all.
+                                targetState = searchResults.isEmpty() && cachedYouTubePlaylists.isEmpty(),
                                 animationSpec = tween(durationMillis = 190),
                                 label = "search_results_fade"
                             ) { isEmpty ->
@@ -1170,8 +1174,9 @@ fun SearchResultsList(
     val playerStableState by playerViewModel.stablePlayerState.collectAsStateWithLifecycle()
     val loadingYouTubePlaylistId by playerViewModel.loadingYouTubePlaylistId.collectAsStateWithLifecycle()
     val playlistCovers by playerViewModel.playlistCovers.collectAsStateWithLifecycle()
+    val cachedYouTubePlaylists by playerViewModel.cachedYouTubePlaylists.collectAsStateWithLifecycle()
 
-    if (results.isEmpty()) {
+    if (results.isEmpty() && cachedYouTubePlaylists.isEmpty()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -1183,8 +1188,8 @@ fun SearchResultsList(
         return
     }
 
-    val groupedResults = remember(results) {
-        results.groupBy { item ->
+    val groupedResults = remember(results, cachedYouTubePlaylists) {
+        val grouped = results.groupBy { item ->
             when (item) {
                 is SearchResultItem.SongItem -> SearchFilterType.SONGS
                 is SearchResultItem.AlbumItem -> SearchFilterType.ALBUMS
@@ -1192,6 +1197,19 @@ fun SearchResultsList(
                 is SearchResultItem.PlaylistItem -> SearchFilterType.PLAYLISTS
                 is SearchResultItem.YouTubePlaylistItem -> SearchFilterType.PLAYLISTS
             }
+        }
+        val playlists = grouped[SearchFilterType.PLAYLISTS].orEmpty()
+        // A search that reaches YouTube lists live playlists. When it cannot — no connection, or a
+        // query that matches none — fall back to the playlists whose track list is saved locally,
+        // so an opened playlist stays reachable and its screen opens from the saved copy.
+        val hasLiveYouTubePlaylists = playlists.any { it is SearchResultItem.YouTubePlaylistItem }
+        if (hasLiveYouTubePlaylists || cachedYouTubePlaylists.isEmpty()) {
+            grouped
+        } else {
+            grouped + (
+                SearchFilterType.PLAYLISTS to
+                    playlists + cachedYouTubePlaylists.map(SearchResultItem::YouTubePlaylistItem)
+                )
         }
     }
     // Another filter, or results with another set of sections, get a fresh scroll state and open

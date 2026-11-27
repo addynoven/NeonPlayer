@@ -139,6 +139,15 @@ fun YouTubePlaylistScreen(
                             cardSize = 104.dp,
                             playContentDescription = stringResource(R.string.cd_play_playlist)
                         )
+                        if (uiState.isFromCache) {
+                            Text(
+                                text = stringResource(R.string.youtube_playlist_offline_notice),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(top = 8.dp, start = 24.dp, end = 24.dp)
+                            )
+                        }
                     }
                 }
 

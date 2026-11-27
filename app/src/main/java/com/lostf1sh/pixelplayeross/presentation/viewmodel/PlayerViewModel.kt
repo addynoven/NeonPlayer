@@ -304,7 +304,8 @@ class PlayerViewModel @Inject constructor(
     private val sessionToken: SessionToken,
     private val mediaControllerFactory: com.lostf1sh.pixelplayeross.data.media.MediaControllerFactory,
     private val dispatchers: DispatcherProvider,
-    private val youtubeMusicRepository: com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
+    private val youtubeMusicRepository: com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository,
+    private val youTubePlaylistCache: com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistCache
 ) : ViewModel() {
 
     /**
@@ -975,7 +976,33 @@ class PlayerViewModel @Inject constructor(
     @Inject
     lateinit var imageCacheManager: com.lostf1sh.pixelplayeross.data.media.ImageCacheManager
 
+    /**
+     * Playlists whose track list is cached locally. Search shows these when a live search returns
+     * no playlists — that is the offline case, and the playlist page can open from the saved list.
+     */
+    private val _cachedYouTubePlaylists =
+        MutableStateFlow<List<com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistSummary>>(emptyList())
+    val cachedYouTubePlaylists: StateFlow<List<com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistSummary>> =
+        _cachedYouTubePlaylists.asStateFlow()
+
+    private suspend fun refreshCachedYouTubePlaylists() {
+        val summaries = youTubePlaylistCache.list().map { playlist ->
+            com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistSummary(
+                id = playlist.id,
+                title = playlist.title,
+                uploader = null,
+                trackCount = playlist.songs.size.toLong(),
+                thumbnailUrl = playlist.songs.firstOrNull()?.albumArtUriString
+            )
+        }
+        _cachedYouTubePlaylists.value = summaries
+    }
+
     init {
+        viewModelScope.launch {
+            refreshCachedYouTubePlaylists()
+            youTubePlaylistCache.changes.collect { refreshCachedYouTubePlaylists() }
+        }
         viewModelScope.launch { offerToRestoreInterruptedSaves() }
         listeningStatsTracker.initialize(viewModelScope)
         dailyMixStateHolder.initialize(viewModelScope)

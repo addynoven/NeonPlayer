@@ -1113,17 +1113,11 @@ class YouTubeMusicRepository @Inject constructor(
         )
     }
 
-    private fun generateSongIdLong(videoId: String): Long {
-        return YOUTUBE_SONG_ID_OFFSET + (videoId.hashCode().toLong().absoluteValue % 1_000_000_000_000L)
-    }
+    private fun generateSongIdLong(videoId: String): Long = YouTubeIds.songId(videoId)
 
-    private fun generateArtistIdLong(artistName: String): Long {
-        return 7_100_000_000_000L + (artistName.hashCode().toLong().absoluteValue % 1_000_000_000_000L)
-    }
+    private fun generateArtistIdLong(artistName: String): Long = YouTubeIds.artistId(artistName)
 
-    private fun generateAlbumIdLong(albumName: String): Long {
-        return 7_200_000_000_000L + (albumName.hashCode().toLong().absoluteValue % 1_000_000_000_000L)
-    }
+    private fun generateAlbumIdLong(albumName: String): Long = YouTubeIds.albumId(albumName)
 }
 
 /**

@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
+import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistCache
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylist
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -22,6 +23,7 @@ import timber.log.Timber
 @HiltViewModel
 class YouTubePlaylistViewModel @Inject constructor(
     private val youtubeMusicRepository: YouTubeMusicRepository,
+    private val playlistCache: YouTubePlaylistCache,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -40,13 +42,32 @@ class YouTubePlaylistViewModel @Inject constructor(
             youtubeMusicRepository.fetchPlaylist(playlistId, prefetch = false)
                 .onSuccess { playlist ->
                     _uiState.update {
-                        it.copy(isLoading = false, playlist = playlist, errorMessage = null)
+                        it.copy(
+                            isLoading = false,
+                            playlist = playlist,
+                            errorMessage = null,
+                            isFromCache = false
+                        )
                     }
+                    playlistCache.write(playlist)
                 }
                 .onFailure { error ->
                     Timber.e(error, "Could not load YouTube playlist %s", playlistId)
+                    val cached = playlistCache.read(playlistId)
                     _uiState.update {
-                        it.copy(isLoading = false, errorMessage = "Could not load this playlist")
+                        if (cached != null) {
+                            it.copy(
+                                isLoading = false,
+                                playlist = cached,
+                                errorMessage = null,
+                                isFromCache = true
+                            )
+                        } else {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "Could not load this playlist"
+                            )
+                        }
                     }
                 }
         }
@@ -61,5 +82,7 @@ class YouTubePlaylistViewModel @Inject constructor(
 data class YouTubePlaylistUiState(
     val isLoading: Boolean = false,
     val playlist: YouTubePlaylist? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    /** True when the network failed and the list came from the saved copy instead. */
+    val isFromCache: Boolean = false
 )
