@@ -72,6 +72,7 @@ internal fun MiniPlayerContentInternal(
     isPlaying: Boolean,
     isOutputConnecting: Boolean,
     isPreparingPlayback: Boolean,
+    isBuffering: Boolean,
     onPlayPause: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
@@ -109,7 +110,7 @@ internal fun MiniPlayerContentInternal(
                     modifier = Modifier.size(24.dp),
                     color = LocalMaterialTheme.current.onPrimaryContainer
                 )
-            } else if (isPreparingPlayback) {
+            } else if (isPreparingPlayback || isBuffering) {
                 CircularWavyProgressIndicator(modifier = Modifier.size(24.dp))
             }
         }
@@ -143,7 +144,7 @@ internal fun MiniPlayerContentInternal(
                 canScroll = canScroll
             )
             AutoScrollingText(
-                text = if (isPreparingPlayback) {
+                text = if (isPreparingPlayback || isBuffering) {
                     stringResource(R.string.mini_player_loading_audio)
                 } else {
                     song.displayArtist

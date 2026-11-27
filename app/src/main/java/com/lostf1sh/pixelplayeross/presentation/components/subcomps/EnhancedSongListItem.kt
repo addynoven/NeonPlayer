@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -131,6 +132,12 @@ fun EnhancedSongListItem(
     isPlaying: Boolean,
     isCurrentSong: Boolean = false,
     isLoading: Boolean = false,
+    /**
+     * The stream for this song is being resolved or buffered right now. Distinct from
+     * [isLoading], which is the skeleton placeholder of a paged-in row: here the row is real,
+     * the user has just tapped it, and nothing has reached the speaker yet.
+     */
+    isStreamLoading: Boolean = false,
     showAlbumArt: Boolean = true,
     albumArtSize: Dp = 50.dp,
     customShape: androidx.compose.ui.graphics.Shape? = null,
@@ -354,7 +361,21 @@ fun EnhancedSongListItem(
                             targetSize = Size(albumArtTargetSizePx, albumArtTargetSizePx),
                             modifier = Modifier.fillMaxSize()
                         )
-                        
+
+                        if (isStreamLoading && !showSelectionDecoration) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f), albumShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularWavyProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
+
                         if (showSelectionDecoration) {
                             Box(
                                 modifier = Modifier

@@ -1316,6 +1316,10 @@ fun SearchResultsList(
                                     song = item.song,
                                     isPlaying = isPlaying,
                                     isCurrentSong = currentPlayingSongId == item.song.id,
+                                    isStreamLoading = rememberSongStreamLoading(
+                                        songId = item.song.id,
+                                        playerViewModel = playerViewModel
+                                    ),
                                     onMoreOptionsClick = onSongMoreOptionsClick,
                                     onClick = { onSongResultClick(item.song) },
                                     isSelected = item.song.id in selectedSongIds,
