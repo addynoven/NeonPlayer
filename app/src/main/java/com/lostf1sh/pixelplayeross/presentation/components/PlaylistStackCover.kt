@@ -104,20 +104,22 @@ private fun slotsFor(style: StackStyle): List<StackSlot> = when (style) {
 fun PlaylistStackCover(
     title: String,
     songCovers: List<String>,
-    isPlaying: Boolean,
+    isPlaying: Boolean = false,
     stackStyle: StackStyle = StackStyle.SYMMETRICAL,
-    onClick: () -> Unit,
-    onPlayClick: () -> Unit,
+    onClick: () -> Unit = {},
+    onPlayClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     cardSize: Dp = 92.dp,
     isLoading: Boolean = false,
     showMetadata: Boolean = true,
+    showPlayButton: Boolean = true,
+    interactive: Boolean = true,
     playContentDescription: String? = null,
     songCount: Int = songCovers.size
 ) {
     val covers = remember(songCovers) {
         songCovers.mapNotNull { it.takeIf { cover -> cover.isNotBlank() } }.take(MAX_STACK_COVERS)
-    }
+    }.ifEmpty { listOf(null) }
     val slots = remember(stackStyle) { slotsFor(stackStyle) }
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -144,10 +146,16 @@ fun PlaylistStackCover(
         Box(
             modifier = Modifier
                 .size(width = cardSize * 1.5f, height = cardSize * 1.32f)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = LocalIndication.current,
-                    onClick = onClick
+                .then(
+                    if (interactive) {
+                        Modifier.clickable(
+                            interactionSource = interactionSource,
+                            indication = LocalIndication.current,
+                            onClick = onClick
+                        )
+                    } else {
+                        Modifier
+                    }
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -162,14 +170,16 @@ fun PlaylistStackCover(
                 )
             }
 
-            StackPlayButton(
-                isPlaying = isPlaying,
-                isLoading = isLoading,
-                cardSize = cardSize,
-                buttonSize = (cardSize * 0.42f).coerceIn(26.dp, 38.dp),
-                contentDescription = playContentDescription,
-                onClick = onPlayClick
-            )
+            if (showPlayButton) {
+                StackPlayButton(
+                    isPlaying = isPlaying,
+                    isLoading = isLoading,
+                    cardSize = cardSize,
+                    buttonSize = (cardSize * 0.42f).coerceIn(26.dp, 38.dp),
+                    contentDescription = playContentDescription,
+                    onClick = onPlayClick
+                )
+            }
         }
 
         if (showMetadata) {
@@ -194,7 +204,7 @@ fun PlaylistStackCover(
 
 @Composable
 private fun StackCoverCard(
-    cover: String,
+    cover: String?,
     slot: StackSlot,
     fan: Float,
     cardSize: Dp,
@@ -216,12 +226,27 @@ private fun StackCoverCard(
                 shadowElevation = 6.dp.toPx()
             }
     ) {
-        AsyncImage(
-            model = cover,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Brush.linearGradient(placeholderColors)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.MusicNote,
+                contentDescription = null,
+                tint = Color.White.copy(alpha = 0.7f),
+                modifier = Modifier.size(cardSize * 0.3f)
+            )
+        }
+        if (cover != null) {
+            AsyncImage(
+                model = cover,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         if (slot.dim > 0f) {
             Box(
                 Modifier

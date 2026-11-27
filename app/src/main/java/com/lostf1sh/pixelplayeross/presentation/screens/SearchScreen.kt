@@ -1417,7 +1417,8 @@ fun SearchResultsList(
                                             playerViewModel.playSongs(
                                                 songs,
                                                 songs.first(),
-                                                item.playlist.name
+                                                item.playlist.name,
+                                                playlistId = item.playlist.id
                                             )
                                             if (playerStableState.isShuffleEnabled) playerViewModel.toggleShuffle()
                                         } else {
@@ -1438,6 +1439,8 @@ fun SearchResultsList(
                                 SearchResultPlaylistItem(
                                     playlist = item.playlist,
                                     playlistSongs = playlistSongs,
+                                    isPlaying = playerStableState.currentPlaylistId == item.playlist.id &&
+                                        playerStableState.isPlaying,
                                     onPlayClick = onPlayClick,
                                     onOpenClick = onOpenClick,
                                     isSelected = item.playlist.id in selectedPlaylistIds,
@@ -1760,6 +1763,7 @@ fun SearchResultPlaylistItem(
     playlistSongs: ImmutableList<Song>,
     onOpenClick: () -> Unit,
     onPlayClick: () -> Unit,
+    isPlaying: Boolean = false,
     isSelected: Boolean = false,
     selectionIndex: Int? = null,
     isSelectionMode: Boolean = false,
@@ -1808,10 +1812,20 @@ fun SearchResultPlaylistItem(
                     .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PlaylistCover(
-                    playlist = playlist,
-                    playlistSongs = playlistSongs,
-                    size = 56.dp
+                PlaylistStackCover(
+                    title = playlist.name,
+                    songCovers = remember(playlistSongs) {
+                        playlistSongs.mapNotNull { it.albumArtUriString }.distinct().take(3)
+                    },
+                    isPlaying = isPlaying,
+                    songCount = playlist.songIds.size,
+                    onClick = onOpenClick,
+                    onPlayClick = onPlayClick,
+                    cardSize = 52.dp,
+                    showMetadata = false,
+                    // Leave taps to the row while selecting, so long-press selection keeps working.
+                    interactive = !isSelectionMode,
+                    playContentDescription = stringResource(R.string.cd_play_playlist)
                 )
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
@@ -1827,17 +1841,6 @@ fun SearchResultPlaylistItem(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                }
-                FilledIconButton(
-                    onClick = onPlayClick,
-                    modifier = Modifier.size(40.dp),
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.cd_play_playlist), modifier = Modifier.size(24.dp))
                 }
             }
             if (isSelectionMode && isSelected) {

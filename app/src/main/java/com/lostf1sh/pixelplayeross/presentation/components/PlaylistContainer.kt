@@ -495,10 +495,17 @@ private fun PlaylistGridItem(
         Box {
             Column(modifier = Modifier.padding(10.dp)) {
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    PlaylistCover(
-                        playlist = playlist,
-                        playlistSongs = remember(playlistSongs) { playlistSongs.toImmutableList() },
-                        size = maxWidth
+                    PlaylistStackCover(
+                        title = playlist.name,
+                        songCovers = remember(playlistSongs) {
+                            playlistSongs.mapNotNull { it.albumArtUriString }.distinct().take(3)
+                        },
+                        songCount = playlist.songIds.size,
+                        cardSize = maxWidth * 0.66f,
+                        showMetadata = false,
+                        showPlayButton = false,
+                        interactive = false,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
                 Spacer(modifier = Modifier.height(10.dp))
@@ -636,10 +643,16 @@ fun PlaylistItem(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            PlaylistCover(
-                playlist = playlist,
-                playlistSongs = remember(playlistSongs) { (playlistSongs ?: emptyList()).toImmutableList() },
-                size = 48.dp
+            PlaylistStackCover(
+                title = playlist.name,
+                songCovers = remember(playlistSongs) {
+                    (playlistSongs ?: emptyList()).mapNotNull { it.albumArtUriString }.distinct().take(3)
+                },
+                songCount = playlist.songIds.size,
+                cardSize = 44.dp,
+                showMetadata = false,
+                showPlayButton = false,
+                interactive = false
             )
 
             Spacer(modifier = Modifier.width(16.dp))
