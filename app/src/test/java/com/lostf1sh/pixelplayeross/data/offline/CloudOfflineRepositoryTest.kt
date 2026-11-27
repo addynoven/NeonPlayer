@@ -107,5 +107,57 @@ class CloudOfflineRepositoryTest {
         ).isTrue()
     }
 
+    @Test
+    fun `explicit download promotes an auto-saved copy instead of skipping it`() {
+        assertThat(
+            CloudOfflineRepository.shouldPromoteToPinned(
+                requestedOrigin = OfflineTrackOrigin.USER,
+                existingOrigin = OfflineTrackOrigin.RECENT.storageValue,
+                existingState = OfflineDownloadStatus.COMPLETE.storageValue,
+                completedFileAvailable = true
+            )
+        ).isTrue()
+    }
+
+    @Test
+    fun `promotion needs a finished file that is still on disk`() {
+        assertThat(
+            CloudOfflineRepository.shouldPromoteToPinned(
+                requestedOrigin = OfflineTrackOrigin.USER,
+                existingOrigin = OfflineTrackOrigin.RECENT.storageValue,
+                existingState = OfflineDownloadStatus.COMPLETE.storageValue,
+                completedFileAvailable = false
+            )
+        ).isFalse()
+        assertThat(
+            CloudOfflineRepository.shouldPromoteToPinned(
+                requestedOrigin = OfflineTrackOrigin.USER,
+                existingOrigin = OfflineTrackOrigin.RECENT.storageValue,
+                existingState = OfflineDownloadStatus.FAILED.storageValue,
+                completedFileAvailable = true
+            )
+        ).isFalse()
+    }
+
+    @Test
+    fun `auto-save never demotes a pinned download`() {
+        assertThat(
+            CloudOfflineRepository.shouldPromoteToPinned(
+                requestedOrigin = OfflineTrackOrigin.RECENT,
+                existingOrigin = OfflineTrackOrigin.USER.storageValue,
+                existingState = OfflineDownloadStatus.COMPLETE.storageValue,
+                completedFileAvailable = true
+            )
+        ).isFalse()
+        assertThat(
+            CloudOfflineRepository.shouldPromoteToPinned(
+                requestedOrigin = OfflineTrackOrigin.FAVORITE,
+                existingOrigin = OfflineTrackOrigin.FAVORITE.storageValue,
+                existingState = OfflineDownloadStatus.COMPLETE.storageValue,
+                completedFileAvailable = true
+            )
+        ).isFalse()
+    }
+
     private fun song(uri: String) = Song.emptySong().copy(contentUriString = uri)
 }

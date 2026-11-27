@@ -102,6 +102,17 @@ class CloudOfflineRepository @Inject constructor(
                 val existingByUri = dao.getBySourceUris(batch.map(Song::contentUriString))
                     .associateBy(OfflineTrackEntity::sourceUri)
                 val now = System.currentTimeMillis()
+                // An explicit download of a track auto-save already finished must still pin it:
+                // the file is there, but the row is still evictable until its origin says USER.
+                val promotions = batch.mapNotNull { song ->
+                    val existing = existingByUri[song.contentUriString] ?: return@mapNotNull null
+                    val completedFileAvailable = existing.localPath?.let(::File)
+                        ?.let { it.isFile && it.length() > 0L } == true
+                    if (!shouldPromoteToPinned(origin, existing.origin, existing.state, completedFileAvailable)) {
+                        return@mapNotNull null
+                    }
+                    existing.copy(origin = origin.storageValue, updatedAt = now)
+                }
                 val attempts = batch.mapNotNull { song ->
                     val sourceUri = song.contentUriString
                     val provider = providerFor(sourceUri) ?: return@mapNotNull null
@@ -129,6 +140,10 @@ class CloudOfflineRepository @Inject constructor(
                         updatedAt = now,
                         origin = origin.storageValue
                     )
+                }
+                if (promotions.isNotEmpty()) {
+                    dao.upsertAll(promotions)
+                    queued += promotions.size
                 }
                 if (attempts.isEmpty()) continue
                 val songsByUri = batch.associateBy(Song::contentUriString)
@@ -308,6 +323,16 @@ class CloudOfflineRepository @Inject constructor(
          * Album, playlist, and selection actions can all target the same track. Preserve an
          * in-flight attempt instead of replacing it and discarding already-downloaded bytes.
          */
+        internal fun shouldPromoteToPinned(
+            requestedOrigin: OfflineTrackOrigin,
+            existingOrigin: String?,
+            existingState: String?,
+            completedFileAvailable: Boolean
+        ): Boolean = completedFileAvailable &&
+            existingState == OfflineDownloadStatus.COMPLETE.storageValue &&
+            existingOrigin != OfflineTrackOrigin.USER.storageValue &&
+            requestedOrigin == OfflineTrackOrigin.USER
+
         internal fun shouldStartNewAttempt(
             existingState: String?,
             completedFileAvailable: Boolean

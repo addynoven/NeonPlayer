@@ -136,8 +136,7 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
         } catch (error: Throwable) {
             tempFile.delete()
             finalizedFile?.delete()
-            val shouldRetry = runAttemptCount < MAX_RETRIES &&
-                (error is IOException || (error is DownloadHttpException && error.code >= 500))
+            val shouldRetry = runAttemptCount < MAX_RETRIES && isRetryableDownloadFailure(error)
             Timber.tag(TAG).w(error, "Cloud track download failed for %s", sourceUri)
             val updated = dao.updateState(
                 downloadId = downloadId,
@@ -483,7 +482,7 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
         val extensionHint: String? = null
     )
 
-    private class DownloadHttpException(val code: Int) : IOException("Server returned HTTP $code")
+    internal class DownloadHttpException(val code: Int) : IOException("Server returned HTTP $code")
     private class StaleDownloadAttemptException : Exception()
 
     companion object {
@@ -536,4 +535,14 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
             }
         }
     }
+}
+
+/**
+ * A 4xx answer will not change however often the same request is repeated, so only 5xx and plain
+ * I/O failures are worth another attempt.
+ */
+internal fun isRetryableDownloadFailure(error: Throwable): Boolean = when (error) {
+    is CloudTrackDownloadWorker.DownloadHttpException -> error.code >= 500
+    is IOException -> true
+    else -> false
 }
