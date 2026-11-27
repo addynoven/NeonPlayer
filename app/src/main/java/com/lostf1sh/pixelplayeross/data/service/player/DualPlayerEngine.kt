@@ -1046,8 +1046,15 @@ class DualPlayerEngine @Inject constructor(
     /**
      * Returns a [DefaultLoadControl] tuned to the device's RAM tier.
      *
-     * Low-RAM devices ([ActivityManager.isLowRamDevice]) receive halved buffer ceilings
-     * to prevent memory pressure when both players co-exist during a crossfade.
+     * The ceilings are deliberately large: cloud tracks are streamed through the local proxy,
+     * and every time the loader hits [maxBufferMs] it closes the HTTP response and later
+     * re-opens it with a new `Range` request. For googlevideo's bounded-range URLs the first
+     * 512 KB of that reconnect costs ~0.7 s (TLS + redirect + upstream TTFB), which the user
+     * hears as the music stopping. A 4-minute opus/m4a track is only ~3-4 MB, so buffering a
+     * whole track costs a few MB and removes the reconnect entirely.
+     *
+     * Low-RAM devices ([ActivityManager.isLowRamDevice]) keep a tighter ceiling so two players
+     * can co-exist during a crossfade.
      * [bufferForPlaybackMs] is set to ExoPlayer's documented default of 2 500 ms on both
      * tiers — the previous value of 5 000 ms doubled first-audio latency with no benefit.
      */
@@ -1057,20 +1064,20 @@ class DualPlayerEngine @Inject constructor(
         return if (isLowRam) {
             DefaultLoadControl.Builder()
                 .setBufferDurationsMs(
-                    15_000,
                     30_000,
+                    300_000,
                     2_500,
-                    5_000
+                    10_000
                 )
                 .setPrioritizeTimeOverSizeThresholds(true)
                 .build()
         } else {
             DefaultLoadControl.Builder()
                 .setBufferDurationsMs(
-                    30_000,
                     60_000,
+                    600_000,
                     2_500,
-                    5_000
+                    10_000
                 )
                 .setPrioritizeTimeOverSizeThresholds(true)
                 .build()
