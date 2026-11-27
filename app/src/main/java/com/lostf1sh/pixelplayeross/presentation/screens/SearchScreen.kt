@@ -1457,8 +1457,13 @@ fun SearchResultsList(
                                     isPlaying = playerStableState.currentPlaylistId == item.playlist.id &&
                                         playerStableState.isPlaying,
                                     isLoading = loadingYouTubePlaylistId == item.playlist.id,
-                                    onClick = {
-                                        playerViewModel.playYouTubePlaylist(item.playlist)
+                                    onOpenClick = {
+                                        navController.navigateSafely(
+                                            Screen.YouTubePlaylistDetail.createRoute(
+                                                item.playlist.id,
+                                                item.playlist.title
+                                            )
+                                        )
                                         onItemSelected()
                                     },
                                     onPlayClick = {
@@ -1683,7 +1688,7 @@ fun SearchResultYouTubePlaylistItem(
     covers: List<String>,
     isPlaying: Boolean,
     isLoading: Boolean,
-    onClick: () -> Unit,
+    onOpenClick: () -> Unit,
     onPlayClick: () -> Unit,
     onCoversNeeded: () -> Unit
 ) {
@@ -1708,7 +1713,7 @@ fun SearchResultYouTubePlaylistItem(
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(onClick = onOpenClick)
     ) {
         Row(
             modifier = Modifier
@@ -1721,7 +1726,7 @@ fun SearchResultYouTubePlaylistItem(
                 songCovers = covers.ifEmpty { listOfNotNull(playlist.thumbnailUrl) },
                 songCount = playlist.trackCount?.toInt() ?: covers.size,
                 isPlaying = isPlaying,
-                onClick = onClick,
+                onClick = onOpenClick,
                 onPlayClick = onPlayClick,
                 cardSize = 56.dp,
                 isLoading = isLoading,

@@ -376,6 +376,23 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Queue a playlist that is already loaded, starting at [startSong] when it belongs to it.
+     * The playlist screen uses this so picking the fifth track still leaves the other nine queued.
+     */
+    fun playYouTubePlaylistTracks(
+        playlist: com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylist,
+        startSong: com.lostf1sh.pixelplayeross.data.model.Song? = null
+    ) {
+        if (playlist.songs.isEmpty()) {
+            sendToast("Empty playlist")
+            return
+        }
+        val start = startSong?.takeIf { candidate -> playlist.songs.any { it.id == candidate.id } }
+            ?: playlist.songs.first()
+        playSongs(playlist.songs, start, playlist.title, playlistId = playlist.id)
+    }
+
     private val _playerUiState = MutableStateFlow(PlayerUiState())
     val playerUiState: StateFlow<PlayerUiState> = _playerUiState.asStateFlow()
 

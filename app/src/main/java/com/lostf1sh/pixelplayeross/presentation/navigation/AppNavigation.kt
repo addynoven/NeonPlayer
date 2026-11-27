@@ -54,6 +54,8 @@ import com.lostf1sh.pixelplayeross.presentation.screens.MashupScreen
 import com.lostf1sh.pixelplayeross.presentation.screens.NavBarCornerRadiusScreen
 import com.lostf1sh.pixelplayeross.presentation.screens.PaletteStyleSettingsScreen
 import com.lostf1sh.pixelplayeross.presentation.screens.PlaylistDetailScreen
+import com.lostf1sh.pixelplayeross.presentation.youtube.playlist.YouTubePlaylistScreen
+import com.lostf1sh.pixelplayeross.presentation.youtube.playlist.YouTubePlaylistViewModel
 import com.lostf1sh.pixelplayeross.presentation.screens.RecentlyPlayedScreen
 
 import com.lostf1sh.pixelplayeross.presentation.screens.AboutScreen
@@ -423,6 +425,36 @@ fun AppNavigation(
                             onBackClick = { navController.popBackStack() },
                             onDeletePlayListClick = { navController.popBackStack() },
                             navController = navController
+                        )
+                    }
+                }
+            }
+
+            composable(
+                route = Screen.YouTubePlaylistDetail.route,
+                arguments = listOf(
+                    navArgument("playlistId") { type = NavType.StringType },
+                    navArgument("title") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                ),
+                enterTransition = { enterTransition() },
+                exitTransition = { exitTransition() },
+                popEnterTransition = { popEnterTransition() },
+                popExitTransition = { popExitTransition() },
+            ) { backStackEntry ->
+                val playlistId = backStackEntry.arguments?.getString("playlistId")
+                val title = backStackEntry.arguments?.getString("title")
+                val youTubePlaylistViewModel: YouTubePlaylistViewModel = hiltViewModel()
+                if (!playlistId.isNullOrBlank()) {
+                    ScreenWrapper(navController = navController, playerViewModel = playerViewModel) {
+                        YouTubePlaylistScreen(
+                            playerViewModel = playerViewModel,
+                            viewModel = youTubePlaylistViewModel,
+                            fallbackTitle = title,
+                            onBackClick = { navController.popBackStack() }
                         )
                     }
                 }
