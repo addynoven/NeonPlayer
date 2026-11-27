@@ -332,18 +332,35 @@ class PlayerViewModel @Inject constructor(
     /**
      * Fill in the covers for one playlist card. Called when a card scrolls into view, so it must
      * be cheap, idempotent and limited: at most a few playlist lookups run at the same time.
+     *
+     * A playlist that was opened already has its track list on disk, covers included, so that
+     * answers first and the network is only asked when the cache misses. The result is remembered
+     * even when empty, because an empty answer is an answer: otherwise every recomposition of the
+     * card retries the lookup.
      */
     fun ensurePlaylistCovers(playlistId: String, fallbackCover: String?) {
-        if (!_playlistCovers.value[playlistId].isNullOrEmpty()) return
+        if (_playlistCovers.value.containsKey(playlistId)) return
         if (!playlistCoversInFlight.add(playlistId)) return
         viewModelScope.launch {
             try {
-                val covers = playlistCoverLoads.withPermit {
-                    youtubeMusicRepository.fetchPlaylistCovers(playlistId).getOrElse { emptyList() }
+                val cached = youTubePlaylistCache.read(playlistId)
+                    ?.songs
+                    ?.mapNotNull { it.albumArtUriString }
+                    ?.distinct()
+                    ?.take(PLAYLIST_COVERS_LIMIT)
+                    .orEmpty()
+                val covers = if (cached.isNotEmpty()) {
+                    cached
+                } else {
+                    playlistCoverLoads.withPermit {
+                        youtubeMusicRepository.fetchPlaylistCovers(playlistId).getOrElse { emptyList() }
+                    }
                 }
                 val resolved = covers.ifEmpty { listOfNotNull(fallbackCover?.takeIf { it.isNotBlank() }) }
                 Timber.d("Playlist covers for %s: %d", playlistId, resolved.size)
-                _playlistCovers.update { current -> current + (playlistId to resolved) }
+                _playlistCovers.update { current ->
+                    rememberPlaylistCovers(current, playlistId, resolved)
+                }
             } finally {
                 playlistCoversInFlight.remove(playlistId)
             }
@@ -5418,6 +5435,29 @@ internal fun Song.improvesLyricsLookupComparedTo(previousSong: Song): Boolean {
     return (previousSong.lyrics.isNullOrBlank() && !lyrics.isNullOrBlank()) ||
         (previousSong.path.isBlank() && path.isNotBlank()) ||
         (previousSong.contentUriString.isBlank() && contentUriString.isNotBlank())
+}
+
+internal const val PLAYLIST_COVERS_LIMIT = 3
+
+/** How many playlist cover lists stay in memory before the oldest are dropped. */
+internal const val MAX_REMEMBERED_PLAYLIST_COVERS = 40
+
+/**
+ * Remember the covers resolved for [playlistId] and keep the map bounded, oldest first.
+ * A stored empty list is intentional: it means "asked, there was nothing".
+ */
+internal fun rememberPlaylistCovers(
+    current: Map<String, List<String>>,
+    playlistId: String,
+    covers: List<String>,
+    max: Int = MAX_REMEMBERED_PLAYLIST_COVERS
+): Map<String, List<String>> {
+    val updated = LinkedHashMap(current)
+    updated[playlistId] = covers
+    while (updated.size > max) {
+        updated.remove(updated.keys.first())
+    }
+    return updated
 }
 
 internal fun parsePersistedLyrics(rawLyrics: String?): Lyrics? {
