@@ -793,7 +793,7 @@ class MusicRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun storePlayedCloudSong(song: Song) = withContext(Dispatchers.IO) {
+    override suspend fun storeCloudSongInLibrary(song: Song) = withContext(Dispatchers.IO) {
         if (!CloudOfflineRepository.isCloudSong(song)) return@withContext
         val numericId = song.id.toLongOrNull() ?: return@withContext
         if (musicDao.songExists(numericId)) return@withContext

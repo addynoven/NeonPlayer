@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 enum class OfflineDownloadStatus(val storageValue: String) {
     QUEUED("queued"),
@@ -66,7 +67,12 @@ class CloudOfflineRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val dao: OfflineTrackDao,
     private val workManager: WorkManager,
-    private val preferencesRepository: UserPreferencesRepository
+    private val preferencesRepository: UserPreferencesRepository,
+    /**
+     * A track that is being saved offline belongs in the library too: it is about to live on the
+     * phone, and the library is where the listener looks for the music they already have.
+     */
+    private val musicRepository: com.lostf1sh.pixelplayeross.data.repository.MusicRepository
 ) {
     private val mutationMutex = Mutex()
 
@@ -127,6 +133,11 @@ class CloudOfflineRepository @Inject constructor(
                 if (attempts.isEmpty()) continue
                 val songsByUri = batch.associateBy(Song::contentUriString)
                 withContext(NonCancellable) {
+                    attempts.forEach { attempt ->
+                        val song = songsByUri[attempt.sourceUri] ?: return@forEach
+                        runCatching { musicRepository.storeCloudSongInLibrary(song) }
+                            .onFailure { Timber.w(it, "Could not add %s to the library", song.id) }
+                    }
                     dao.upsertAll(attempts)
                     try {
                         workManager.enqueue(attempts.map { attempt ->

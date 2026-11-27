@@ -221,10 +221,11 @@ interface MusicRepository {
     fun getSongsByIds(songIds: List<String>): Flow<List<Song>>
 
     /**
-     * Persists a cloud track (YouTube today) in the library once it has been played, so it shows
-     * up in the library and its playback history can be resolved after it leaves the queue.
+     * Gives a cloud track (YouTube today) its library row, so a song that was streamed or saved
+     * offline shows up in the library and its playback history can be resolved later. No-op when
+     * the row already exists.
      */
-    suspend fun storePlayedCloudSong(song: Song)
+    suspend fun storeCloudSongInLibrary(song: Song)
 
     /**
      * Returns a song by its file path.

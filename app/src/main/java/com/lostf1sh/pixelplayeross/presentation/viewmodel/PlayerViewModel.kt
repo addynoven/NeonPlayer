@@ -1017,7 +1017,7 @@ class PlayerViewModel @Inject constructor(
                     offlineAutoSave.rememberSong(song)
                     // Streamed tracks are not part of the library database; storing them the first
                     // time they play is what makes them show up in the library and in History.
-                    runCatching { musicRepository.storePlayedCloudSong(song) }
+                    runCatching { musicRepository.storeCloudSongInLibrary(song) }
                         .onFailure { Timber.w(it, "Could not store the played cloud song %s", song.id) }
                 }
         }

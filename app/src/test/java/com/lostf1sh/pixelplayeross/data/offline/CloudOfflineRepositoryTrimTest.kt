@@ -6,6 +6,7 @@ import com.google.common.truth.Truth.assertThat
 import com.lostf1sh.pixelplayeross.data.database.OfflineTrackDao
 import com.lostf1sh.pixelplayeross.data.database.OfflineTrackEntity
 import com.lostf1sh.pixelplayeross.data.preferences.UserPreferencesRepository
+import com.lostf1sh.pixelplayeross.data.repository.MusicRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -23,11 +24,12 @@ class CloudOfflineRepositoryTrimTest {
     private val dao: OfflineTrackDao = mockk(relaxed = true)
     private val workManager: WorkManager = mockk(relaxed = true)
     private val preferences: UserPreferencesRepository = mockk(relaxed = true)
+    private val musicRepository: MusicRepository = mockk(relaxed = true)
 
     private fun repository(): CloudOfflineRepository {
         val context = mockk<Context>(relaxed = true)
         every { context.filesDir } returns tempDir
-        return CloudOfflineRepository(context, dao, workManager, preferences)
+        return CloudOfflineRepository(context, dao, workManager, preferences, musicRepository)
     }
 
     private fun row(
