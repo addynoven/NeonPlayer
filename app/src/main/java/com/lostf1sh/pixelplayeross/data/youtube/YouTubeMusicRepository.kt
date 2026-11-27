@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -78,6 +79,14 @@ class YouTubeMusicRepository @Inject constructor(
 
         /** Joined budget for both probe requests; the resolver falls through on timeout. */
         private const val PROBE_TIMEOUT_MS = 8_000L
+        private const val M4A_ATTEMPTS = 3
+        private const val M4A_RETRY_DELAY_MS = 500L
+        private val INVIDIOUS_HOSTS = listOf(
+            "yt.chocolatemoo53.com",
+            "inv.nadeko.net",
+            "invidious.nerdvpn.de",
+            "invidious.tiekoetter.com"
+        )
 
         private const val PROBE_USER_AGENT =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
@@ -431,6 +440,67 @@ class YouTubeMusicRepository @Inject constructor(
      * fallback service in parallel. Resolved URLs are cached for [STREAM_CACHE_TTL_MS] so
      * replays and queue skips don't pay the resolver ladder again.
      */
+    /**
+     * The stream to save when the user downloads a track.
+     *
+     * Downloads prefer the AAC/MP4 variant because that is a real music file other players can read
+     * and tag; the opus/webm variant that streaming prefers has no tag support in practice.
+     */
+    suspend fun getDownloadStream(videoId: String): Result<YouTubeDownloadStream> =
+        withContext(Dispatchers.IO) {
+            extractM4aStream(videoId)?.let { return@withContext Result.success(it) }
+            Timber.d("No m4a stream for %s, falling back to the streaming url", videoId)
+            getAudioStreamUrl(videoId).map { url -> YouTubeDownloadStream(url, "", 0) }
+        }
+
+    // YouTube intermittently answers an InnerTube call with an HTML error page, which NewPipe
+    // surfaces as a parsing exception. One retry usually lands on a working response, and when
+    // every attempt fails the Invidious endpoints can still name an AAC stream.
+    private suspend fun extractM4aStream(videoId: String): YouTubeDownloadStream? {
+        repeat(M4A_ATTEMPTS) { attempt ->
+            tryExtractM4aStream(videoId)?.let { return it }
+            if (attempt < M4A_ATTEMPTS - 1) delay(M4A_RETRY_DELAY_MS)
+        }
+        return getM4aStreamViaInvidious(videoId)
+    }
+
+    private fun tryExtractM4aStream(videoId: String): YouTubeDownloadStream? = try {
+        val extractor = ServiceList.YouTube.getStreamExtractor(
+            "https://www.youtube.com/watch?v=$videoId"
+        )
+        extractor.fetchPage()
+        val candidates = extractor.audioStreams
+            .filter { stream -> !stream.url.isNullOrBlank() }
+            .filter { stream ->
+                val mime = stream.format?.mimeType.orEmpty()
+                mime.startsWith("audio/mp4", ignoreCase = true) ||
+                    stream.format?.name?.contains("m4a", ignoreCase = true) == true
+            }
+            .sortedByDescending { stream -> stream.averageBitrate }
+        for (stream in candidates) {
+            val url = stream.url ?: continue
+            // A probe that times out says nothing about the stream, and downloads do their own
+            // byte-range check while fetching, so a dead probe is not a reason to give up.
+            val verified = try {
+                verifyStreamUrlNot403(url)
+            } catch (error: Exception) {
+                Timber.d(error, "m4a probe for %s did not finish", videoId)
+                false
+            }
+            if (verified) {
+                Timber.d("m4a download stream for %s: %d kbps", videoId, stream.averageBitrate)
+                return YouTubeDownloadStream(url, "audio/mp4", stream.averageBitrate)
+            }
+        }
+        val best = candidates.firstOrNull()?.url?.takeIf { it.isNotBlank() }
+            ?: return null
+        Timber.d("No verified m4a stream for %s, saving the best candidate anyway", videoId)
+        YouTubeDownloadStream(best, "audio/mp4", candidates.first().averageBitrate)
+    } catch (error: Exception) {
+        Timber.w(error, "Could not extract an m4a stream for %s", videoId)
+        null
+    }
+
     suspend fun getAudioStreamUrl(videoId: String): Result<String> = withContext(Dispatchers.IO) {
         resolvedStreamCache[videoId]?.let { cached ->
             if (cached.isUsable) {
@@ -605,13 +675,7 @@ class YouTubeMusicRepository @Inject constructor(
      * Invidious API fallback — queries reliable public Invidious instances for audio streams.
      */
     private suspend fun getAudioStreamViaInvidious(videoId: String): Result<String> = withContext(Dispatchers.IO) {
-        val invidiousInstances = listOf(
-            "https://yt.chocolatemoo53.com/api/v1/videos/$videoId?local=true",
-            "https://inv.nadeko.net/api/v1/videos/$videoId?local=true",
-            "https://invidious.nerdvpn.de/api/v1/videos/$videoId?local=true",
-            "https://invidious.tiekoetter.com/api/v1/videos/$videoId?local=true"
-        )
-        for (apiUrl in invidiousInstances) {
+        for (apiUrl in invidiousVideoEndpoints(videoId)) {
             try {
                 Timber.d("Trying Invidious API instance: $apiUrl")
                 val request = Request.Builder()
@@ -671,6 +735,67 @@ class YouTubeMusicRepository @Inject constructor(
         return@withContext Result.failure(IllegalStateException("All Invidious instances failed for $videoId"))
     }
 
+    /**
+     * Ask the Invidious endpoints for an AAC stream when the InnerTube extractor keeps failing.
+     *
+     * The same host rewrite and range probe as the playback fallback apply: an instance hands out
+     * a PoToken bound to the node named in `issuer`, so the URL is pinned to that node before use.
+     */
+    private suspend fun getM4aStreamViaInvidious(videoId: String): YouTubeDownloadStream? =
+        withContext(Dispatchers.IO) {
+            for (apiUrl in invidiousVideoEndpoints(videoId)) {
+                try {
+                    val request = Request.Builder()
+                        .url(apiUrl)
+                        .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                        .build()
+                    val response = okHttpClient.newCall(request).execute()
+                    if (!response.isSuccessful) continue
+                    val formats = JSONObject(response.body.string()).optJSONArray("adaptiveFormats")
+                        ?: continue
+                    var bestUrl: String? = null
+                    var bestBitrate = -1
+                    for (index in 0 until formats.length()) {
+                        val format = formats.getJSONObject(index)
+                        val mime = format.optString("type", "")
+                        if (!mime.startsWith("audio/mp4", ignoreCase = true)) continue
+                        val url = format.optString("url", "")
+                        if (url.isBlank()) continue
+                        val bitrate = format.optInt("bitrate", 0)
+                        if (bitrate > bestBitrate) {
+                            bestBitrate = bitrate
+                            bestUrl = url
+                        }
+                    }
+                    val candidate = bestUrl?.let(::pinToIssuerNode)?.takeIf { it.isNotBlank() }
+                        ?: continue
+                    val usable = try {
+                        verifyStreamUrlNot403(candidate)
+                    } catch (error: Exception) {
+                        Timber.d(error, "m4a probe for %s did not finish", videoId)
+                        false
+                    }
+                    if (usable) {
+                        Timber.d("m4a stream for %s from Invidious: %d kbps", videoId, bestBitrate / 1000)
+                        return@withContext YouTubeDownloadStream(candidate, "audio/mp4", bestBitrate / 1000)
+                    }
+                } catch (error: Exception) {
+                    Timber.w(error, "Invidious m4a lookup failed for %s", videoId)
+                }
+            }
+            null
+        }
+
+    private fun invidiousVideoEndpoints(videoId: String): List<String> = INVIDIOUS_HOSTS.map { host ->
+        "https://$host/api/v1/videos/$videoId?local=true"
+    }
+
+    /** Pin a PoToken-bearing URL to the node that minted it (see the playback fallback). */
+    private fun pinToIssuerNode(url: String): String {
+        val issuer = Regex("[?&]issuer=([^&]+)").find(url)?.groupValues?.get(1)
+        return if (issuer.isNullOrBlank()) url
+        else Regex("^(https://)[^/]+/").replace(url, "$1$issuer/")
+    }
     /**
      * Piped API fallback — queries reliable public Piped instances for audio streams.
      */
@@ -1123,6 +1248,13 @@ class YouTubeMusicRepository @Inject constructor(
 /**
  * A YouTube playlist resolved into the queue shape the player already uses.
  */
+/** An audio stream chosen for offline saving, with the container it is expected to arrive in. */
+data class YouTubeDownloadStream(
+    val url: String,
+    val mimeType: String,
+    val bitrateKbps: Int
+)
+
 data class YouTubePlaylist(
     val id: String,
     val title: String,

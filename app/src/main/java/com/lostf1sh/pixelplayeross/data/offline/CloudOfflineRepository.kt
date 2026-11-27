@@ -3,8 +3,10 @@ package com.lostf1sh.pixelplayeross.data.offline
 import android.content.Context
 import android.net.Uri
 import androidx.work.Constraints
+import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.await
@@ -114,11 +116,17 @@ class CloudOfflineRepository @Inject constructor(
                     )
                 }
                 if (attempts.isEmpty()) continue
+                val songsByUri = batch.associateBy(Song::contentUriString)
                 withContext(NonCancellable) {
                     dao.upsertAll(attempts)
                     try {
                         workManager.enqueue(attempts.map { attempt ->
-                            downloadRequest(attempt.downloadId, attempt.attemptId, attempt.sourceUri)
+                            downloadRequest(
+                                downloadId = attempt.downloadId,
+                                attemptId = attempt.attemptId,
+                                sourceUri = attempt.sourceUri,
+                                song = songsByUri[attempt.sourceUri]
+                            )
                         }).await()
                     } catch (error: Exception) {
                         attempts.forEach { attempt ->
@@ -265,24 +273,33 @@ class CloudOfflineRepository @Inject constructor(
     private fun downloadRequest(
         downloadId: String,
         attemptId: String,
-        sourceUri: String
-    ) = OneTimeWorkRequestBuilder<CloudTrackDownloadWorker>()
-        .setConstraints(
-            Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresStorageNotLow(true)
-                .build()
-        )
-        .setInputData(
-            workDataOf(
-                CloudTrackDownloadWorker.KEY_DOWNLOAD_ID to downloadId,
-                CloudTrackDownloadWorker.KEY_ATTEMPT_ID to attemptId,
-                CloudTrackDownloadWorker.KEY_SOURCE_URI to sourceUri
+        sourceUri: String,
+        song: Song? = null
+    ): OneTimeWorkRequest {
+        // The song's artist/album/cover travel with the job: the downloaded YouTube stream has
+        // none of it, and a saved file should still look like the song it is.
+        val input = Data.Builder()
+            .putString(CloudTrackDownloadWorker.KEY_DOWNLOAD_ID, downloadId)
+            .putString(CloudTrackDownloadWorker.KEY_ATTEMPT_ID, attemptId)
+            .putString(CloudTrackDownloadWorker.KEY_SOURCE_URI, sourceUri)
+        song?.artist?.takeIf(String::isNotBlank)
+            ?.let { input.putString(CloudTrackDownloadWorker.KEY_ARTIST, it) }
+        song?.album?.takeIf(String::isNotBlank)
+            ?.let { input.putString(CloudTrackDownloadWorker.KEY_ALBUM, it) }
+        song?.albumArtUriString?.takeIf(String::isNotBlank)
+            ?.let { input.putString(CloudTrackDownloadWorker.KEY_COVER_URI, it) }
+        return OneTimeWorkRequestBuilder<CloudTrackDownloadWorker>()
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .setRequiresStorageNotLow(true)
+                    .build()
             )
-        )
-        .addTag(CloudTrackDownloadWorker.TAG)
-        .addTag(workName(downloadId))
-        .build()
+            .setInputData(input.build())
+            .addTag(CloudTrackDownloadWorker.TAG)
+            .addTag(workName(downloadId))
+            .build()
+    }
 }
 
 private fun OfflineTrackEntity.toModel() = OfflineDownload(

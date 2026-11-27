@@ -15,6 +15,8 @@ import com.lostf1sh.pixelplayeross.data.navidrome.NavidromeSongUri
 import com.lostf1sh.pixelplayeross.data.offline.CloudDownloadExports
 import com.lostf1sh.pixelplayeross.data.offline.CloudDownloadNotifications
 import com.lostf1sh.pixelplayeross.data.offline.CloudExportResult
+import com.lostf1sh.pixelplayeross.data.audio.AudioFileTags
+import com.lostf1sh.pixelplayeross.data.audio.Mp4MetadataWriter
 import com.lostf1sh.pixelplayeross.data.offline.CloudOfflineRepository
 import com.lostf1sh.pixelplayeross.data.offline.OfflineDownloadStatus
 import com.lostf1sh.pixelplayeross.data.stream.CloudStreamSecurity
@@ -102,6 +104,11 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
             }
             val finalFile = fetched.file
             finalizedFile = finalFile
+            // A downloaded YouTube track is a bare stream; give it the tags and cover the song
+            // has in the library so other players show a song instead of a hashed filename.
+            if (entity.provider == "youtube" && finalFile.extension == "m4a") {
+                writeTrackMetadata(finalFile, entity)
+            }
             coroutineContext.ensureActive()
             withContext(NonCancellable) {
                 val completed = dao.updateState(
@@ -276,7 +283,8 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
                                 throw IOException("Audio file is too large")
                             }
                             if (extension == null) {
-                                extension = extensionFor(response.header("Content-Type"), mimeType)
+                                extension = source.extensionHint
+                                    ?: extensionFor(response.header("Content-Type"), mimeType)
                             }
                             totalBytesFromContentRange(response.header("Content-Range"))
                                 ?.let { size -> totalBytes = size }
@@ -326,6 +334,38 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
         if (!tempFile.renameTo(finalFile)) {
             tempFile.copyTo(finalFile, overwrite = true)
             tempFile.delete()
+        }
+    }
+
+    private suspend fun writeTrackMetadata(file: File, entity: OfflineTrackEntity) {
+        try {
+            val tags = AudioFileTags(
+                title = entity.title,
+                artist = inputData.getString(KEY_ARTIST),
+                album = inputData.getString(KEY_ALBUM),
+                coverBytes = inputData.getString(KEY_COVER_URI)?.let(::fetchCoverImage)
+            )
+            if (Mp4MetadataWriter.write(file, tags)) {
+                Timber.tag(TAG).d("Wrote tags into %s", file.name)
+            }
+        } catch (error: Exception) {
+            // Tags are a nicety: a file that plays without them beats a failed download.
+            Timber.tag(TAG).w(error, "Could not write tags into %s", file.name)
+        }
+    }
+
+    private fun fetchCoverImage(url: String): ByteArray? {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) return null
+        val request = Request.Builder()
+            .url(url)
+            .header("User-Agent", YOUTUBE_USER_AGENT)
+            .build()
+        return client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) return null
+            val declared = response.body.contentLength()
+            if (declared > MAX_COVER_BYTES) return null
+            val bytes = response.body.bytes()
+            bytes.takeIf { it.size <= MAX_COVER_BYTES }
         }
     }
 
@@ -400,15 +440,15 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
                 if (!CloudStreamSecurity.validateYouTubeVideoId(id)) {
                     throw IOException("Invalid YouTube video identifier")
                 }
-                val streamUrl = youTubeMusicRepository.getAudioStreamUrl(id)
+                val stream = youTubeMusicRepository.getDownloadStream(id)
                     .getOrElse { error -> throw IOException("Could not resolve YouTube audio", error) }
                 DownloadSource(
-                    url = streamUrl,
+                    url = stream.url,
                     headers = mapOf(
                         "User-Agent" to YOUTUBE_USER_AGENT,
                         "Referer" to "https://www.youtube.com/watch?v=$id"
                     ),
-                    allowedHost = streamUrl,
+                    allowedHost = stream.url,
                     // googlevideo answers bounded ranges only, so the whole track has to be
                     // pulled in windows instead of one open-ended GET.
                     ranged = true
@@ -435,7 +475,9 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
         val url: String,
         val headers: Map<String, String> = emptyMap(),
         val allowedHost: String?,
-        val ranged: Boolean = false
+        val ranged: Boolean = false,
+        /** Container the resolver promised, so a vague Content-Type does not misname the file. */
+        val extensionHint: String? = null
     )
 
     private class DownloadHttpException(val code: Int) : IOException("Server returned HTTP $code")
@@ -452,6 +494,9 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
         /** Window size for ranged YouTube downloads: bounded ranges are what googlevideo serves. */
         private const val YOUTUBE_RANGE_WINDOW_BYTES = 4L * 1024L * 1024L
 
+        /** Covers are thumbnails; anything bigger than this is not an image worth embedding. */
+        private const val MAX_COVER_BYTES = 4L * 1024L * 1024L
+
         /**
          * Total size from a `Content-Range: bytes 0-99/1000` header: everything after the last
          * slash. Null when the server does not know the size.
@@ -462,6 +507,9 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
         const val KEY_DOWNLOAD_ID = "download_id"
         const val KEY_ATTEMPT_ID = "attempt_id"
         const val KEY_SOURCE_URI = "source_uri"
+        const val KEY_ARTIST = "artist"
+        const val KEY_ALBUM = "album"
+        const val KEY_COVER_URI = "cover_uri"
         const val KEY_BYTES = "bytes"
         const val KEY_TOTAL_BYTES = "total_bytes"
         const val KEY_ERROR = "error"
