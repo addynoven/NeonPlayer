@@ -288,7 +288,7 @@ private const val ENABLE_FOLDERS_STORAGE_FILTER = false
 private fun LibraryTabId.hasStorageFilterButton(): Boolean = when (this) {
     LibraryTabId.SONGS, LibraryTabId.ALBUMS, LibraryTabId.ARTISTS, LibraryTabId.LIKED -> true
     LibraryTabId.FOLDERS -> ENABLE_FOLDERS_STORAGE_FILTER
-    LibraryTabId.PLAYLISTS, LibraryTabId.GENRES -> false
+    LibraryTabId.PLAYLISTS, LibraryTabId.GENRES, LibraryTabId.HISTORY -> false
 }
 
 private const val FOLDER_NAVIGATION_ROOT_KEY = "__folder_root__"
@@ -698,6 +698,7 @@ fun LibraryScreen(
         LibraryTabId.FOLDERS -> isSelectionMode
         LibraryTabId.ARTISTS -> isArtistSelectionMode
         LibraryTabId.GENRES -> isGenreSelectionMode
+        LibraryTabId.HISTORY -> false
     }
     val canHandleFolderBack = visibleCurrentTabId == LibraryTabId.FOLDERS &&
             canNavigateBackInFolders &&
@@ -745,6 +746,7 @@ fun LibraryScreen(
                         showGenreMultiSelectionSheet = false
                     }
 
+                    LibraryTabId.HISTORY -> Unit
                 }
             }
 
@@ -1070,6 +1072,7 @@ fun LibraryScreen(
                             LibraryTabId.LIKED -> playerUiState.currentFavoriteSortOption
                             LibraryTabId.FOLDERS -> playerUiState.currentFolderSortOption
                             LibraryTabId.GENRES -> currentGenreSortOption
+                            LibraryTabId.HISTORY -> null
                         }
 
                         val locateAction = when (visibleCurrentTabId) {
@@ -1096,6 +1099,7 @@ fun LibraryScreen(
                                     LibraryTabId.LIKED -> playerViewModel.sortFavoriteSongs(option)
                                     LibraryTabId.FOLDERS -> playerViewModel.sortFolders(option)
                                     LibraryTabId.GENRES -> playerViewModel.sortGenres(option)
+                                    LibraryTabId.HISTORY -> Unit
                                 }
                             }
                         }
@@ -1733,6 +1737,14 @@ fun LibraryScreen(
                                         )
                                     }
 
+                                    LibraryTabId.HISTORY -> {
+                                        LibraryHistoryTab(
+                                            playerViewModel = playerViewModel,
+                                            bottomBarHeight = bottomBarHeightDp,
+                                            onMoreOptionsClick = stableOnMoreOptionsClick
+                                        )
+                                    }
+
                                     LibraryTabId.GENRES -> {
                                         val libraryGenres by playerViewModel.libraryGenres.collectAsStateWithLifecycle()
                                         val stableOnGenreClick: (Genre) -> Unit = remember(navController) {
@@ -1772,6 +1784,7 @@ fun LibraryScreen(
                                 LibraryTabId.LIKED,
                                 LibraryTabId.FOLDERS -> selectedSongs.size
                                 LibraryTabId.GENRES -> selectedGenres.size
+                                LibraryTabId.HISTORY -> 0
                             }
                             SelectionCountPill(
                                 selectedCount = selectionCount,
@@ -2837,6 +2850,7 @@ private fun LibraryTabId.iconRes(): Int = when (this) {
     LibraryTabId.FOLDERS -> R.drawable.rounded_folder_24
     LibraryTabId.LIKED -> R.drawable.round_favorite_24
     LibraryTabId.GENRES -> R.drawable.rounded_category_24
+    LibraryTabId.HISTORY -> R.drawable.rounded_schedule_24
 }
 
 @Composable

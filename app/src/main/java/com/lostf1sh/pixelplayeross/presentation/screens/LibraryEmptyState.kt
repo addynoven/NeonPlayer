@@ -128,6 +128,12 @@ private fun libraryEmptySpec(
             titleRes = R.string.lib_empty_genres_title,
             subtitleRes = R.string.lib_empty_genres_subtitle
         )
+
+        LibraryTabId.HISTORY -> LibraryEmptySpec(
+            iconRes = R.drawable.rounded_schedule_24,
+            titleRes = R.string.lib_empty_history_title,
+            subtitleRes = R.string.lib_empty_history_subtitle
+        )
     }
 }
 

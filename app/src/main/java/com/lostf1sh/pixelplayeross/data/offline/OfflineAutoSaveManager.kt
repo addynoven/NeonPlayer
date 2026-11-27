@@ -38,18 +38,16 @@ class OfflineAutoSaveManager @Inject constructor(
         }
     }
 
-    /** Hearting saves the track; un-hearting only deletes a copy that the heart created. */
+    /**
+     * Hearting saves the track. Un-hearting leaves the file alone: it is already on the phone,
+     * and the listener may still want the copy they asked for the next time they go offline.
+     */
     suspend fun onFavoriteChanged(song: Song, isFavorite: Boolean) {
+        if (!isFavorite) return
         if (!CloudOfflineRepository.isCloudSong(song)) return
         runCatching {
-            if (isFavorite) {
-                if (!preferencesRepository.autoSaveFavoritesFlow.first()) return
-                repository.enqueue(song, OfflineTrackOrigin.FAVORITE)
-            } else {
-                val existing = repository.find(song.contentUriString) ?: return
-                if (existing.origin != OfflineTrackOrigin.FAVORITE) return
-                repository.remove(song)
-            }
+            if (!preferencesRepository.autoSaveFavoritesFlow.first()) return
+            repository.enqueue(song, OfflineTrackOrigin.FAVORITE)
             trim()
         }.onFailure { error ->
             Timber.w(error, "Auto-save failed for %s", song.title)

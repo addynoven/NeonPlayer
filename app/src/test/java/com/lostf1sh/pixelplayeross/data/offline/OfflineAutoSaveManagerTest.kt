@@ -3,7 +3,6 @@ package com.lostf1sh.pixelplayeross.data.offline
 import com.google.common.truth.Truth.assertThat
 import com.lostf1sh.pixelplayeross.data.model.Song
 import com.lostf1sh.pixelplayeross.data.preferences.UserPreferencesRepository
-import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -51,22 +50,11 @@ class OfflineAutoSaveManagerTest {
     }
 
     @Test
-    fun `un-hearting removes a copy the heart created`() = runTest {
-        coEvery { repository.find(song.contentUriString) } returns download(OfflineTrackOrigin.FAVORITE)
-
-        manager.onFavoriteChanged(song, isFavorite = false)
-
-        coVerify { repository.remove(song) }
-    }
-
-    @Test
-    fun `un-hearting keeps a download the listener made`() = runTest {
-        coEvery { repository.find(song.contentUriString) } returns download(OfflineTrackOrigin.USER)
-        every { preferences.recentOfflineCountFlow } returns flowOf(10)
-
+    fun `un-hearting keeps the copy the heart downloaded`() = runTest {
         manager.onFavoriteChanged(song, isFavorite = false)
 
         coVerify(exactly = 0) { repository.remove(any<Song>()) }
+        coVerify(exactly = 0) { repository.enqueue(any(), any()) }
     }
 
     @Test
@@ -87,17 +75,4 @@ class OfflineAutoSaveManagerTest {
 
         coVerify { repository.enqueue(song, OfflineTrackOrigin.RECENT) }
     }
-
-    private fun download(origin: OfflineTrackOrigin) = OfflineDownload(
-        downloadId = "download-1",
-        sourceUri = song.contentUriString,
-        status = OfflineDownloadStatus.COMPLETE,
-        bytesDownloaded = 4_000_000L,
-        totalBytes = 4_000_000L,
-        localPath = "/tmp/song.m4a",
-        errorMessage = null,
-        title = song.title,
-        provider = "youtube",
-        origin = origin
-    )
 }

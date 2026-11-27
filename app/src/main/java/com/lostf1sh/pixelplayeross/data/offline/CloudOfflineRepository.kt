@@ -213,11 +213,6 @@ class CloudOfflineRepository @Inject constructor(
         }
     }
 
-    /** Current row for [sourceUri], used by the auto-save triggers to avoid re-downloading. */
-    suspend fun find(sourceUri: String): OfflineDownload? = withContext(Dispatchers.IO) {
-        dao.getBySourceUri(sourceUri)?.toModel()
-    }
-
     /**
      * Drops automatic copies until the cache fits [limitBytes] and [recentKeep] recent tracks.
      *

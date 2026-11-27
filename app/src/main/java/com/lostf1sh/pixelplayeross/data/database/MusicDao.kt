@@ -513,6 +513,15 @@ interface MusicDao {
     )
     suspend fun getSongByIdOnce(songId: Long): SongEntity?
 
+    @Query("SELECT EXISTS(SELECT 1 FROM songs WHERE id = :songId)")
+    suspend fun songExists(songId: Long): Boolean
+
+    @Query("SELECT EXISTS(SELECT 1 FROM artists WHERE id = :artistId)")
+    suspend fun artistExists(artistId: Long): Boolean
+
+    @Query("SELECT EXISTS(SELECT 1 FROM albums WHERE id = :albumId)")
+    suspend fun albumExists(albumId: Long): Boolean
+
     @Query(
         "SELECT " + SONG_DETAIL_PROJECTION + """
         FROM songs

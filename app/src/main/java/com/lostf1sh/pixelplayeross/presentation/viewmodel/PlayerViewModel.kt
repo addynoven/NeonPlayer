@@ -1012,7 +1012,14 @@ class PlayerViewModel @Inject constructor(
             playbackStateHolder.stablePlayerState
                 .map { state -> state.currentSong }
                 .distinctUntilChanged { previous, current -> previous?.id == current?.id }
-                .collect { song -> song?.let(offlineAutoSave::rememberSong) }
+                .collect { song ->
+                    song ?: return@collect
+                    offlineAutoSave.rememberSong(song)
+                    // Streamed tracks are not part of the library database; storing them the first
+                    // time they play is what makes them show up in the library and in History.
+                    runCatching { musicRepository.storePlayedCloudSong(song) }
+                        .onFailure { Timber.w(it, "Could not store the played cloud song %s", song.id) }
+                }
         }
         dailyMixStateHolder.initialize(viewModelScope)
         lyricsStateHolder.initialize(viewModelScope, lyricsLoadCallback, playbackStateHolder.stablePlayerState)
@@ -1206,6 +1213,8 @@ class PlayerViewModel @Inject constructor(
                     LibraryTabId.FOLDERS -> SortOption.FOLDERS
                     LibraryTabId.LIKED -> SortOption.LIKED
                     LibraryTabId.GENRES -> SortOption.GENRES
+                    // History is always chronological, so it has no user-facing sort options.
+                    LibraryTabId.HISTORY -> emptyList()
                 }
             } finally {
                 Trace.endSection()

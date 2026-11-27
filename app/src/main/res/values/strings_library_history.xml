@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="library_tab_history">History</string>
+    <string name="library_history_empty">Nothing played yet. Songs you stream show up here.</string>
+    <string name="library_history_queue_name">History</string>
+    <string name="lib_empty_history_title">Nothing played yet</string>
+    <string name="lib_empty_history_subtitle">Songs you play from anywhere show up here, newest first.</string>
+</resources>

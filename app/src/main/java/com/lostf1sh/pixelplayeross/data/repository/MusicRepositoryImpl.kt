@@ -26,6 +26,7 @@ import com.lostf1sh.pixelplayeross.data.database.SearchHistoryDao
 import com.lostf1sh.pixelplayeross.data.database.SearchHistoryEntity
 import com.lostf1sh.pixelplayeross.data.database.toAlbum
 import com.lostf1sh.pixelplayeross.data.database.toArtist
+import com.lostf1sh.pixelplayeross.data.database.toCloudSongRows
 import com.lostf1sh.pixelplayeross.data.database.toSearchHistoryItem
 import com.lostf1sh.pixelplayeross.data.database.toSong
 import com.lostf1sh.pixelplayeross.data.model.Album
@@ -41,6 +42,7 @@ import com.lostf1sh.pixelplayeross.data.model.SearchResultItem
 import com.lostf1sh.pixelplayeross.data.model.SortOption
 import com.lostf1sh.pixelplayeross.data.model.FolderSource
 import com.lostf1sh.pixelplayeross.data.model.StorageFilter
+import com.lostf1sh.pixelplayeross.data.offline.CloudOfflineRepository
 import com.lostf1sh.pixelplayeross.data.preferences.PlaylistPreferencesRepository
 import com.lostf1sh.pixelplayeross.data.preferences.UserPreferencesRepository
 import com.lostf1sh.pixelplayeross.ui.theme.GenreThemeUtils
@@ -789,6 +791,20 @@ class MusicRepositoryImpl @Inject constructor(
         return withContext(Dispatchers.IO) {
             musicDao.getSongByPath(path)?.toSong()
         }
+    }
+
+    override suspend fun storePlayedCloudSong(song: Song) = withContext(Dispatchers.IO) {
+        if (!CloudOfflineRepository.isCloudSong(song)) return@withContext
+        val numericId = song.id.toLongOrNull() ?: return@withContext
+        if (musicDao.songExists(numericId)) return@withContext
+        val rows = song.toCloudSongRows() ?: return@withContext
+        // Parent rows are only created when missing: an artist or album shared by several cloud
+        // tracks must keep the artwork and counters it already has.
+        musicDao.insertMusicData(
+            songs = listOf(rows.song),
+            albums = if (musicDao.albumExists(rows.album.id)) emptyList() else listOf(rows.album),
+            artists = if (musicDao.artistExists(rows.artist.id)) emptyList() else listOf(rows.artist)
+        )
     }
 
     override suspend fun invalidateCachesDependentOnAllowedDirectories() {
