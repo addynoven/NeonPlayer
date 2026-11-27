@@ -265,6 +265,7 @@
     <string name="musicbrainz_match_score">Eşleşme güveni: %%%1$d</string>
     <string name="musicbrainz_applied">MusicBrainz tanımlayıcıları kaydedildi. Eksik yıl ve yer tutucu adlar tamamlandı.</string>
     <string name="youtube_search_placeholder">YouTube\'da şarkı veya sanatçı ara</string>
+    <string name="youtube_search_placeholder_link">YouTube\'da ara veya çalma listesi bağlantısı yapıştır</string>
     <string name="youtube_search_hint">Kitaplığınızda olmayan müzikleri YouTube\'da arayın.</string>
     <string name="youtube_no_results">“%1$s” için YouTube sonucu yok</string>
     <string name="youtube_search_failed">YouTube\'a ulaşılamadı</string>

@@ -265,6 +265,7 @@
     <string name="musicbrainz_applied">تم حفظ معرّفات MusicBrainz. تم استكمال السنة المفقودة والأسماء المؤقتة.</string>
     <string name="cloud_playlist_download">تنزيل قائمة التشغيل</string>
     <string name="youtube_search_placeholder">ابحث عن أغانٍ أو فنانين على YouTube</string>
+    <string name="youtube_search_placeholder_link">ابحث على YouTube أو الصق رابط قائمة تشغيل</string>
     <string name="youtube_search_hint">ابحث على YouTube عن موسيقى غير موجودة في مكتبتك.</string>
     <string name="youtube_no_results">لا توجد نتائج على YouTube لـ «%1$s»</string>
     <string name="youtube_search_failed">تعذّر الاتصال بـ YouTube</string>

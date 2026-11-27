@@ -317,6 +317,7 @@
 
     <!-- YouTube dashboard -->
     <string name="youtube_search_placeholder">Search YouTube songs or artists</string>
+    <string name="youtube_search_placeholder_link">Search YouTube or paste a playlist link</string>
     <string name="youtube_search_hint">Search YouTube to add music that is not in your library.</string>
     <string name="youtube_no_results">No YouTube results for “%1$s”</string>
     <string name="youtube_search_failed">Could not reach YouTube</string>

@@ -265,6 +265,7 @@
     <string name="musicbrainz_applied">MusicBrainz-identifikatorer lagret. Manglende år og plassholdernavn ble supplert.</string>
     <string name="cloud_playlist_download">Last ned spilleliste</string>
     <string name="youtube_search_placeholder">Søk etter sanger eller artister på YouTube</string>
+    <string name="youtube_search_placeholder_link">Søk på YouTube eller lim inn en spillelistelenke</string>
     <string name="youtube_search_hint">Søk på YouTube etter musikk som ikke er i biblioteket ditt.</string>
     <string name="youtube_no_results">Ingen YouTube-treff for «%1$s»</string>
     <string name="youtube_search_failed">Fikk ikke kontakt med YouTube</string>

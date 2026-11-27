@@ -285,6 +285,7 @@
     <string name="musicbrainz_applied">已保存 MusicBrainz 标识符，并补全了缺失的年份和占位名称。</string>
     <string name="cloud_playlist_download">下载歌单</string>
     <string name="youtube_search_placeholder">搜索 YouTube 歌曲或歌手</string>
+    <string name="youtube_search_placeholder_link">搜索 YouTube 或粘贴播放列表链接</string>
     <string name="youtube_search_hint">在 YouTube 上搜索曲库中没有的音乐。</string>
     <string name="youtube_no_results">YouTube 上没有“%1$s”的结果</string>
     <string name="youtube_search_failed">无法连接 YouTube</string>

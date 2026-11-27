@@ -280,6 +280,7 @@
     <string name="musicbrainz_match_score">Miera zhody: %1$d %%</string>
     <string name="musicbrainz_applied">Identifikátory MusicBrainz sa uložili. Chýbajúci rok sa doplnil a zástupné názvy sa nahradili.</string>
     <string name="youtube_search_placeholder">Hľadať skladby alebo interpretov na YouTube</string>
+    <string name="youtube_search_placeholder_link">Hľadať na YouTube alebo vložiť odkaz na playlist</string>
     <string name="youtube_search_hint">Hľadajte na YouTube hudbu, ktorá nie je vo vašej knižnici.</string>
     <string name="youtube_no_results">Na YouTube sa nenašlo nič pre „%1$s“</string>
     <string name="youtube_search_failed">YouTube je nedostupný</string>

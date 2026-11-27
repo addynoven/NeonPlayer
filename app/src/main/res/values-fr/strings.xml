@@ -265,6 +265,7 @@
     <string name="musicbrainz_applied">Identifiants MusicBrainz enregistrés. L\'année manquante et les noms génériques ont été complétés.</string>
     <string name="cloud_playlist_download">Télécharger la playlist</string>
     <string name="youtube_search_placeholder">Rechercher des titres ou des artistes sur YouTube</string>
+    <string name="youtube_search_placeholder_link">Rechercher sur YouTube ou coller un lien de playlist</string>
     <string name="youtube_search_hint">Recherchez sur YouTube de la musique absente de votre bibliothèque.</string>
     <string name="youtube_no_results">Aucun résultat YouTube pour « %1$s »</string>
     <string name="youtube_search_failed">Impossible de joindre YouTube</string>

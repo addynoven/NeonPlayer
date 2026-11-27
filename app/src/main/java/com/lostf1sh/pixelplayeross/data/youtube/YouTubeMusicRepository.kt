@@ -31,6 +31,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.ServiceList
+import org.schabi.newpipe.extractor.playlist.PlaylistInfo
 import org.schabi.newpipe.extractor.search.SearchInfo
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import timber.log.Timber
@@ -63,6 +64,12 @@ class YouTubeMusicRepository @Inject constructor(
 
         /** How many results ahead of the tap get resolved in the background. */
         private const val PREFETCH_LIMIT = 2
+
+        /** A pasted playlist link becomes a queue; cap it so a 5000-song list cannot hang the load. */
+        private const val MAX_PLAYLIST_ITEMS = 300
+
+        /** Upper bound on continuation pages fetched for one playlist. */
+        private const val MAX_PLAYLIST_PAGES = 12
 
         /** Joined budget for both probe requests; the resolver falls through on timeout. */
         private const val PROBE_TIMEOUT_MS = 8_000L
@@ -302,6 +309,65 @@ class YouTubeMusicRepository @Inject constructor(
         }
     }
 
+    /**
+     * Resolve a YouTube playlist link into songs the player can queue, using the same extractor
+     * as search so every item carries the same ids, artwork and stream URI a search hit would.
+     *
+     * Links arrive in every shape YouTube hands out (watch links with `&list=`, music.youtube.com
+     * share links, or a bare id), so the id is parsed first and one canonical URL is fetched.
+     */
+    suspend fun fetchPlaylist(
+        linkOrId: String,
+        maxItems: Int = MAX_PLAYLIST_ITEMS
+    ): Result<YouTubePlaylist> = withContext(Dispatchers.IO) {
+        val playlistId = extractYouTubePlaylistId(linkOrId)
+            ?: return@withContext Result.failure(
+                IllegalArgumentException("Not a YouTube playlist link: $linkOrId")
+            )
+        val playlistUrl = "https://www.youtube.com/playlist?list=$playlistId"
+
+        try {
+            val info = PlaylistInfo.getInfo(ServiceList.YouTube, playlistUrl)
+            // Keep insertion order: the queue should play in the order the playlist shows.
+            val songs = LinkedHashMap<String, Song>()
+            fun add(item: StreamInfoItem) {
+                if (songs.size >= maxItems) return
+                val song = mapStreamInfoToSong(item)
+                if (!songs.containsKey(song.path)) songs[song.path] = song
+            }
+
+            info.relatedItems.filterIsInstance<StreamInfoItem>().forEach(::add)
+            var page = info.nextPage
+            var pages = 0
+            while (page != null && songs.size < maxItems && pages < MAX_PLAYLIST_PAGES) {
+                val more = PlaylistInfo.getMoreItems(ServiceList.YouTube, playlistUrl, page)
+                more.items.filterIsInstance<StreamInfoItem>().forEach(::add)
+                page = more.nextPage
+                pages++
+            }
+
+            val ordered = songs.values.toList()
+            if (ordered.isEmpty()) {
+                return@withContext Result.failure(
+                    IllegalStateException("Playlist $playlistId has no playable items")
+                )
+            }
+            prefetchStreamUrls(ordered, limit = PREFETCH_LIMIT)
+            Timber.d("Loaded playlist %s (%d items in %d pages)", playlistId, ordered.size, pages)
+            Result.success(
+                YouTubePlaylist(
+                    id = playlistId,
+                    title = info.name?.takeIf { it.isNotBlank() } ?: playlistId,
+                    songs = ordered
+                )
+            )
+        } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Timber.e(e, "Could not load YouTube playlist: %s", playlistId)
+            Result.failure(e)
+        }
+    }
     /**
      * Resolve the direct audio stream URL for a given YouTube [videoId].
      *
@@ -1003,3 +1069,34 @@ class YouTubeMusicRepository @Inject constructor(
         return 7_200_000_000_000L + (albumName.hashCode().toLong().absoluteValue % 1_000_000_000_000L)
     }
 }
+
+/**
+ * A YouTube playlist resolved into the queue shape the player already uses.
+ */
+data class YouTubePlaylist(
+    val id: String,
+    val title: String,
+    val songs: List<Song>
+)
+
+/**
+ * Pull a playlist id out of anything a user is likely to paste.
+ *
+ * Handles `youtube.com/playlist?list=…`, `music.youtube.com/…`, watch links that carry
+ * `&list=…` (a song opened inside a playlist), the `VL` prefix InnerTube uses for browse ids,
+ * and a bare playlist id. Returns null for anything else, so a plain search still searches.
+ */
+internal fun extractYouTubePlaylistId(input: String): String? {
+    val text = input.trim()
+    if (text.isEmpty()) return null
+
+    val fromQuery = text.substringAfter("list=", "").substringBefore('&').substringBefore('#')
+    val candidate = (fromQuery.ifBlank { text }).trim().removePrefix("VL")
+    if (candidate.isEmpty()) return null
+    if (!candidate.matches(YOUTUBE_PLAYLIST_ID)) return null
+    return candidate
+}
+
+/** Playlist ids are `PL…`, `OLAK5uy_…` (auto-generated album playlists) or `RD…` mixes. */
+private val YOUTUBE_PLAYLIST_ID = Regex("^(PL|OLAK5uy_|RD|UU|LL|FL)[A-Za-z0-9_-]{10,60}$")
+

@@ -265,6 +265,7 @@
     <string name="musicbrainz_applied">MusicBrainz-IDs gespeichert. Fehlendes Jahr und Platzhalternamen wurden ergänzt.</string>
     <string name="cloud_playlist_download">Playlist herunterladen</string>
     <string name="youtube_search_placeholder">YouTube-Songs oder Künstler suchen</string>
+    <string name="youtube_search_placeholder_link">YouTube durchsuchen oder Playlist-Link einfügen</string>
     <string name="youtube_search_hint">Suche auf YouTube nach Musik, die nicht in deiner Bibliothek ist.</string>
     <string name="youtube_no_results">Keine YouTube-Ergebnisse für „%1$s“</string>
     <string name="youtube_search_failed">YouTube ist nicht erreichbar</string>

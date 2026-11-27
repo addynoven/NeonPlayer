@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -100,7 +101,7 @@ fun YouTubeDashboardScreen(
                 value = uiState.searchQuery,
                 onValueChange = { viewModel.onSearchQueryChanged(it) },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(R.string.youtube_search_placeholder)) },
+                placeholder = { Text(stringResource(R.string.youtube_search_placeholder_link)) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
                     Button(
@@ -118,6 +119,15 @@ fun YouTubeDashboardScreen(
             if (uiState.isSearching || uiState.isSyncing) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            val playlistTitle = uiState.playlistTitle
+            if (playlistTitle != null) {
+                YouTubePlaylistHeader(
+                    title = playlistTitle,
+                    songCount = uiState.searchResults.size
+                )
+                Spacer(modifier = Modifier.height(12.dp))
             }
 
             val error = uiState.errorMessage
@@ -149,6 +159,29 @@ fun YouTubeDashboardScreen(
                 else -> YouTubeEmptyState(text = stringResource(R.string.youtube_search_hint))
             }
         }
+    }
+}
+
+@Composable
+private fun YouTubePlaylistHeader(title: String, songCount: Int) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = stringResource(R.string.dash_song_count, songCount),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

@@ -279,6 +279,7 @@
     <string name="musicbrainz_match_score">Spolehlivost shody: %1$d %%</string>
     <string name="musicbrainz_applied">Identifikátory MusicBrainz byly uloženy. Chybějící rok byl doplněn a zástupné názvy nahrazeny.</string>
     <string name="youtube_search_placeholder">Hledat skladby nebo interprety na YouTube</string>
+    <string name="youtube_search_placeholder_link">Hledat na YouTube nebo vložit odkaz na playlist</string>
     <string name="youtube_search_hint">Hledejte na YouTube hudbu, která není ve vaší knihovně.</string>
     <string name="youtube_no_results">Na YouTube nic nenalezeno pro „%1$s“</string>
     <string name="youtube_search_failed">YouTube je nedostupný</string>

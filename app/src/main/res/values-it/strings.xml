@@ -265,6 +265,7 @@
     <string name="musicbrainz_applied">Identificatori MusicBrainz salvati. Sono stati integrati l\'anno mancante e i nomi segnaposto.</string>
     <string name="cloud_playlist_download">Scarica playlist</string>
     <string name="youtube_search_placeholder">Cerca brani o artisti su YouTube</string>
+    <string name="youtube_search_placeholder_link">Cerca su YouTube o incolla un link a una playlist</string>
     <string name="youtube_search_hint">Cerca su YouTube la musica che non è nella tua libreria.</string>
     <string name="youtube_no_results">Nessun risultato YouTube per «%1$s»</string>
     <string name="youtube_search_failed">Impossibile raggiungere YouTube</string>
