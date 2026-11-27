@@ -29,6 +29,14 @@ class YouTubeStreamProxy @Inject constructor(
     )
     override val cacheExpirationMs = 3L * 60 * 60 * 1000 // 3 hours
     override val proxyTag = "YouTubeStreamProxy"
+
+    /**
+     * googlevideo sometimes stalls one range request for 8-11 s while the rest of the file
+     * comes down in ~150 ms chunks. ExoPlayer abandons the connection after its own 8 s read
+     * timeout, so the stall becomes an audible gap plus a reconnect; giving the chunk a
+     * deadline instead lets the relay retry it on a freshly resolved URL.
+     */
+    override val chunkCallTimeoutSeconds: Long? = 4L
     override val routePath = "/youtube/{videoId}"
     override val routeParamName = "videoId"
     override val uriScheme = "youtube"

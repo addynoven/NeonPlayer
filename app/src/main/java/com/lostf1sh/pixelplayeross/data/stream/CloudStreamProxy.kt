@@ -82,6 +82,23 @@ abstract class CloudStreamProxy<K : Any>(
             .build()
     }
 
+    /**
+     * Deadline for fetching one bounded-range chunk, or null to let a chunk run as long as the
+     * upstream needs. googlevideo nodes do occasionally stall a single range request for
+     * 8-11 s; ExoPlayer gives up on the whole connection after its own 8 s read timeout, so the
+     * listener hears a gap and the player re-opens the stream at a new offset. Ending the
+     * stalled request early lets [fetchAndRelayChunk] evict that URL and retry on a freshly
+     * resolved one. Left null for servers where a slow chunk is normal (a home NAS, a cloud
+     * host on mobile data) — cutting those off would only cause churn.
+     */
+    protected open val chunkCallTimeoutSeconds: Long? = null
+
+    private val chunkClient: OkHttpClient by lazy {
+        streamingClient.newBuilder().apply {
+            chunkCallTimeoutSeconds?.let { callTimeout(it, TimeUnit.SECONDS) }
+        }.build()
+    }
+
     @Volatile
     private var sessionToken: String = ""
 
@@ -583,7 +600,15 @@ abstract class CloudStreamProxy<K : Any>(
         writer: ByteWriteChannel
     ): Boolean {
         var url = getOrFetchStreamUrl(id) ?: return false
-        repeat(2) { attempt ->
+        // Two tries under the per-chunk deadline, then one last try with the plain client:
+        // a stalled request is worth abandoning early, but a slow chunk that does arrive
+        // is always better than dropping the stream and skipping the track.
+        val clients = if (chunkCallTimeoutSeconds == null) {
+            listOf(streamingClient, streamingClient)
+        } else {
+            listOf(chunkClient, chunkClient, streamingClient)
+        }
+        for (client in clients) {
             val request = Request.Builder().url(url)
                 .header("Range", "bytes=$start-$end")
             upstreamHeadersForUrl(id, url).forEach { (name, value) ->
@@ -594,19 +619,25 @@ abstract class CloudStreamProxy<K : Any>(
             // retry once. Returning false lets the caller shrink the window as well.
             val response = try {
                 withContext(Dispatchers.IO) {
-                    streamingClient.newCall(request.build()).execute()
+                    client.newCall(request.build()).execute()
                 }
             } catch (e: kotlinx.coroutines.CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Timber.w(e, "%s upstream chunk %s-%s failed before response", proxyTag, start, end)
+                val stalledFor = chunkCallTimeoutSeconds
+                val stalled = e is java.io.InterruptedIOException && stalledFor != null
+                Timber.w(
+                    e,
+                    "%s upstream chunk %s-%s failed before response" + (if (stalled) " (stalled past " + stalledFor + "s)" else ""),
+                    proxyTag, start, end
+                )
                 null
             }
             if (response == null) {
                 evictResolvedStream(id)
                 urlCache.remove(id)
                 url = getOrFetchStreamUrl(id) ?: return false
-                return@repeat
+                continue
             }
             response.use { upstream ->
                 when (upstream.code) {
