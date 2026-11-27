@@ -389,7 +389,7 @@ private fun DownloadItemCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = download.provider.replaceFirstChar { it.uppercase() },
+                    text = download.provider.providerLabel(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1
@@ -504,6 +504,12 @@ private fun OfflineDownloadStatus.visual(): DownloadVisual = when (this) {
         { MaterialTheme.colorScheme.errorContainer },
         { MaterialTheme.colorScheme.onErrorContainer }
     )
+}
+
+/** Provider ids are lowercase config values; YouTube keeps its own capitalisation. */
+private fun String.providerLabel(): String = when (this) {
+    "youtube" -> "YouTube"
+    else -> replaceFirstChar { it.uppercase() }
 }
 
 @Composable
