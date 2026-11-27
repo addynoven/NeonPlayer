@@ -3,13 +3,17 @@ package com.lostf1sh.pixelplayeross.presentation.youtube.playlist
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lostf1sh.pixelplayeross.data.offline.CloudOfflineRepository
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistCache
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylist
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,6 +28,7 @@ import timber.log.Timber
 class YouTubePlaylistViewModel @Inject constructor(
     private val youtubeMusicRepository: YouTubeMusicRepository,
     private val playlistCache: YouTubePlaylistCache,
+    private val cloudOfflineRepository: CloudOfflineRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -33,6 +38,12 @@ class YouTubePlaylistViewModel @Inject constructor(
     val uiState: StateFlow<YouTubePlaylistUiState> = _uiState.asStateFlow()
 
     private var loadStarted = false
+
+    /** Number of tracks queued by the last [downloadAll]; zero when they were already saved. */
+    private val _queuedDownloads = MutableSharedFlow<Int>(extraBufferCapacity = 1)
+    val queuedDownloads: SharedFlow<Int> = _queuedDownloads.asSharedFlow()
+
+    private var downloadStarted = false
 
     fun load() {
         if (playlistId.isBlank() || loadStarted) return
@@ -70,6 +81,24 @@ class YouTubePlaylistViewModel @Inject constructor(
                         }
                     }
                 }
+        }
+    }
+
+    /** Saves every track of the playlist for offline playback. */
+    fun downloadAll() {
+        val playlist = _uiState.value.playlist ?: return
+        if (downloadStarted) return
+        downloadStarted = true
+        viewModelScope.launch {
+            val queued = try {
+                cloudOfflineRepository.enqueueAll(playlist.songs)
+            } catch (error: Exception) {
+                Timber.e(error, "Could not queue YouTube playlist download %s", playlistId)
+                0
+            } finally {
+                downloadStarted = false
+            }
+            _queuedDownloads.emit(queued)
         }
     }
 

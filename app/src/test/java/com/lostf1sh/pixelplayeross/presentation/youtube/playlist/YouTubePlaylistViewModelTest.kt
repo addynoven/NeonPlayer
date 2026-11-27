@@ -4,12 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.common.truth.Truth.assertThat
 import com.lostf1sh.pixelplayeross.MainCoroutineExtension
 import com.lostf1sh.pixelplayeross.data.model.Song
+import com.lostf1sh.pixelplayeross.data.offline.CloudOfflineRepository
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylist
 import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistCache
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -22,6 +24,7 @@ class YouTubePlaylistViewModelTest {
 
     private val repository = mockk<YouTubeMusicRepository>()
     private val cache = mockk<YouTubePlaylistCache>(relaxed = true)
+    private val offlineRepository = mockk<CloudOfflineRepository>(relaxed = true)
 
     @BeforeEach
     fun setUp() {
@@ -109,9 +112,29 @@ class YouTubePlaylistViewModelTest {
         io.mockk.coVerify(exactly = 1) { repository.fetchPlaylist("PL3", prefetch = false) }
     }
 
+    @Test
+    fun `downloading saves every track of the playlist`() = runTest {
+        val playlist = playlist("PL6", songs("h", "i"))
+        coEvery { repository.fetchPlaylist("PL6", prefetch = false) } returns Result.success(playlist)
+        coEvery { offlineRepository.enqueueAll(playlist.songs) } returns 2
+
+        val viewModel = viewModel("PL6")
+        viewModel.load()
+        advanceUntilIdle()
+
+        val queued = mutableListOf<Int>()
+        val job = launch { viewModel.queuedDownloads.collect { queued += it } }
+        viewModel.downloadAll()
+        advanceUntilIdle()
+        job.cancel()
+
+        assertThat(queued).containsExactly(2)
+    }
+
     private fun viewModel(playlistId: String) = YouTubePlaylistViewModel(
         youtubeMusicRepository = repository,
         playlistCache = cache,
+        cloudOfflineRepository = offlineRepository,
         savedStateHandle = SavedStateHandle(mapOf("playlistId" to playlistId))
     )
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,8 +53,25 @@ fun YouTubePlaylistScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val playerState by playerViewModel.stablePlayerState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) { viewModel.load() }
+
+    LaunchedEffect(viewModel) {
+        viewModel.queuedDownloads.collect { count ->
+            playerViewModel.sendToast(
+                if (count == 0) {
+                    context.getString(R.string.youtube_playlist_download_none)
+                } else {
+                    context.resources.getQuantityString(
+                        R.plurals.youtube_playlist_download_queued,
+                        count,
+                        count
+                    )
+                }
+            )
+        }
+    }
 
     val playlist = uiState.playlist
     val isThisQueuePlaying = playlist != null &&
@@ -75,6 +94,19 @@ fun YouTubePlaylistScreen(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back)
                         )
+                    }
+                },
+                actions = {
+                    // Saving needs the network, and the saved copy is what you have when it is gone.
+                    if (playlist != null && !uiState.isFromCache) {
+                        IconButton(onClick = { viewModel.downloadAll() }) {
+                            Icon(
+                                imageVector = Icons.Default.Download,
+                                contentDescription = stringResource(
+                                    R.string.youtube_playlist_download_action
+                                )
+                            )
+                        }
                     }
                 }
             )
