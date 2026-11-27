@@ -12,6 +12,7 @@ import com.lostf1sh.pixelplayeross.data.offline.CloudExportResult
 import com.lostf1sh.pixelplayeross.data.offline.CloudOfflineRepository
 import com.lostf1sh.pixelplayeross.data.offline.OfflineDownload
 import com.lostf1sh.pixelplayeross.data.offline.OfflineDownloadStatus
+import com.lostf1sh.pixelplayeross.data.preferences.UserPreferencesRepository
 import com.lostf1sh.pixelplayeross.data.repository.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
@@ -60,7 +61,8 @@ internal fun List<OfflineDownload>.toCloudDownloadsUiState(): CloudDownloadsUiSt
 class CloudDownloadsViewModel @Inject constructor(
     private val repository: CloudOfflineRepository,
     private val musicRepository: MusicRepository,
-    private val exports: CloudDownloadExports
+    private val exports: CloudDownloadExports,
+    private val preferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
     val exportFolder = exports.folder
     private val _feedback = MutableSharedFlow<CloudDownloadFeedback>()
@@ -75,6 +77,40 @@ class CloudDownloadsViewModel @Inject constructor(
             started = SharingStarted.Eagerly,
             initialValue = CloudDownloadsUiState()
         )
+
+    val autoSaveFavorites = preferencesRepository.autoSaveFavoritesFlow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    val recentOfflineCount = preferencesRepository.recentOfflineCountFlow.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        UserPreferencesRepository.DEFAULT_RECENT_OFFLINE_COUNT
+    )
+
+    val storageLimitMb = preferencesRepository.offlineStorageLimitMbFlow.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        UserPreferencesRepository.DEFAULT_OFFLINE_STORAGE_LIMIT_MB
+    )
+
+    val wifiOnly = preferencesRepository.downloadsWifiOnlyFlow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    fun setAutoSaveFavorites(enabled: Boolean) {
+        viewModelScope.launch { preferencesRepository.setAutoSaveFavorites(enabled) }
+    }
+
+    fun setRecentOfflineCount(count: Int) {
+        viewModelScope.launch { preferencesRepository.setRecentOfflineCount(count) }
+    }
+
+    fun setStorageLimitMb(megabytes: Int) {
+        viewModelScope.launch { preferencesRepository.setOfflineStorageLimitMb(megabytes) }
+    }
+
+    fun setWifiOnly(enabled: Boolean) {
+        viewModelScope.launch { preferencesRepository.setDownloadsWifiOnly(enabled) }
+    }
 
     fun remove(download: OfflineDownload) {
         viewModelScope.launch { repository.remove(download.sourceUri) }

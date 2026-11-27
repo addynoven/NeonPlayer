@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.lostf1sh.pixelplayeross.data.offline.OfflineTrackOrigin
 
 /**
  * Persistent state for an app-private copy of a cloud track.
@@ -35,5 +36,7 @@ data class OfflineTrackEntity(
     @ColumnInfo(name = "total_bytes") val totalBytes: Long? = null,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
-    @ColumnInfo(name = "error_message") val errorMessage: String? = null
+    @ColumnInfo(name = "error_message") val errorMessage: String? = null,
+    /** [OfflineTrackOrigin.storageValue] — who asked for this copy and what may delete it. */
+    val origin: String = OfflineTrackOrigin.USER.storageValue
 )

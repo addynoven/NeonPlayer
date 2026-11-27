@@ -5,6 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import com.lostf1sh.pixelplayeross.data.DailyMixManager
 import com.lostf1sh.pixelplayeross.data.listenbrainz.ScrobbleManager
 import com.lostf1sh.pixelplayeross.data.model.Song
+import com.lostf1sh.pixelplayeross.data.offline.OfflineAutoSaveManager
 import com.lostf1sh.pixelplayeross.data.stats.PlaybackStatsRepository
 import io.mockk.coVerify
 import io.mockk.every
@@ -21,6 +22,7 @@ class ListeningStatsTrackerTest {
     private val dailyMixManager: DailyMixManager = mockk(relaxed = true)
     private val playbackStatsRepository: PlaybackStatsRepository = mockk(relaxed = true)
     private val scrobbleManager: ScrobbleManager = mockk(relaxed = true)
+    private val offlineAutoSave: OfflineAutoSaveManager = mockk(relaxed = true)
 
     @BeforeEach
     fun setUp() {
@@ -37,7 +39,8 @@ class ListeningStatsTrackerTest {
         val tracker = ListeningStatsTracker(
             dailyMixManager = dailyMixManager,
             playbackStatsRepository = playbackStatsRepository,
-            scrobbleManager = scrobbleManager
+            scrobbleManager = scrobbleManager,
+            offlineAutoSave = offlineAutoSave
         )
         val song = song(
             songId = "looped-song",
@@ -71,7 +74,8 @@ class ListeningStatsTrackerTest {
         val tracker = ListeningStatsTracker(
             dailyMixManager = dailyMixManager,
             playbackStatsRepository = playbackStatsRepository,
-            scrobbleManager = scrobbleManager
+            scrobbleManager = scrobbleManager,
+            offlineAutoSave = offlineAutoSave
         )
         val song = song(songId = "song-1")
         val firstChunkMs = 7_000L

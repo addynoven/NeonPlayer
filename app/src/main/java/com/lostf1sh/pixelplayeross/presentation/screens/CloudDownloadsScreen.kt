@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +38,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -43,6 +46,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -67,6 +71,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lostf1sh.pixelplayeross.R
 import com.lostf1sh.pixelplayeross.data.offline.OfflineDownload
 import com.lostf1sh.pixelplayeross.data.offline.OfflineDownloadStatus
+import com.lostf1sh.pixelplayeross.data.offline.OfflineTrackOrigin
 import com.lostf1sh.pixelplayeross.presentation.components.MiniPlayerHeight
 import com.lostf1sh.pixelplayeross.presentation.viewmodel.CloudDownloadsViewModel
 
@@ -78,6 +83,10 @@ fun CloudDownloadsScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val exportFolder by viewModel.exportFolder.collectAsStateWithLifecycle(initialValue = null)
     val queueingAll by viewModel.queueingAll.collectAsStateWithLifecycle()
+    val autoSaveFavorites by viewModel.autoSaveFavorites.collectAsStateWithLifecycle()
+    val recentOfflineCount by viewModel.recentOfflineCount.collectAsStateWithLifecycle()
+    val storageLimitMb by viewModel.storageLimitMb.collectAsStateWithLifecycle()
+    val wifiOnly by viewModel.wifiOnly.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var confirmDownloadAll by rememberSaveable { mutableStateOf(false) }
     val folderPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
@@ -155,6 +164,19 @@ fun CloudDownloadsScreen(
                     usedBytes = state.usedBytes,
                     completedCount = state.completed.size,
                     totalCount = state.totalCount
+                )
+            }
+
+            item {
+                AutoSaveCard(
+                    autoSaveFavorites = autoSaveFavorites,
+                    onAutoSaveFavorites = viewModel::setAutoSaveFavorites,
+                    recentOfflineCount = recentOfflineCount,
+                    onRecentOfflineCount = viewModel::setRecentOfflineCount,
+                    storageLimitMb = storageLimitMb,
+                    onStorageLimitMb = viewModel::setStorageLimitMb,
+                    wifiOnly = wifiOnly,
+                    onWifiOnly = viewModel::setWifiOnly
                 )
             }
 
@@ -388,12 +410,22 @@ private fun DownloadItemCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = download.provider.providerLabel(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = download.provider.providerLabel(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
+                    if (download.origin != OfflineTrackOrigin.USER) {
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.cloud_downloads_auto_badge),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = statusText(download, context),
@@ -441,6 +473,120 @@ private fun DownloadItemCard(
                     Icons.Rounded.Delete,
                     contentDescription = stringResource(R.string.cloud_remove_download),
                     tint = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AutoSaveCard(
+    autoSaveFavorites: Boolean,
+    onAutoSaveFavorites: (Boolean) -> Unit,
+    recentOfflineCount: Int,
+    onRecentOfflineCount: (Int) -> Unit,
+    storageLimitMb: Int,
+    onStorageLimitMb: (Int) -> Unit,
+    wifiOnly: Boolean,
+    onWifiOnly: (Boolean) -> Unit
+) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp)) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    stringResource(R.string.cloud_downloads_auto_title),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    stringResource(R.string.cloud_downloads_auto_summary),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            SwitchRow(
+                title = stringResource(R.string.cloud_downloads_auto_favorites_title),
+                subtitle = stringResource(R.string.cloud_downloads_auto_favorites_summary),
+                checked = autoSaveFavorites,
+                onCheckedChange = onAutoSaveFavorites
+            )
+            ChoiceRow(
+                title = stringResource(R.string.cloud_downloads_recent_title),
+                subtitle = stringResource(R.string.cloud_downloads_recent_summary),
+                options = listOf(0 to stringResource(R.string.cloud_downloads_recent_off)) +
+                    listOf(5, 10, 20).map { count -> count to count.toString() },
+                selected = recentOfflineCount,
+                onSelect = onRecentOfflineCount
+            )
+            ChoiceRow(
+                title = stringResource(R.string.cloud_downloads_storage_limit_title),
+                subtitle = stringResource(R.string.cloud_downloads_storage_limit_summary),
+                options = listOf(
+                    0 to stringResource(R.string.cloud_downloads_storage_unlimited),
+                    500 to stringResource(R.string.cloud_downloads_storage_500_mb),
+                    1024 to stringResource(R.string.cloud_downloads_storage_1_gb),
+                    2048 to stringResource(R.string.cloud_downloads_storage_2_gb)
+                ),
+                selected = storageLimitMb,
+                onSelect = onStorageLimitMb
+            )
+            SwitchRow(
+                title = stringResource(R.string.cloud_downloads_wifi_title),
+                subtitle = stringResource(R.string.cloud_downloads_wifi_summary),
+                checked = wifiOnly,
+                onCheckedChange = onWifiOnly
+            )
+        }
+    }
+}
+
+@Composable
+private fun SwitchRow(
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+}
+
+@Composable
+private fun ChoiceRow(
+    title: String,
+    subtitle: String,
+    options: List<Pair<Int, String>>,
+    selected: Int,
+    onSelect: (Int) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(title, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            subtitle,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row(
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            options.forEach { (value, label) ->
+                FilterChip(
+                    selected = value == selected,
+                    onClick = { onSelect(value) },
+                    label = { Text(label) }
                 )
             }
         }

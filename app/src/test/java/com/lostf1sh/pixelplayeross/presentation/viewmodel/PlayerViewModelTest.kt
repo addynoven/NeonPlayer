@@ -263,7 +263,8 @@ class PlayerViewModelTest {
             mockMediaControllerFactory,
             testDispatchers,
             mockk(relaxed = true),
-            mockPlaylistCache
+            mockPlaylistCache,
+            mockk(relaxed = true)
         )
     }
 

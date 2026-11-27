@@ -8,6 +8,7 @@ import com.lostf1sh.pixelplayeross.data.offline.CloudOfflineRepository
 import com.lostf1sh.pixelplayeross.data.offline.OfflineDownload
 import com.lostf1sh.pixelplayeross.data.offline.OfflineDownloadStatus
 import com.lostf1sh.pixelplayeross.data.model.Song
+import com.lostf1sh.pixelplayeross.data.preferences.UserPreferencesRepository
 import com.lostf1sh.pixelplayeross.data.repository.MusicRepository
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -147,7 +148,12 @@ class CloudDownloadsViewModelTest {
     ): CloudDownloadsViewModel {
         val exports = mockk<CloudDownloadExports>()
         every { exports.folder } returns flowOf(null)
-        return CloudDownloadsViewModel(repository, music, exports)
+        val preferences = mockk<UserPreferencesRepository>(relaxed = true)
+        every { preferences.autoSaveFavoritesFlow } returns flowOf(true)
+        every { preferences.recentOfflineCountFlow } returns flowOf(10)
+        every { preferences.offlineStorageLimitMbFlow } returns flowOf(1024)
+        every { preferences.downloadsWifiOnlyFlow } returns flowOf(true)
+        return CloudDownloadsViewModel(repository, music, exports, preferences)
     }
 
     private fun download(

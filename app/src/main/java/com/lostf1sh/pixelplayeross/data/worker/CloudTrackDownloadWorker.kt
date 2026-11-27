@@ -46,6 +46,7 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
     private val jellyfinRepository: JellyfinRepository,
     private val youTubeMusicRepository: YouTubeMusicRepository,
     private val exports: CloudDownloadExports,
+    private val offlineAutoSave: com.lostf1sh.pixelplayeross.data.offline.OfflineAutoSaveManager,
     baseOkHttpClient: OkHttpClient
 ) : CoroutineWorker(appContext, workerParams) {
     private val client = baseOkHttpClient.newBuilder()
@@ -165,6 +166,8 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
             }
         }
         completedFile?.let { file -> finishExport(entity, file, resumeInterruptedCopy = false) }
+        // The download just grew the cache; keep it inside the size budget the listener picked.
+        if (completedFile != null) offlineAutoSave.trim()
         result
     }
 

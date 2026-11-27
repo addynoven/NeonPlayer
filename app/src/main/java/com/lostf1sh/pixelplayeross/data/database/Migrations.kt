@@ -162,6 +162,19 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
  * Existing rows are copied in their current order and assigned dense positions so even legacy
  * databases with duplicate sort values migrate without dropping a song.
  */
+/**
+ * Auto-saved copies need to be distinguishable from downloads the listener asked for, so the
+ * cache can be pruned without deleting someone's library. Every existing row was a deliberate
+ * download, hence the default.
+ */
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "ALTER TABLE `offline_tracks` ADD COLUMN `origin` TEXT NOT NULL DEFAULT 'user'"
+        )
+    }
+}
+
 val MIGRATION_5_6 = object : Migration(5, 6) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("DROP TABLE IF EXISTS `playlist_songs_v6`")

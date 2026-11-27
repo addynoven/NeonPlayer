@@ -3,6 +3,7 @@ package com.lostf1sh.pixelplayeross.presentation.viewmodel
 import android.os.SystemClock
 import androidx.media3.common.C
 import com.lostf1sh.pixelplayeross.data.DailyMixManager
+import com.lostf1sh.pixelplayeross.data.offline.OfflineAutoSaveManager
 import com.lostf1sh.pixelplayeross.data.listenbrainz.ScrobbleManager
 import com.lostf1sh.pixelplayeross.data.model.Song
 import com.lostf1sh.pixelplayeross.data.stats.PlaybackStatsRepository
@@ -33,7 +34,8 @@ import timber.log.Timber
 class ListeningStatsTracker @Inject constructor(
     private val dailyMixManager: DailyMixManager,
     private val playbackStatsRepository: PlaybackStatsRepository,
-    private val scrobbleManager: ScrobbleManager
+    private val scrobbleManager: ScrobbleManager,
+    private val offlineAutoSave: OfflineAutoSaveManager
 ) {
     private var currentSession: ActiveSession? = null
     private var pendingVoluntarySongId: String? = null
@@ -313,6 +315,8 @@ class ListeningStatsTracker @Inject constructor(
             durationMs = listened,
             timestamp = timestamp
         )
+        // A track the listener actually sat through is worth keeping for the next outage.
+        offlineAutoSave.onListened(songId = songId, listenedMs = listened)
     }
 
     private fun accumulateRealtimeListening(session: ActiveSession, nowRealtime: Long) {

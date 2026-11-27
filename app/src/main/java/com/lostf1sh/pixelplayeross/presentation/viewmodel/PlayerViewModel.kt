@@ -305,7 +305,8 @@ class PlayerViewModel @Inject constructor(
     private val mediaControllerFactory: com.lostf1sh.pixelplayeross.data.media.MediaControllerFactory,
     private val dispatchers: DispatcherProvider,
     private val youtubeMusicRepository: com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository,
-    private val youTubePlaylistCache: com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistCache
+    private val youTubePlaylistCache: com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistCache,
+    private val offlineAutoSave: com.lostf1sh.pixelplayeross.data.offline.OfflineAutoSaveManager
 ) : ViewModel() {
 
     /**
@@ -1005,6 +1006,14 @@ class PlayerViewModel @Inject constructor(
         }
         viewModelScope.launch { offerToRestoreInterruptedSaves() }
         listeningStatsTracker.initialize(viewModelScope)
+        // The auto-save triggers only get a song id from the player, so keep the songs that pass
+        // through it here; a YouTube track is otherwise unreachable once it leaves the queue.
+        viewModelScope.launch {
+            playbackStateHolder.stablePlayerState
+                .map { state -> state.currentSong }
+                .distinctUntilChanged { previous, current -> previous?.id == current?.id }
+                .collect { song -> song?.let(offlineAutoSave::rememberSong) }
+        }
         dailyMixStateHolder.initialize(viewModelScope)
         lyricsStateHolder.initialize(viewModelScope, lyricsLoadCallback, playbackStateHolder.stablePlayerState)
         playbackStateHolder.initialize(coroutineScope = viewModelScope)
@@ -3409,6 +3418,7 @@ class PlayerViewModel @Inject constructor(
             val favoriteSongId = resolveFavoriteSongId(currentSong) ?: return@launch
             val currentlyFavorite = favoriteSongIds.value.contains(favoriteSongId)
             setFavoriteStatusEverywhere(favoriteSongId, !currentlyFavorite)
+            offlineAutoSave.onFavoriteChanged(currentSong, !currentlyFavorite)
         }
     }
 
@@ -3418,6 +3428,7 @@ class PlayerViewModel @Inject constructor(
             val currentlyFavorite = favoriteSongIds.value.contains(favoriteSongId)
             val targetFavoriteState = if (removing) false else !currentlyFavorite
             setFavoriteStatusEverywhere(favoriteSongId, targetFavoriteState)
+            offlineAutoSave.onFavoriteChanged(song, targetFavoriteState)
         }
     }
 

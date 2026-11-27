@@ -14,6 +14,7 @@ import androidx.work.workDataOf
 import com.lostf1sh.pixelplayeross.data.database.OfflineTrackDao
 import com.lostf1sh.pixelplayeross.data.database.OfflineTrackEntity
 import com.lostf1sh.pixelplayeross.data.model.Song
+import com.lostf1sh.pixelplayeross.data.preferences.UserPreferencesRepository
 import com.lostf1sh.pixelplayeross.data.worker.CloudTrackDownloadWorker
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -25,6 +26,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -51,7 +53,8 @@ data class OfflineDownload(
     val localPath: String?,
     val errorMessage: String?,
     val title: String = "",
-    val provider: String = ""
+    val provider: String = "",
+    val origin: OfflineTrackOrigin = OfflineTrackOrigin.USER
 ) {
     val progress: Float?
         get() = totalBytes?.takeIf { it > 0L }
@@ -62,7 +65,8 @@ data class OfflineDownload(
 class CloudOfflineRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val dao: OfflineTrackDao,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
+    private val preferencesRepository: UserPreferencesRepository
 ) {
     private val mutationMutex = Mutex()
 
@@ -77,13 +81,17 @@ class CloudOfflineRepository @Inject constructor(
     fun observeAll(): Flow<List<OfflineDownload>> =
         dao.observeAll().map { rows -> rows.map(OfflineTrackEntity::toModel) }
 
-    suspend fun enqueue(song: Song) {
-        enqueueAll(listOf(song))
+    suspend fun enqueue(song: Song, origin: OfflineTrackOrigin = OfflineTrackOrigin.USER) {
+        enqueueAll(listOf(song), origin)
     }
 
-    suspend fun enqueueAll(songs: Collection<Song>): Int = withContext(Dispatchers.IO) {
+    suspend fun enqueueAll(
+        songs: Collection<Song>,
+        origin: OfflineTrackOrigin = OfflineTrackOrigin.USER
+    ): Int = withContext(Dispatchers.IO) {
         mutationMutex.withLock {
             var queued = 0
+            val wifiOnly = preferencesRepository.downloadsWifiOnlyFlow.first()
             for (batch in downloadCandidates(songs).chunked(QUEUE_BATCH_SIZE)) {
                 val existingByUri = dao.getBySourceUris(batch.map(Song::contentUriString))
                     .associateBy(OfflineTrackEntity::sourceUri)
@@ -112,7 +120,8 @@ class CloudOfflineRepository @Inject constructor(
                         localPath = null,
                         state = OfflineDownloadStatus.QUEUED.storageValue,
                         createdAt = existing?.createdAt ?: now,
-                        updatedAt = now
+                        updatedAt = now,
+                        origin = origin.storageValue
                     )
                 }
                 if (attempts.isEmpty()) continue
@@ -125,7 +134,8 @@ class CloudOfflineRepository @Inject constructor(
                                 downloadId = attempt.downloadId,
                                 attemptId = attempt.attemptId,
                                 sourceUri = attempt.sourceUri,
-                                song = songsByUri[attempt.sourceUri]
+                                song = songsByUri[attempt.sourceUri],
+                                wifiOnly = wifiOnly
                             )
                         }).await()
                     } catch (error: Exception) {
@@ -162,7 +172,8 @@ class CloudOfflineRepository @Inject constructor(
             val request = downloadRequest(
                 downloadId = existing.downloadId,
                 attemptId = attemptId,
-                sourceUri = sourceUri
+                sourceUri = sourceUri,
+                wifiOnly = preferencesRepository.downloadsWifiOnlyFlow.first()
             )
             dao.upsert(
                 existing.copy(
@@ -199,6 +210,52 @@ class CloudOfflineRepository @Inject constructor(
                 entity.localPath?.let(::File)?.takeIf { it.exists() }?.delete()
                 deleteAttemptFiles(context, entity.downloadId, entity.attemptId)
             }
+        }
+    }
+
+    /** Current row for [sourceUri], used by the auto-save triggers to avoid re-downloading. */
+    suspend fun find(sourceUri: String): OfflineDownload? = withContext(Dispatchers.IO) {
+        dao.getBySourceUri(sourceUri)?.toModel()
+    }
+
+    /**
+     * Drops automatic copies until the cache fits [limitBytes] and [recentKeep] recent tracks.
+     *
+     * Explicit downloads are never candidates. Recent entries go first and favorites last, so a
+     * hearted song survives a full budget for as long as anything can. A zero budget disables the
+     * size check but still trims the recent list.
+     */
+    suspend fun trim(limitBytes: Long, recentKeep: Int): Int = withContext(Dispatchers.IO) {
+        mutationMutex.withLock {
+            val completed = dao.getCompleted().sortedBy(OfflineTrackEntity::updatedAt)
+            if (completed.isEmpty()) return@withLock 0
+
+            val doomed = mutableListOf<OfflineTrackEntity>()
+            // completed is sorted oldest-first, so the excess recent entries are the ones at the
+            // front: keeping the newest is what makes the cache useful for the next commute.
+            val recent = completed.filter { it.origin == OfflineTrackOrigin.RECENT.storageValue }
+            val excessRecent = (recent.size - recentKeep.coerceAtLeast(0)).coerceAtLeast(0)
+            doomed += recent.take(excessRecent)
+
+            val survivors = completed.filterNot { it in doomed }
+            if (limitBytes > 0L) {
+                var total = survivors.sumOf { it.diskBytes() }
+                val evictionOrder = survivors
+                    .filter { it.origin == OfflineTrackOrigin.RECENT.storageValue } +
+                    survivors.filter { it.origin == OfflineTrackOrigin.FAVORITE.storageValue }
+                for (candidate in evictionOrder) {
+                    if (total <= limitBytes) break
+                    doomed += candidate
+                    total -= candidate.diskBytes()
+                }
+            }
+
+            for (entity in doomed) {
+                if (dao.deleteBySourceUriForAttempt(entity.sourceUri, entity.attemptId) == 0) continue
+                entity.localPath?.let(::File)?.takeIf { it.exists() }?.delete()
+                deleteAttemptFiles(context, entity.downloadId, entity.attemptId)
+            }
+            doomed.size
         }
     }
 
@@ -274,7 +331,8 @@ class CloudOfflineRepository @Inject constructor(
         downloadId: String,
         attemptId: String,
         sourceUri: String,
-        song: Song? = null
+        song: Song? = null,
+        wifiOnly: Boolean = false
     ): OneTimeWorkRequest {
         // The song's artist/album/cover travel with the job: the downloaded YouTube stream has
         // none of it, and a saved file should still look like the song it is.
@@ -291,7 +349,7 @@ class CloudOfflineRepository @Inject constructor(
         return OneTimeWorkRequestBuilder<CloudTrackDownloadWorker>()
             .setConstraints(
                 Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .setRequiredNetworkType(if (wifiOnly) NetworkType.UNMETERED else NetworkType.CONNECTED)
                     .setRequiresStorageNotLow(true)
                     .build()
             )
@@ -311,5 +369,9 @@ private fun OfflineTrackEntity.toModel() = OfflineDownload(
     localPath = localPath,
     errorMessage = errorMessage,
     title = title,
-    provider = provider
+    provider = provider,
+    origin = OfflineTrackOrigin.fromStorage(origin)
 )
+
+private fun OfflineTrackEntity.diskBytes(): Long =
+    localPath?.let(::File)?.takeIf { it.exists() }?.length() ?: 0L

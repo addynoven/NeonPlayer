@@ -296,6 +296,11 @@ constructor(
         val UPDATE_CHANNEL = stringPreferencesKey("update_channel")
         val UPDATE_AUTO_CHECK = booleanPreferencesKey("update_auto_check")
         val UPDATE_LAST_NOTIFIED_VERSION = stringPreferencesKey("update_last_notified_version")
+
+        val AUTO_SAVE_FAVORITES = booleanPreferencesKey("auto_save_favorites")
+        val RECENT_OFFLINE_COUNT = intPreferencesKey("recent_offline_count")
+        val OFFLINE_STORAGE_LIMIT_MB = intPreferencesKey("offline_storage_limit_mb")
+        val DOWNLOADS_WIFI_ONLY = booleanPreferencesKey("downloads_wifi_only")
     }
 
     /** Null until the user picks a channel; the updater then follows the installed build. */
@@ -314,6 +319,50 @@ constructor(
 
     suspend fun setUpdateAutoCheck(enabled: Boolean) {
         dataStore.edit { preferences -> preferences[PreferencesKeys.UPDATE_AUTO_CHECK] = enabled }
+    }
+
+    /** Hearting a cloud song saves it for offline listening unless the listener turned this off. */
+    val autoSaveFavoritesFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.AUTO_SAVE_FAVORITES] ?: true
+    }
+
+    suspend fun setAutoSaveFavorites(enabled: Boolean) {
+        dataStore.edit { preferences -> preferences[PreferencesKeys.AUTO_SAVE_FAVORITES] = enabled }
+    }
+
+    /** How many recently played cloud songs stay on disk; zero disables the recent cache. */
+    val recentOfflineCountFlow: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.RECENT_OFFLINE_COUNT] ?: DEFAULT_RECENT_OFFLINE_COUNT
+    }
+
+    suspend fun setRecentOfflineCount(count: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.RECENT_OFFLINE_COUNT] =
+                count.coerceIn(0, MAX_RECENT_OFFLINE_COUNT)
+        }
+    }
+
+    /** Size budget for auto-saved downloads in megabytes; zero means no limit. */
+    val offlineStorageLimitMbFlow: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.OFFLINE_STORAGE_LIMIT_MB] ?: DEFAULT_OFFLINE_STORAGE_LIMIT_MB
+    }
+
+    suspend fun setOfflineStorageLimitMb(megabytes: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.OFFLINE_STORAGE_LIMIT_MB] = megabytes.coerceAtLeast(0)
+        }
+    }
+
+    /**
+     * Downloads wait for unmetered networks by default. Cloud tracks are tens of megabytes each,
+     * so a favorite spree on cellular is the kind of bill nobody forgives.
+     */
+    val downloadsWifiOnlyFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.DOWNLOADS_WIFI_ONLY] ?: true
+    }
+
+    suspend fun setDownloadsWifiOnly(enabled: Boolean) {
+        dataStore.edit { preferences -> preferences[PreferencesKeys.DOWNLOADS_WIFI_ONLY] = enabled }
     }
 
     suspend fun getLastNotifiedUpdateVersion(): String? =
@@ -1527,6 +1576,13 @@ constructor(
         /** Default word-based delimiters (matched case-insensitively with whitespace boundaries) */
         val DEFAULT_ARTIST_WORD_DELIMITERS = listOf("featuring", "feat.", "feat", "ft.", "ft", "vs.", "vs", "versus", "with", "prod.", "prod")
         const val DEFAULT_ALBUM_ART_CACHE_LIMIT_MB = 200
+
+        /** Ten tracks is a few albums — enough for a commute without surprising the listener. */
+        const val DEFAULT_RECENT_OFFLINE_COUNT = 10
+        const val MAX_RECENT_OFFLINE_COUNT = 50
+
+        /** 128 kbps AAC is roughly a megabyte a minute, so 1 GB is about 150 songs. */
+        const val DEFAULT_OFFLINE_STORAGE_LIMIT_MB = 1024
 
         /**
          * Synchronous read of the folder-cover-art opt-in.
