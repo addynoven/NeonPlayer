@@ -18,6 +18,7 @@ import com.lostf1sh.pixelplayeross.data.offline.CloudExportResult
 import com.lostf1sh.pixelplayeross.data.offline.CloudOfflineRepository
 import com.lostf1sh.pixelplayeross.data.offline.OfflineDownloadStatus
 import com.lostf1sh.pixelplayeross.data.stream.CloudStreamSecurity
+import com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.io.File
@@ -41,6 +42,7 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
     private val dao: OfflineTrackDao,
     private val navidromeRepository: NavidromeRepository,
     private val jellyfinRepository: JellyfinRepository,
+    private val youTubeMusicRepository: YouTubeMusicRepository,
     private val exports: CloudDownloadExports,
     baseOkHttpClient: OkHttpClient
 ) : CoroutineWorker(appContext, workerParams) {
@@ -88,83 +90,35 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
 
         val result = try {
             val source = resolveSource(sourceUri)
-            val requestBuilder = Request.Builder().url(source.url)
-            source.headers.forEach { (name, value) -> requestBuilder.header(name, value) }
-
-            client.newCall(requestBuilder.get().build()).execute().use { response ->
-                if (!response.isSuccessful) {
-                    throw DownloadHttpException(response.code)
-                }
-                if (!CloudStreamSecurity.isSupportedAudioContentType(response.header("Content-Type"))) {
-                    throw IOException("Server returned a non-audio response")
-                }
-                if (!CloudStreamSecurity.isAcceptableContentLength(response.header("Content-Length"))) {
-                    throw IOException("Audio file is too large")
-                }
-
-                val body = response.body
-                val total = body.contentLength().takeIf { it >= 0L }
-                val extension = extensionFor(response.header("Content-Type"), entity.mimeType)
-                val finalFile = CloudOfflineRepository.downloadDirectory(applicationContext)
-                    .resolve(
-                        "${CloudOfflineRepository.attemptFileStem(downloadId, attemptId)}.$extension"
-                    )
-                var copied = 0L
-                var lastPublished = 0L
-
-                body.byteStream().use { input ->
-                    tempFile.outputStream().buffered().use { output ->
-                        val buffer = ByteArray(DEFAULT_BUFFER_SIZE * 8)
-                        while (true) {
-                            coroutineContext.ensureActive()
-                            val count = input.read(buffer)
-                            if (count < 0) break
-                            output.write(buffer, 0, count)
-                            copied += count
-                            if (copied > CloudStreamSecurity.MAX_STREAM_CONTENT_LENGTH_BYTES) {
-                                throw IOException("Audio file is too large")
-                            }
-                            if (copied - lastPublished >= PROGRESS_STEP_BYTES) {
-                                publishProgress(downloadId, attemptId, copied, total)
-                                lastPublished = copied
-                            }
-                        }
-                    }
-                }
-
-                if (copied <= 0L) throw IOException("Downloaded file is empty")
-                if (total != null && copied != total) {
-                    throw IOException("Download ended early ($copied/$total bytes)")
-                }
-                coroutineContext.ensureActive()
-                if (!dao.isCurrentAttempt(downloadId, attemptId)) {
-                    throw StaleDownloadAttemptException()
-                }
-                finalFile.delete()
-                if (!tempFile.renameTo(finalFile)) {
-                    tempFile.copyTo(finalFile, overwrite = true)
-                    tempFile.delete()
-                }
-                finalizedFile = finalFile
-                coroutineContext.ensureActive()
-                withContext(NonCancellable) {
-                    val completed = dao.updateState(
-                        downloadId = downloadId,
-                        attemptId = attemptId,
-                        state = OfflineDownloadStatus.COMPLETE.storageValue,
-                        bytesDownloaded = copied,
-                        totalBytes = total ?: copied,
-                        localPath = finalFile.absolutePath,
-                        errorMessage = null,
-                        updatedAt = System.currentTimeMillis()
-                    )
-                    if (completed == 0) finalFile.delete() else completedFile = finalFile
-                    finalizedFile = null
-                }
-                Result.success()
+            val fetched = if (source.ranged) {
+                downloadRanged(source, tempFile, downloadId, attemptId, entity.mimeType)
+            } else {
+                downloadDirect(source, tempFile, downloadId, attemptId, entity.mimeType)
             }
+
+            coroutineContext.ensureActive()
+            if (!dao.isCurrentAttempt(downloadId, attemptId)) {
+                throw StaleDownloadAttemptException()
+            }
+            val finalFile = fetched.file
+            finalizedFile = finalFile
+            coroutineContext.ensureActive()
+            withContext(NonCancellable) {
+                val completed = dao.updateState(
+                    downloadId = downloadId,
+                    attemptId = attemptId,
+                    state = OfflineDownloadStatus.COMPLETE.storageValue,
+                    bytesDownloaded = fetched.bytes,
+                    totalBytes = fetched.totalBytes ?: fetched.bytes,
+                    localPath = finalFile.absolutePath,
+                    errorMessage = null,
+                    updatedAt = System.currentTimeMillis()
+                )
+                if (completed == 0) finalFile.delete() else completedFile = finalFile
+                finalizedFile = null
+            }
+            Result.success()
         } catch (cancelled: CancellationException) {
-            tempFile.delete()
             finalizedFile?.delete()
             throw cancelled
         } catch (_: StaleDownloadAttemptException) {
@@ -207,6 +161,174 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
         result
     }
 
+    private data class FetchedTrack(val file: File, val bytes: Long, val totalBytes: Long?)
+
+    /**
+     * One open-ended GET, for servers that serve the whole file that way. Safe for Navidrome and
+     * Jellyfin; YouTube goes through [downloadRanged] instead.
+     */
+    private suspend fun downloadDirect(
+        source: DownloadSource,
+        tempFile: File,
+        downloadId: String,
+        attemptId: String,
+        mimeType: String?
+    ): FetchedTrack {
+        val requestBuilder = Request.Builder().url(source.url)
+        source.headers.forEach { (name, value) -> requestBuilder.header(name, value) }
+
+        return client.newCall(requestBuilder.get().build()).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw DownloadHttpException(response.code)
+            }
+            if (!CloudStreamSecurity.isSupportedAudioContentType(response.header("Content-Type"))) {
+                throw IOException("Server returned a non-audio response")
+            }
+            if (!CloudStreamSecurity.isAcceptableContentLength(response.header("Content-Length"))) {
+                throw IOException("Audio file is too large")
+            }
+
+            val body = response.body
+            val total = body.contentLength().takeIf { it >= 0L }
+            val finalFile = CloudOfflineRepository.downloadDirectory(applicationContext).resolve(
+                "${CloudOfflineRepository.attemptFileStem(downloadId, attemptId)}." +
+                    extensionFor(response.header("Content-Type"), mimeType)
+            )
+            var copied = 0L
+            var lastPublished = 0L
+
+            body.byteStream().use { input ->
+                tempFile.outputStream().buffered().use { output ->
+                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE * 8)
+                    while (true) {
+                        coroutineContext.ensureActive()
+                        val count = input.read(buffer)
+                        if (count < 0) break
+                        output.write(buffer, 0, count)
+                        copied += count
+                        if (copied > CloudStreamSecurity.MAX_STREAM_CONTENT_LENGTH_BYTES) {
+                            throw IOException("Audio file is too large")
+                        }
+                        if (copied - lastPublished >= PROGRESS_STEP_BYTES) {
+                            publishProgress(downloadId, attemptId, copied, total)
+                            lastPublished = copied
+                        }
+                    }
+                }
+            }
+
+            if (copied <= 0L) throw IOException("Downloaded file is empty")
+            if (total != null && copied != total) {
+                throw IOException("Download ended early ($copied/$total bytes)")
+            }
+            renameIntoPlace(tempFile, finalFile)
+            FetchedTrack(finalFile, copied, total)
+        }
+    }
+
+    /**
+     * YouTube audio arrives from googlevideo, which refuses an open-ended GET on most URLs and
+     * only answers bounded byte ranges. The track is therefore pulled window by window and the
+     * windows are appended to the same file, which produces the identical bytes in the end.
+     */
+    private suspend fun downloadRanged(
+        source: DownloadSource,
+        tempFile: File,
+        downloadId: String,
+        attemptId: String,
+        mimeType: String?
+    ): FetchedTrack {
+        tempFile.delete()
+        var copied = 0L
+        var totalBytes: Long? = null
+        var extension: String? = null
+        var lastPublished = 0L
+
+        tempFile.outputStream().buffered().use { output ->
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE * 8)
+            while (true) {
+                coroutineContext.ensureActive()
+                val requestBuilder = Request.Builder().url(source.url)
+                source.headers.forEach { (name, value) -> requestBuilder.header(name, value) }
+                requestBuilder.header(
+                    "Range",
+                    "bytes=$copied-${copied + YOUTUBE_RANGE_WINDOW_BYTES - 1}"
+                )
+                var windowBytes = 0L
+                var finished = false
+
+                client.newCall(requestBuilder.get().build()).execute().use { response ->
+                    when {
+                        // Asked past the end of the file: the previous window already completed it.
+                        response.code == 416 -> finished = true
+                        !response.isSuccessful -> throw DownloadHttpException(response.code)
+                        else -> {
+                            if (!CloudStreamSecurity.isSupportedAudioContentType(
+                                    response.header("Content-Type")
+                                )
+                            ) {
+                                throw IOException("Server returned a non-audio response")
+                            }
+                            if (!CloudStreamSecurity.isAcceptableContentLength(
+                                    response.header("Content-Length")
+                                )
+                            ) {
+                                throw IOException("Audio file is too large")
+                            }
+                            if (extension == null) {
+                                extension = extensionFor(response.header("Content-Type"), mimeType)
+                            }
+                            totalBytesFromContentRange(response.header("Content-Range"))
+                                ?.let { size -> totalBytes = size }
+
+                            response.body.byteStream().use { input ->
+                                while (true) {
+                                    coroutineContext.ensureActive()
+                                    val count = input.read(buffer)
+                                    if (count < 0) break
+                                    output.write(buffer, 0, count)
+                                    copied += count
+                                    windowBytes += count
+                                    if (copied > CloudStreamSecurity.MAX_STREAM_CONTENT_LENGTH_BYTES) {
+                                        throw IOException("Audio file is too large")
+                                    }
+                                    if (copied - lastPublished >= PROGRESS_STEP_BYTES) {
+                                        publishProgress(downloadId, attemptId, copied, totalBytes)
+                                        lastPublished = copied
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (finished || windowBytes == 0L) break
+                if (windowBytes < YOUTUBE_RANGE_WINDOW_BYTES) break
+                val knownTotal = totalBytes
+                if (knownTotal != null && copied >= knownTotal) break
+            }
+        }
+
+        if (copied <= 0L) throw IOException("Downloaded file is empty")
+        val knownTotal = totalBytes
+        if (knownTotal != null && copied < knownTotal) {
+            throw IOException("Download ended early ($copied/$knownTotal bytes)")
+        }
+        val finalFile = CloudOfflineRepository.downloadDirectory(applicationContext).resolve(
+            "${CloudOfflineRepository.attemptFileStem(downloadId, attemptId)}.${extension ?: "webm"}"
+        )
+        renameIntoPlace(tempFile, finalFile)
+        return FetchedTrack(finalFile, copied, knownTotal ?: copied)
+    }
+
+    private fun renameIntoPlace(tempFile: File, finalFile: File) {
+        finalFile.delete()
+        if (!tempFile.renameTo(finalFile)) {
+            tempFile.copyTo(finalFile, overwrite = true)
+            tempFile.delete()
+        }
+    }
+
     private suspend fun finishExport(
         entity: OfflineTrackEntity,
         file: File,
@@ -247,7 +369,7 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
         setProgress(workDataOf(KEY_BYTES to copied, KEY_TOTAL_BYTES to (total ?: -1L)))
     }
 
-    private fun resolveSource(sourceUri: String): DownloadSource {
+    private suspend fun resolveSource(sourceUri: String): DownloadSource {
         val parsed = sourceUri.toUri()
         val id = parsed.host ?: parsed.path?.removePrefix("/")
             ?: throw IOException("Cloud track identifier is missing")
@@ -274,6 +396,24 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
                     allowedHost = jellyfinRepository.serverUrl
                 )
             }
+            "youtube" -> {
+                if (!CloudStreamSecurity.validateYouTubeVideoId(id)) {
+                    throw IOException("Invalid YouTube video identifier")
+                }
+                val streamUrl = youTubeMusicRepository.getAudioStreamUrl(id)
+                    .getOrElse { error -> throw IOException("Could not resolve YouTube audio", error) }
+                DownloadSource(
+                    url = streamUrl,
+                    headers = mapOf(
+                        "User-Agent" to YOUTUBE_USER_AGENT,
+                        "Referer" to "https://www.youtube.com/watch?v=$id"
+                    ),
+                    allowedHost = streamUrl,
+                    // googlevideo answers bounded ranges only, so the whole track has to be
+                    // pulled in windows instead of one open-ended GET.
+                    ranged = true
+                )
+            }
             else -> throw IOException("Unsupported cloud provider")
         }.also { source ->
             val host = source.allowedHost
@@ -294,7 +434,8 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
     private data class DownloadSource(
         val url: String,
         val headers: Map<String, String> = emptyMap(),
-        val allowedHost: String?
+        val allowedHost: String?,
+        val ranged: Boolean = false
     )
 
     private class DownloadHttpException(val code: Int) : IOException("Server returned HTTP $code")
@@ -302,6 +443,22 @@ class CloudTrackDownloadWorker @AssistedInject constructor(
 
     companion object {
         const val TAG = "cloud_track_download"
+
+        /** googlevideo blocks the default okhttp agent and wants a youtube.com referer. */
+        private const val YOUTUBE_USER_AGENT =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                "(KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+
+        /** Window size for ranged YouTube downloads: bounded ranges are what googlevideo serves. */
+        private const val YOUTUBE_RANGE_WINDOW_BYTES = 4L * 1024L * 1024L
+
+        /**
+         * Total size from a `Content-Range: bytes 0-99/1000` header: everything after the last
+         * slash. Null when the server does not know the size.
+         */
+        internal fun totalBytesFromContentRange(header: String?): Long? =
+            header?.substringAfterLast('/')?.trim()?.toLongOrNull()
+
         const val KEY_DOWNLOAD_ID = "download_id"
         const val KEY_ATTEMPT_ID = "attempt_id"
         const val KEY_SOURCE_URI = "source_uri"

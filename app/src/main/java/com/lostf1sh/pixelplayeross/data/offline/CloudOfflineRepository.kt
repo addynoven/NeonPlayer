@@ -222,6 +222,7 @@ class CloudOfflineRepository @Inject constructor(
         ) {
             "navidrome" -> "navidrome"
             "jellyfin" -> "jellyfin"
+            "youtube" -> "youtube"
             else -> null
         }
 
