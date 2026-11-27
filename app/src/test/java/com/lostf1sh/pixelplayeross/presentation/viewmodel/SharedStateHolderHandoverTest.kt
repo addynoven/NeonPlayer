@@ -13,6 +13,7 @@ import com.lostf1sh.pixelplayeross.data.model.SearchResultItem
 import com.lostf1sh.pixelplayeross.data.model.Song
 import com.lostf1sh.pixelplayeross.data.preferences.UserPreferencesRepository
 import com.lostf1sh.pixelplayeross.data.repository.MusicRepository
+import com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
 import com.lostf1sh.pixelplayeross.data.service.SleepTimerSession
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -46,6 +47,13 @@ import org.junit.jupiter.api.Test
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class SharedStateHolderHandoverTest {
+
+    private val youtubeMusicRepository = mockk<YouTubeMusicRepository>(relaxed = true)
+
+    init {
+        coEvery { youtubeMusicRepository.searchSongs(any()) } returns Result.success(emptyList())
+        coEvery { youtubeMusicRepository.searchPlaylists(any()) } returns Result.success(emptyList())
+    }
 
     @Nested
     inner class SleepTimer {
@@ -113,7 +121,7 @@ class SharedStateHolderHandoverTest {
 
         @Test
         fun `current owner clearing moves search to the surviving owner`() = runTest {
-            val holder = SearchStateHolder(musicRepository)
+            val holder = SearchStateHolder(musicRepository, youtubeMusicRepository)
             val mainActivityOwner = ownerScope()
             val externalPlayerOwner = ownerScope()
             holder.initialize(mainActivityOwner)
@@ -134,7 +142,7 @@ class SharedStateHolderHandoverTest {
 
         @Test
         fun `stale owner clearing keeps search on the current owner`() = runTest {
-            val holder = SearchStateHolder(musicRepository)
+            val holder = SearchStateHolder(musicRepository, youtubeMusicRepository)
             val mainActivityOwner = ownerScope()
             val externalPlayerOwner = ownerScope()
             holder.initialize(mainActivityOwner)
@@ -154,7 +162,7 @@ class SharedStateHolderHandoverTest {
         fun `current owner clearing resumes the current search for the surviving owner`() = runTest {
             val matches = MutableStateFlow<List<SearchResultItem>>(emptyList())
             every { musicRepository.searchAll("indian summer", any()) } returns matches
-            val holder = SearchStateHolder(musicRepository)
+            val holder = SearchStateHolder(musicRepository, youtubeMusicRepository)
             val mainActivityOwner = ownerScope()
             val externalPlayerOwner = ownerScope()
             holder.initialize(mainActivityOwner)

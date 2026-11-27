@@ -6,6 +6,10 @@ import com.lostf1sh.pixelplayeross.data.model.SearchFilterType
 import com.lostf1sh.pixelplayeross.data.model.SearchResultItem
 import com.lostf1sh.pixelplayeross.data.model.Song
 import com.lostf1sh.pixelplayeross.data.repository.MusicRepository
+import com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
+import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistSummary
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -30,6 +34,13 @@ import org.junit.jupiter.api.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchStateHolderTest {
 
+    private val youtubeMusicRepository = mockk<YouTubeMusicRepository>(relaxed = true)
+
+    init {
+        coEvery { youtubeMusicRepository.searchSongs(any()) } returns Result.success(emptyList())
+        coEvery { youtubeMusicRepository.searchPlaylists(any()) } returns Result.success(emptyList())
+    }
+
     private val nightSongs = listOf(SearchResultItem.SongItem(song("night-drive")))
     private val nightAlbums = listOf(SearchResultItem.AlbumItem(album(id = 7L, title = "Night Signals")))
     private val nightArtists = listOf(
@@ -48,7 +59,7 @@ class SearchStateHolderTest {
     @Test
     fun `changing the filter shows that filter's results without waiting for the typing debounce`() = runTest {
         val owner = ownerScope()
-        val holder = SearchStateHolder(musicRepository).apply { initialize(owner) }
+        val holder = SearchStateHolder(musicRepository, youtubeMusicRepository).apply { initialize(owner) }
         runCurrent()
         holder.performSearch("night")
         advanceTimeBy(SEARCH_SETTLE_MS)
@@ -68,7 +79,7 @@ class SearchStateHolderTest {
         val allMatches = MutableStateFlow<List<SearchResultItem>>(nightSongs + nightAlbums)
         every { musicRepository.searchAll("night", SearchFilterType.ALL) } returns allMatches
         val owner = ownerScope()
-        val holder = SearchStateHolder(musicRepository).apply { initialize(owner) }
+        val holder = SearchStateHolder(musicRepository, youtubeMusicRepository).apply { initialize(owner) }
         runCurrent()
         holder.performSearch("night")
         advanceTimeBy(SEARCH_SETTLE_MS)
@@ -88,7 +99,7 @@ class SearchStateHolderTest {
     @Test
     fun `a filter change while the query is still debouncing searches that query with the new filter`() = runTest {
         val owner = ownerScope()
-        val holder = SearchStateHolder(musicRepository).apply { initialize(owner) }
+        val holder = SearchStateHolder(musicRepository, youtubeMusicRepository).apply { initialize(owner) }
         runCurrent()
         holder.performSearch("night")
         advanceTimeBy(100L)
@@ -108,7 +119,7 @@ class SearchStateHolderTest {
     @Test
     fun `selecting the filter that is already selected does not search again`() = runTest {
         val owner = ownerScope()
-        val holder = SearchStateHolder(musicRepository).apply { initialize(owner) }
+        val holder = SearchStateHolder(musicRepository, youtubeMusicRepository).apply { initialize(owner) }
         runCurrent()
         holder.performSearch("night")
         advanceTimeBy(SEARCH_SETTLE_MS)
@@ -125,7 +136,7 @@ class SearchStateHolderTest {
     @Test
     fun `changing the filter before typing a query does not search`() = runTest {
         val owner = ownerScope()
-        val holder = SearchStateHolder(musicRepository).apply { initialize(owner) }
+        val holder = SearchStateHolder(musicRepository, youtubeMusicRepository).apply { initialize(owner) }
         runCurrent()
 
         holder.updateSearchFilter(SearchFilterType.ALBUMS)
@@ -140,7 +151,7 @@ class SearchStateHolderTest {
     @Test
     fun `a query typed after picking a filter searches with that filter`() = runTest {
         val owner = ownerScope()
-        val holder = SearchStateHolder(musicRepository).apply { initialize(owner) }
+        val holder = SearchStateHolder(musicRepository, youtubeMusicRepository).apply { initialize(owner) }
         runCurrent()
 
         holder.updateSearchFilter(SearchFilterType.ALBUMS)
@@ -155,7 +166,7 @@ class SearchStateHolderTest {
 
     @Test
     fun `the search resumed for the surviving owner keeps its filter`() = runTest {
-        val holder = SearchStateHolder(musicRepository)
+        val holder = SearchStateHolder(musicRepository, youtubeMusicRepository)
         val mainActivityOwner = ownerScope()
         val externalPlayerOwner = ownerScope()
         holder.initialize(mainActivityOwner)
@@ -178,6 +189,68 @@ class SearchStateHolderTest {
         mainActivityOwner.cancel()
     }
 
+    @Test
+    fun `youtube songs and playlists arrive next to the library hits`() = runTest {
+        val soundtrack = YouTubePlaylistSummary(
+            id = "PLeTrn4AsfVQyVNHMymfdRYls046TEZU5H",
+            title = "Need For Speed Most Wanted 2005 Soundtrack",
+            uploader = "Crash FM",
+            trackCount = 26,
+            thumbnailUrl = null
+        )
+        coEvery { youtubeMusicRepository.searchSongs(any()) } returns
+            Result.success(listOf(song("nine-thou")))
+        coEvery { youtubeMusicRepository.searchPlaylists(any()) } returns
+            Result.success(listOf(soundtrack))
+
+        val owner = ownerScope()
+        val holder = SearchStateHolder(musicRepository, youtubeMusicRepository).apply { initialize(owner) }
+        runCurrent()
+        holder.performSearch("night")
+        // 300 ms library debounce, then 600 ms before YouTube is asked.
+        advanceTimeBy(SEARCH_SETTLE_MS + 700L)
+        runCurrent()
+
+        val results = holder.searchResults.value
+        assertTrue(results.containsAll(nightSongs + nightAlbums + nightArtists))
+        assertTrue(results.contains(SearchResultItem.SongItem(song("nine-thou"))))
+        assertTrue(results.contains(SearchResultItem.YouTubePlaylistItem(soundtrack)))
+        owner.cancel()
+    }
+
+    @Test
+    fun `a repeated youtube hit does not produce two rows with the same key`() = runTest {
+        coEvery { youtubeMusicRepository.searchSongs(any()) } returns
+            Result.success(listOf(song("nine-thou"), song("nine-thou")))
+
+        val owner = ownerScope()
+        val holder = SearchStateHolder(musicRepository, youtubeMusicRepository).apply { initialize(owner) }
+        runCurrent()
+        holder.performSearch("night")
+        advanceTimeBy(SEARCH_SETTLE_MS + 700L)
+        runCurrent()
+
+        val songIds = holder.searchResults.value
+            .filterIsInstance<SearchResultItem.SongItem>()
+            .map { it.song.id }
+        assertEquals(songIds.distinct(), songIds)
+        owner.cancel()
+    }
+    @Test
+    fun `the playlists chip asks youtube for playlists only`() = runTest {
+        val owner = ownerScope()
+        val holder = SearchStateHolder(musicRepository, youtubeMusicRepository).apply { initialize(owner) }
+        runCurrent()
+
+        holder.updateSearchFilter(SearchFilterType.PLAYLISTS)
+        holder.performSearch("need for speed")
+        advanceTimeBy(SEARCH_SETTLE_MS + 700L)
+        runCurrent()
+
+        coVerify(exactly = 0) { youtubeMusicRepository.searchSongs(any()) }
+        coVerify(exactly = 1) { youtubeMusicRepository.searchPlaylists("need for speed") }
+        owner.cancel()
+    }
     // Separate Job so each owner has its own identity, while still running on the test
     // dispatcher that runCurrent and advanceTimeBy drive.
     private fun TestScope.ownerScope(): CoroutineScope = CoroutineScope(coroutineContext + Job())

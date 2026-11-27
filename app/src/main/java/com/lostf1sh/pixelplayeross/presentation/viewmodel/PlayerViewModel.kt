@@ -315,6 +315,38 @@ class PlayerViewModel @Inject constructor(
         youtubeMusicRepository.prefetchStreamUrls(songs, limit = 2)
     }
 
+    /** Playlist whose tracks are being fetched right now, so its row can show a spinner. */
+    private val _loadingYouTubePlaylistId = MutableStateFlow<String?>(null)
+    val loadingYouTubePlaylistId: StateFlow<String?> = _loadingYouTubePlaylistId.asStateFlow()
+
+    /**
+     * Queue a whole YouTube playlist. Tapping it is already a decision to listen to all of it, so
+     * the tracks are fetched here and playback starts as soon as the list resolves.
+     */
+    fun playYouTubePlaylist(playlist: com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistSummary) {
+        if (_loadingYouTubePlaylistId.value == playlist.id) return
+        viewModelScope.launch {
+            _loadingYouTubePlaylistId.value = playlist.id
+            try {
+                youtubeMusicRepository.fetchPlaylist(playlist.id)
+
+                    .onSuccess { loaded ->
+                        if (loaded.songs.isEmpty()) {
+                            sendToast("Empty playlist")
+                        } else {
+                            playSongs(loaded.songs, loaded.songs.first(), loaded.title)
+                        }
+                    }
+                    .onFailure { e ->
+                        Timber.e(e, "Could not queue YouTube playlist %s", playlist.id)
+                        sendToast("Could not load playlist")
+                    }
+            } finally {
+                _loadingYouTubePlaylistId.value = null
+            }
+        }
+    }
+
     private val _playerUiState = MutableStateFlow(PlayerUiState())
     val playerUiState: StateFlow<PlayerUiState> = _playerUiState.asStateFlow()
 

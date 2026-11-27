@@ -32,12 +32,14 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import com.lostf1sh.pixelplayeross.ui.theme.ShapeCache
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,6 +66,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -79,6 +82,7 @@ import com.lostf1sh.pixelplayeross.data.model.Playlist
 import com.lostf1sh.pixelplayeross.data.model.SearchFilterType
 import com.lostf1sh.pixelplayeross.data.model.SearchHistoryItem
 import com.lostf1sh.pixelplayeross.data.model.SearchResultItem
+import com.lostf1sh.pixelplayeross.data.youtube.YouTubePlaylistSummary
 import com.lostf1sh.pixelplayeross.data.model.Song
 import com.lostf1sh.pixelplayeross.presentation.components.SmartImage
 import com.lostf1sh.pixelplayeross.presentation.components.SmartImageListTargetSize
@@ -124,6 +128,7 @@ import com.lostf1sh.pixelplayeross.presentation.screens.search.components.GenreC
 import com.lostf1sh.pixelplayeross.presentation.selection.dragToSelect
 import com.lostf1sh.pixelplayeross.presentation.selection.rememberDragToSelectState
 import com.lostf1sh.pixelplayeross.presentation.viewmodel.PlaylistViewModel
+import coil.compose.AsyncImage
 import com.lostf1sh.pixelplayeross.utils.formatSongCount
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -1162,6 +1167,7 @@ fun SearchResultsList(
 ) {
     val localDensity = LocalDensity.current
     val playerStableState by playerViewModel.stablePlayerState.collectAsStateWithLifecycle()
+    val loadingYouTubePlaylistId by playerViewModel.loadingYouTubePlaylistId.collectAsStateWithLifecycle()
 
     if (results.isEmpty()) {
         Box(
@@ -1182,6 +1188,7 @@ fun SearchResultsList(
                 is SearchResultItem.AlbumItem -> SearchFilterType.ALBUMS
                 is SearchResultItem.ArtistItem -> SearchFilterType.ARTISTS
                 is SearchResultItem.PlaylistItem -> SearchFilterType.PLAYLISTS
+                is SearchResultItem.YouTubePlaylistItem -> SearchFilterType.PLAYLISTS
             }
         }
     }
@@ -1297,6 +1304,7 @@ fun SearchResultsList(
                             is SearchResultItem.AlbumItem -> "album_${item.album.id}"
                             is SearchResultItem.ArtistItem -> "artist_${item.artist.id}"
                             is SearchResultItem.PlaylistItem -> "playlist_${item.playlist.id}_${index}"
+                            is SearchResultItem.YouTubePlaylistItem -> "yt_playlist_${item.playlist.id}_${index}"
                         }
                     },
                     contentType = { index ->
@@ -1305,6 +1313,7 @@ fun SearchResultsList(
                             is SearchResultItem.AlbumItem -> "search_album"
                             is SearchResultItem.ArtistItem -> "search_artist"
                             is SearchResultItem.PlaylistItem -> "search_playlist"
+                            is SearchResultItem.YouTubePlaylistItem -> "search_yt_playlist"
                         }
                     }
                 ) { index ->
@@ -1434,6 +1443,16 @@ fun SearchResultsList(
                                     isSelectionMode = isPlaylistSelectionMode,
                                     onLongPress = { onPlaylistLongPress(item.playlist) },
                                     onSelectionToggle = { onPlaylistSelectionToggle(item.playlist) }
+                                )
+                            }
+                            is SearchResultItem.YouTubePlaylistItem -> {
+                                SearchResultYouTubePlaylistItem(
+                                    playlist = item.playlist,
+                                    isLoading = loadingYouTubePlaylistId == item.playlist.id,
+                                    onClick = {
+                                        playerViewModel.playYouTubePlaylist(item.playlist)
+                                        onItemSelected()
+                                    }
                                 )
                             }
                         }
@@ -1634,6 +1653,104 @@ fun SearchResultArtistItem(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchResultYouTubePlaylistItem(
+    playlist: YouTubePlaylistSummary,
+    isLoading: Boolean,
+    onClick: () -> Unit
+) {
+    val itemShape = remember {
+        AbsoluteSmoothCornerShape(
+            cornerRadiusTL = 26.dp,
+            smoothnessAsPercentTR = 60,
+            cornerRadiusTR = 26.dp,
+            smoothnessAsPercentBR = 60,
+            cornerRadiusBR = 26.dp,
+            smoothnessAsPercentBL = 60,
+            cornerRadiusBL = 26.dp,
+            smoothnessAsPercentTL = 60
+        )
+    }
+
+    Card(
+        shape = itemShape,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+                contentAlignment = Alignment.Center
+            ) {
+                val thumbnail = playlist.thumbnailUrl
+                if (thumbnail != null) {
+                    AsyncImage(
+                        model = thumbnail,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Rounded.PlayArrow,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = playlist.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                val subtitle = buildString {
+                    playlist.uploader?.takeIf { it.isNotBlank() }?.let { append(it) }
+                    playlist.trackCount?.let {
+                        if (isNotEmpty()) append(" · ")
+                        append(formatSongCount(it.toInt()))
+                    }
+                }
+                if (subtitle.isNotEmpty()) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(22.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Rounded.PlayArrow,
+                    contentDescription = stringResource(R.string.cd_play_playlist),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
 @Composable
 fun SearchResultPlaylistItem(
     playlist: Playlist,

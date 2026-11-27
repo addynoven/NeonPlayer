@@ -32,6 +32,8 @@ import org.json.JSONObject
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.playlist.PlaylistInfo
+import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem
+import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeSearchQueryHandlerFactory
 import org.schabi.newpipe.extractor.search.SearchInfo
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import timber.log.Timber
@@ -70,6 +72,9 @@ class YouTubeMusicRepository @Inject constructor(
 
         /** Upper bound on continuation pages fetched for one playlist. */
         private const val MAX_PLAYLIST_PAGES = 12
+
+        /** How many playlist cards one search shows. */
+        private const val PLAYLIST_RESULT_LIMIT = 12
 
         /** Joined budget for both probe requests; the resolver falls through on timeout. */
         private const val PROBE_TIMEOUT_MS = 8_000L
@@ -309,6 +314,43 @@ class YouTubeMusicRepository @Inject constructor(
         }
     }
 
+    /**
+     * Playlist results for a query, so search can offer whole soundtracks next to single songs.
+     * Only summaries: fetching the tracks is deferred until the user actually taps one.
+     */
+    suspend fun searchPlaylists(
+        query: String,
+        limit: Int = PLAYLIST_RESULT_LIMIT
+    ): Result<List<YouTubePlaylistSummary>> = withContext(Dispatchers.IO) {
+        try {
+            val handler = ServiceList.YouTube.searchQHFactory.fromQuery(
+                query,
+                listOf(YoutubeSearchQueryHandlerFactory.PLAYLISTS),
+                ""
+            )
+            val info = SearchInfo.getInfo(ServiceList.YouTube, handler)
+            val playlists = info.relatedItems
+                .filterIsInstance<PlaylistInfoItem>()
+                .mapNotNull { item ->
+                    val id = extractYouTubePlaylistId(item.url) ?: return@mapNotNull null
+                    YouTubePlaylistSummary(
+                        id = id,
+                        title = item.name,
+                        uploader = item.uploaderName,
+                        trackCount = item.streamCount.takeIf { it > 0 },
+                        thumbnailUrl = item.thumbnails.firstOrNull()?.url
+                    )
+                }
+                .distinctBy { it.id }
+                .take(limit)
+            Result.success(playlists)
+        } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Timber.e(e, "Could not search YouTube playlists for %s", query)
+            Result.failure(e)
+        }
+    }
     /**
      * Resolve a YouTube playlist link into songs the player can queue, using the same extractor
      * as search so every item carries the same ids, artwork and stream URI a search hit would.
@@ -1077,6 +1119,17 @@ data class YouTubePlaylist(
     val id: String,
     val title: String,
     val songs: List<Song>
+)
+
+/**
+ * A playlist as it appears in search results, before its tracks are fetched.
+ */
+data class YouTubePlaylistSummary(
+    val id: String,
+    val title: String,
+    val uploader: String?,
+    val trackCount: Long?,
+    val thumbnailUrl: String?
 )
 
 /**

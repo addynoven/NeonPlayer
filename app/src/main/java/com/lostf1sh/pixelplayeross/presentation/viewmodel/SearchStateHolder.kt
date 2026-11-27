@@ -4,6 +4,7 @@ import com.lostf1sh.pixelplayeross.data.model.SearchFilterType
 import com.lostf1sh.pixelplayeross.data.model.SearchHistoryItem
 import com.lostf1sh.pixelplayeross.data.model.SearchResultItem
 import com.lostf1sh.pixelplayeross.data.repository.MusicRepository
+import com.lostf1sh.pixelplayeross.data.youtube.YouTubeMusicRepository
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -12,6 +13,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,9 +39,13 @@ import kotlinx.coroutines.FlowPreview
 @Singleton
 class SearchStateHolder @Inject constructor(
     private val musicRepository: MusicRepository,
+    private val youtubeMusicRepository: YouTubeMusicRepository,
 ) {
     private companion object {
         const val SEARCH_DEBOUNCE_MS = 300L
+
+        /** YouTube is a network call per keystroke, so it waits longer than the library does. */
+        const val YOUTUBE_SEARCH_DEBOUNCE_MS = 600L
     }
 
     private data class SearchRequest(
@@ -50,6 +56,12 @@ class SearchStateHolder @Inject constructor(
         // typing debounce.
         val immediate: Boolean = false,
     )
+
+    // Library results and YouTube results arrive at different speeds, so they are kept apart and
+    // merged on every change: Room answers in milliseconds, YouTube in about a second.
+    private val localResults = MutableStateFlow<ImmutableList<SearchResultItem>>(persistentListOf())
+    private val youTubeResults = MutableStateFlow<ImmutableList<SearchResultItem>>(persistentListOf())
+    private var youTubeJob: Job? = null
 
     private val _searchResults = MutableStateFlow<ImmutableList<SearchResultItem>>(persistentListOf())
     val searchResults = _searchResults.asStateFlow()
@@ -92,11 +104,16 @@ class SearchStateHolder @Inject constructor(
                     val normalizedQuery = request.query
 
                     if (normalizedQuery.isBlank()) {
+                        youTubeJob?.cancel()
+                        localResults.value = persistentListOf()
+                        youTubeResults.value = persistentListOf()
                         if (_searchResults.value.isNotEmpty()) {
                             _searchResults.value = persistentListOf()
                         }
                         return@collectLatest
                     }
+
+                    searchYouTube(normalizedQuery, request.filter, request.requestId)
 
                     try {
                         musicRepository.searchAll(normalizedQuery, request.filter).collect { resultsList ->
@@ -107,6 +124,7 @@ class SearchStateHolder @Inject constructor(
                                         is SearchResultItem.AlbumItem -> 1
                                         is SearchResultItem.ArtistItem -> 2
                                         is SearchResultItem.PlaylistItem -> 3
+                                        is SearchResultItem.YouTubePlaylistItem -> 3
                                     }
                                 }
                             )
@@ -115,22 +133,78 @@ class SearchStateHolder @Inject constructor(
                                 return@collect
                             }
 
-                            val immutableResults = sortedResults.toImmutableList()
-                            if (_searchResults.value != immutableResults) {
-                                _searchResults.value = immutableResults
-                            }
+                            localResults.value = sortedResults.toImmutableList()
+                            publishResults()
                         }
                     } catch (_: CancellationException) {
                     } catch (e: Exception) {
                         if (request.requestId == latestSearchRequestId.get()) {
                             Timber.e(e, "Error performing search for query: $normalizedQuery")
-                            _searchResults.value = persistentListOf()
+                            localResults.value = persistentListOf()
+                            publishResults()
                         }
                     }
                 }
         }
     }
 
+
+    /**
+     * Republish the merged list. Called by both halves so a fast local answer is not held back
+     * waiting for the network, and late YouTube rows land under the library hits.
+     */
+    private fun publishResults() {
+        // YouTube can return the same video twice, and its list is merged with the library's.
+        // The list keys rows by song id, so duplicates here are a crash, not a cosmetic issue.
+        val merged = (localResults.value + youTubeResults.value)
+            .distinctBy { result ->
+                when (result) {
+                    is SearchResultItem.SongItem -> "song_${result.song.id}"
+                    is SearchResultItem.AlbumItem -> "album_${result.album.id}"
+                    is SearchResultItem.ArtistItem -> "artist_${result.artist.id}"
+                    is SearchResultItem.PlaylistItem -> "playlist_${result.playlist.id}"
+                    is SearchResultItem.YouTubePlaylistItem -> "yt_playlist_${result.playlist.id}"
+                }
+            }
+            .toImmutableList()
+        if (_searchResults.value != merged) {
+            _searchResults.value = merged
+        }
+    }
+
+    /**
+     * Song and playlist hits from YouTube, so search offers whole soundtracks next to single
+     * tracks. Cancelled on every new query: a slow answer must not overwrite a newer one.
+     */
+    private fun searchYouTube(query: String, filter: SearchFilterType, requestId: Long) {
+        youTubeJob?.cancel()
+        youTubeResults.value = persistentListOf()
+        // Lyrics search has its own provider; the other filters narrow which kinds are wanted,
+        // matching what the local half returns for the same chip.
+        if (filter == SearchFilterType.LYRICS) return
+        val wantsSongs = filter == SearchFilterType.ALL || filter == SearchFilterType.SONGS
+        val wantsPlaylists = filter == SearchFilterType.ALL || filter == SearchFilterType.PLAYLISTS
+
+        youTubeJob = scope?.launch {
+            delay(YOUTUBE_SEARCH_DEBOUNCE_MS)
+            val songs = if (wantsSongs) {
+                youtubeMusicRepository.searchSongs(query).getOrElse { emptyList() }
+            } else {
+                emptyList()
+            }
+            val playlists = if (wantsPlaylists) {
+                youtubeMusicRepository.searchPlaylists(query).getOrElse { emptyList() }
+            } else {
+                emptyList()
+            }
+            if (requestId != latestSearchRequestId.get()) return@launch
+            youTubeResults.value = (
+                songs.map { SearchResultItem.SongItem(it) } +
+                    playlists.map { SearchResultItem.YouTubePlaylistItem(it) }
+                ).toImmutableList()
+            publishResults()
+        }
+    }
     /**
      * Selects [filterType] and re-runs the current query with it straight away, so the results
      * switch together with the chip instead of after the screen re-issues the query and the
@@ -140,6 +214,9 @@ class SearchStateHolder @Inject constructor(
         val previousFilter = _selectedSearchFilter.value
         if (previousFilter == filterType) return
         if (filterType == SearchFilterType.LYRICS || previousFilter == SearchFilterType.LYRICS) {
+            youTubeJob?.cancel()
+            localResults.value = persistentListOf()
+            youTubeResults.value = persistentListOf()
             _searchResults.value = persistentListOf()
         }
         _selectedSearchFilter.value = filterType
