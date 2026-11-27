@@ -36,15 +36,34 @@ on top of the new base instead of merged, because the two repositories share no 
 | License | GPL-3.0, inherited from PixelPlayerOSS |
 | Attribution | `LICENSE`, `THIRD_PARTY_NOTICES.md`, `app/src/main/assets/licenses/` |
 
-Because PixelPlayerOSS was re-imported upstream (its root commit is
-`6fee27643 Initial PixelPlayerOSS import`), the two histories are unrelated and a git
-merge is impossible. Updating means porting: rebase our feature files onto the new tree,
-rewrite the package, and let the compiler drive the API differences.
+`main` is a normal git descendant of upstream: its history is `PixelPlayerOSS/main`
+(`1664e8e63`) plus 24 NeonPlayer commits, so newer upstream releases merge in — no
+re-porting. (`master` is something else: the archived pre-port fork of
+`PixelPlayerHQ/PixelPlayer`, whose history really is unrelated and is kept only as a
+backup.)
 
-To pull a newer upstream release, fetch `PixelPlayerHQ/PixelPlayerOSS`, diff it against
-the base commit above, and port the same feature set forward. Keep the feature files
-listed under [What NeonPlayer adds](#what-neonplayer-adds-on-top-of-pixelplayeross)
-in one place so the port stays mechanical.
+Check whether upstream has anything new:
+
+```sh
+git fetch oss --prune                 # oss = PixelPlayerHQ/PixelPlayerOSS
+git rev-list --count main..oss/main   # commits we are behind
+git log --oneline main..oss/main      # what would come in
+```
+
+Sync when that count is not zero — either merge the weekly `upstream-sync` pull request
+opened by `.github/workflows/upstream-sync.yml`, or run it locally:
+
+```sh
+./scripts/sync-upstream.sh            # merges into sync/upstream-YYYYmmdd-HHMM
+```
+
+Both end in the same check: `./gradlew :app:assembleDebug :app:testDebugUnitTest`, then
+play one YouTube track past the one-minute mark. The files both sides edit, the Room
+schema rule and the NewPipeExtractor pin are in
+[`docs/UPSTREAM_SYNC.md`](docs/UPSTREAM_SYNC.md) — read it before resolving a conflict.
+
+Last checked 2026-11-28: 24 commits ahead, 0 behind; upstream tip `1664e8e63`
+(2026-11-21), so there was nothing to merge.
 
 ## Features
 

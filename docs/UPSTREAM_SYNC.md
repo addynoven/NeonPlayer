@@ -25,6 +25,24 @@ Rules that keep this cheap:
 - **Tag our releases** (`neon-v0.9.0`); leave upstream tags alone so we can still
   diff against a release.
 
+### Is there anything to sync?
+
+```bash
+git fetch oss --prune --tags
+git rev-list --count main..oss/main   # 0 = up to date
+git log --oneline main..oss/main      # what would come in
+```
+
+`scripts/sync-upstream.sh` starts with this check and exits without touching anything
+when the count is zero, so running it is always safe.
+
+`master` is **not** the parent: it is the archived pre-port fork of
+`PixelPlayerHQ/PixelPlayer` (a history unrelated to `oss/main`), kept only as history and
+as the `backup-pre-oss-port` tag. Never merge from it.
+
+Status on 2026-11-28: `main` is 24 commits ahead of `oss/main` and 0 behind; upstream
+tip `1664e8e63` (2026-11-21), so nothing was due.
+
 ## Branch protection
 
 The ruleset ("Protect Master") covers `main` and `master` only: it forbids deleting
