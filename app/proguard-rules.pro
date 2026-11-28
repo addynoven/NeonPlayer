@@ -73,3 +73,10 @@
     public static int d(...);
     public static int i(...);
 }
+
+# Rhino (org.mozilla.javascript, pulled in with the extractor) mentions java.beans in its
+# JSON bridge for host objects. Android has no java.beans, but the path is never taken from
+# the extractor, so the reference only needs to stop failing the R8 run.
+-dontwarn java.beans.**
+-dontwarn javax.script.**
+
