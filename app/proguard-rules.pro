@@ -74,6 +74,11 @@
     public static int i(...);
 }
 
+# NewPipe's InnerTube protobuf messages are read through protobuf-javalite's FieldInfo, which
+# looks the generated fields up by name at runtime. R8 renaming those fields turns every
+# playlist load into "Field browseId_ for <class> not found", so they stay as generated.
+-keep class org.schabi.newpipe.extractor.services.youtube.protos.** { *; }
+
 # Rhino (org.mozilla.javascript, pulled in with the extractor) mentions java.beans in its
 # JSON bridge for host objects. Android has no java.beans, but the path is never taken from
 # the extractor, so the reference only needs to stop failing the R8 run.
