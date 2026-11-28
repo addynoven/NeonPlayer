@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -41,6 +42,7 @@ import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -74,11 +76,25 @@ class YouTubeMusicRepository @Inject constructor(
         /** Upper bound on continuation pages fetched for one playlist. */
         private const val MAX_PLAYLIST_PAGES = 12
 
+        /** Pause before the one retry that smooths over YouTube's transient HTML answers. */
+        private const val PLAYLIST_RETRY_DELAY_MS = 700L
+
         /** How many playlist cards one search shows. */
         private const val PLAYLIST_RESULT_LIMIT = 12
 
         /** Joined budget for both probe requests; the resolver falls through on timeout. */
         private const val PROBE_TIMEOUT_MS = 8_000L
+
+        /**
+         * Per-phase budgets and the ceiling for one stream resolution. Every phase is a
+         * third-party service and the HTTP client has no call timeout, so a single stalled
+         * socket could otherwise hold a tap for minutes. The player now gets a failure it can
+         * retry instead of a spinner that never resolves.
+         */
+        private const val NEW_PIPE_RESOLVE_BUDGET_MS = 12_000L
+        private const val INNER_TUBE_RESOLVE_BUDGET_MS = 10_000L
+        private const val FALLBACK_RESOLVE_BUDGET_MS = 12_000L
+        private const val RESOLVE_DEADLINE_MS = 35_000L
         private const val M4A_ATTEMPTS = 3
         private const val M4A_RETRY_DELAY_MS = 500L
         private val INVIDIOUS_HOSTS = listOf(
@@ -379,7 +395,16 @@ class YouTubeMusicRepository @Inject constructor(
         val playlistUrl = "https://www.youtube.com/playlist?list=$playlistId"
 
         try {
-            val info = PlaylistInfo.getInfo(ServiceList.YouTube, playlistUrl)
+            // YouTube sometimes answers a perfectly valid playlist with its HTML consent or
+            // "not a bot" page instead of the JSON the extractor expects. That is per edge node
+            // and transient, so one short retry recovers most of them instead of failing the tap.
+            val info = runCatching { PlaylistInfo.getInfo(ServiceList.YouTube, playlistUrl) }
+                .getOrElse { first ->
+                    if (!isTransientPlaylistFailure(first)) throw first
+                    Timber.d(first, "Retrying playlist %s after a transient answer", playlistId)
+                    delay(PLAYLIST_RETRY_DELAY_MS)
+                    PlaylistInfo.getInfo(ServiceList.YouTube, playlistUrl)
+                }
             // Keep insertion order: the queue should play in the order the playlist shows.
             val songs = LinkedHashMap<String, Song>()
             fun add(item: StreamInfoItem) {
@@ -529,7 +554,31 @@ class YouTubeMusicRepository @Inject constructor(
         }
     }
 
+    /**
+     * Budgeted entry point. Every strategy below is a third-party service (YouTube itself, Cobalt,
+     * Piped, Invidious) and the shared HTTP client has no call timeout, so a stalled socket used to
+     * park a tap for minutes while the player sat at zero. A resolution now either starts inside
+     * [RESOLVE_DEADLINE_MS] or fails visibly, which the player can retry immediately.
+     */
     private suspend fun resolveAudioStreamUrl(videoId: String): Result<String> = withContext(Dispatchers.IO) {
+        val startedAt = System.currentTimeMillis()
+        val result = withTimeoutOrNull(RESOLVE_DEADLINE_MS) { resolveStreamThroughStrategies(videoId) }
+            ?: Result.failure(resolutionTimeout("YouTube resolution", RESOLVE_DEADLINE_MS))
+        val elapsedMs = System.currentTimeMillis() - startedAt
+        if (result.isSuccess) {
+            Timber.d("Resolved stream for %s in %dms", videoId, elapsedMs)
+        } else {
+            Timber.w(
+                result.exceptionOrNull(),
+                "Stream resolution for %s gave up after %dms",
+                videoId,
+                elapsedMs
+            )
+        }
+        result
+    }
+
+    private suspend fun resolveStreamThroughStrategies(videoId: String): Result<String> = withContext(Dispatchers.IO) {
         resolvedStreamCache[videoId]?.let { cached ->
             if (cached.isUsable) {
                 Timber.d("Stream cache hit for %s", videoId)
@@ -546,7 +595,9 @@ class YouTubeMusicRepository @Inject constructor(
         // PoToken-capped URLs every other path can produce. This is the most reliable
         // resolver, so it gets first refusal and everything below is a fallback.
         if (_isInitialized.value) {
-            val newPipeResult = getAudioStreamViaNewPipe(videoId)
+            val newPipeResult = withTimeoutOrNull(NEW_PIPE_RESOLVE_BUDGET_MS) {
+                getAudioStreamViaNewPipe(videoId)
+            } ?: Result.failure(resolutionTimeout("NewPipe", NEW_PIPE_RESOLVE_BUDGET_MS))
             if (newPipeResult.isSuccess) {
                 cacheStreamUrl(videoId, newPipeResult.getOrThrow())
                 return@withContext newPipeResult
@@ -558,7 +609,9 @@ class YouTubeMusicRepository @Inject constructor(
         }
 
         // Phase 2: race all InnerTube clients concurrently.
-        val innerTubeResult = getAudioStreamViaInnerTube(videoId)
+        val innerTubeResult = withTimeoutOrNull(INNER_TUBE_RESOLVE_BUDGET_MS) {
+            getAudioStreamViaInnerTube(videoId)
+        } ?: Result.failure(resolutionTimeout("InnerTube", INNER_TUBE_RESOLVE_BUDGET_MS))
         if (innerTubeResult.isSuccess) {
             cacheStreamUrl(videoId, innerTubeResult.getOrThrow())
             return@withContext innerTubeResult
@@ -573,7 +626,9 @@ class YouTubeMusicRepository @Inject constructor(
             { getAudioStreamViaPiped(videoId) },
             { getAudioStreamViaInvidious(videoId) }
         )
-        val fallbackResult = raceForFirstSuccess(fallbackJobs)
+        val fallbackResult = withTimeoutOrNull(FALLBACK_RESOLVE_BUDGET_MS) {
+            raceForFirstSuccess(fallbackJobs)
+        } ?: Result.failure(resolutionTimeout("Fallback services", FALLBACK_RESOLVE_BUDGET_MS))
         if (fallbackResult.isSuccess) {
             cacheStreamUrl(videoId, fallbackResult.getOrThrow())
         } else {
@@ -590,6 +645,15 @@ class YouTubeMusicRepository @Inject constructor(
      * Launch every job concurrently and return the first successful result, cancelling the
      * rest. Turns a serial fallback ladder (seconds to minutes) into a single latency budget.
      */
+    private fun isTransientPlaylistFailure(error: Throwable): Boolean {
+        val message = error.message.orEmpty()
+        return message.contains("Got HTML document", ignoreCase = true) ||
+            message.contains("Sign in to confirm", ignoreCase = true)
+    }
+
+    private fun resolutionTimeout(strategy: String, budgetMs: Long): Throwable =
+        TimeoutException("$strategy did not answer within ${budgetMs}ms")
+
     private suspend fun raceForFirstSuccess(jobs: List<suspend () -> Result<String>>): Result<String> {
         if (jobs.isEmpty()) {
             return Result.failure(IllegalStateException("No stream strategies to race"))

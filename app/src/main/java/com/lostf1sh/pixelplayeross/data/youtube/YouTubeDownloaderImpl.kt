@@ -9,13 +9,34 @@ import org.schabi.newpipe.extractor.downloader.Request as ExtractorRequest
 import org.schabi.newpipe.extractor.downloader.Response as ExtractorResponse
 import org.schabi.newpipe.extractor.exceptions.ReCaptchaException
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class YouTubeDownloaderImpl @Inject constructor(
-    private val okHttpClient: OkHttpClient
+    okHttpClient: OkHttpClient
 ) : Downloader() {
+
+    /**
+     * The extractor only ever reaches YouTube through this client, and the shared app client has
+     * no call timeout: a stalled InnerTube or googlevideo socket could hold a stream resolution
+     * open for minutes while the player sat at zero. One extractor request now has to finish
+     * inside [EXTRACTOR_CALL_TIMEOUT_SECONDS], and a phase that stalls that long falls through to
+     * the next strategy instead of parking the tap.
+     */
+    private val client = okHttpClient.newBuilder()
+        .connectTimeout(EXTRACTOR_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .readTimeout(EXTRACTOR_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .writeTimeout(EXTRACTOR_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .callTimeout(EXTRACTOR_CALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        .build()
+
+    private companion object {
+        const val EXTRACTOR_CONNECT_TIMEOUT_SECONDS = 8L
+        const val EXTRACTOR_READ_TIMEOUT_SECONDS = 10L
+        const val EXTRACTOR_CALL_TIMEOUT_SECONDS = 15L
+    }
 
     @Throws(IOException::class, ReCaptchaException::class)
     override fun execute(request: ExtractorRequest): ExtractorResponse {
@@ -60,7 +81,7 @@ class YouTubeDownloaderImpl @Inject constructor(
             else -> requestBuilder.method(httpMethod, null)
         }
 
-        val okHttpResponse = okHttpClient.newCall(requestBuilder.build()).execute()
+        val okHttpResponse = client.newCall(requestBuilder.build()).execute()
         val responseBody = okHttpResponse.body.string()
 
         val responseCode = okHttpResponse.code
